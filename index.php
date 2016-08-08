@@ -288,7 +288,7 @@
 				
 				    <div class="col-md-9 col-sm-9 col-xs-9">
 				      <div style="width: 100%;">
-                        <canvas id="canvas_amplicon_depth" style="width: 100%; height: 390px; padding: 0px; position: relative;"></canvas>
+                        <canvas id="canvas_amplicon_depth"></canvas>
 					  </div>
 					</div>
 				  </div>

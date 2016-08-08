@@ -24,11 +24,11 @@ function loadAmpliconGraph(path_amplicon) {
       // create amplicon depth graph controllers
 
       // draw amplicon depth graph
-      var x_lables = new Array(); 
+      var x_labels = new Array(); 
       for (var i = 0, v = json.pos_s + 1; v <= json.pos_e; i++, v++) { 
-        x_lables[i] = v;
+        x_labels[i] = v;
       }
-      //console.log(x_lables);  
+      //console.log(x_labels);  
 
       var amplicon_datasets = new Array(); 
       var keys = Object.keys(json.depth); 
@@ -56,20 +56,20 @@ function loadAmpliconGraph(path_amplicon) {
           borderJoinStyle: 'miter',
           pointBorderColor: "rgba(" + r + "," + g + "," + b + ",1)",
           pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5, 
+          //pointBorderWidth: 1,
+          //pointHoverRadius: 5, 
           pointHoverBackgroundColor: "rgba(" + r + "," + g + "," + b + ",1)", 
           pointHoverBorderColor: "rgba(" + r + "," + g + "," + b + ",1)",
-          pointHoverBorderWidth: 2,
+          //pointHoverBorderWidth: 2,
           pointRadius: 1, 
-          pointHitRadius: 10,
+          //pointHitRadius: 10,
           data: sample_data,
           spanGaps: false 
         };
         //console.log(sample_data);
+        amplicon_datasets.push(each_data);
       }
-      amplicon_datasets.push(each_data);
-      drawAmpliconDepth({labels: x_lables, datasets: amplicon_datasets});
+      drawAmpliconDepth({labels: x_labels, datasets: amplicon_datasets});
     }
   };
   xhttp.open("GET", path_amplicon, true);
@@ -77,9 +77,15 @@ function loadAmpliconGraph(path_amplicon) {
 }
 
 function drawAmpliconDepth(data) {
-  var ctx = document.getElementById("canvas_amplicon_depth");
-    var lineChart = new Chart(ctx, {
-      type: 'line',
-      data: data
-    });
+  var ctx = document.getElementById("canvas_amplicon_depth").getContext("2d");
+  ctx.canvas.height = 1000;
+
+  var lineChart = new Chart(ctx, {
+    type: 'line',
+    data: data,
+    option: {
+      responsive:false,
+      maintainAspectRatio: false
+    }
+  });
 }
