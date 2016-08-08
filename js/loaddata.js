@@ -6,23 +6,23 @@
  * VERSION  : v0.0.1a
  */
 
-var color_sheet = new Array();;
+var color_sheet = new Array();
 
 function loadData(dir_name) {
-  var path_pointer = "data/" + dir_name + "/data_pointer.json";
+  var path_pointer = "data/" + dir_name + "/amplicon/data_pointer.json";
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
 	  var json = JSON.parse(xhttp.responseText);
 	  //console.log(json);
       document.getElementById("data_name").innerHTML = dir_name;
-	  document.getElementById("sample_num").innerHTML = json.sample_number;
-	  document.getElementById("amplicon_num").innerHTML = json.amplicon_number;
+	  document.getElementById("sample_num").innerHTML = json.sample_num;
+	  document.getElementById("amplicon_num").innerHTML = json.amplicon_num;
 	  var amplicon_data = json.amplicon_data;
 	  loadTable(amplicon_data);
 	  
 	  // create color sheet by sample number
-	  for (var i = 0; i < json.sample_number; i ++) {
+	  for (var i = 0; i < json.sample_num; i ++) {
 		color_sheet.push(dynamicColors());
 	    //console.log(color_sheet[color_sheet.length-1].r);
 	  }
@@ -58,7 +58,7 @@ function loadTable(data_list) {
       // failed
 	  table_body += "style=\"background-color: #E74C3C;\">";
 	}
-	table_body += "<a href=\"#\" onclick=\"loadAmpliconGraph('" + each_amplicon.path + "');return false;\">" + each_amplicon.name + "-" + Math.round(pass_percent * 10) / 10 + "%</a></td>";
+	table_body += "<a href=\"#\" onclick=\"loadAmpliconGraph('" + each_amplicon.path + ".json');return false;\">" + each_amplicon.name + "-" + Math.round(pass_percent * 10) / 10 + "%</a></td>";
 	col_i ++;
   }
   table_body += "</tr></tbody>";

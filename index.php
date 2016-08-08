@@ -184,7 +184,7 @@
 					}
 					
 					foreach ($files as $file) {
-				      if ($file <> "." && $file <> ".." && !preg_match("/^#/i",$file)) {
+				      if ($file <> "." && $file <> ".." && !preg_match("/^[#.]/i",$file)) {
 						echo "<li><a href=\"#\" onclick=\"loadData('".$file."');return false;\">".$file."</a></li>";
 					  }
 					}
@@ -229,16 +229,16 @@
               <div class="row fixed_height_320">
                 <div class="col-md-9 col-sm-9 col-xs-9">
 				  <div class="x_panel fixed_height_320">
-				    <div class="x_title" style="margin-bottom: 2px;">
+				    <div class="x_title">
                       <h2>Pass Check</h2>
                       <div class="clearfix"></div>
                     </div>
-					<div class="x_content pre-scrollable">
+					<div class="x_content pre-scrollable" style="max-height: 241px;">
                       <table id="amplicon_pass_table" class="table table-bordered"></table>
 					</div>
 				  </div>
                 </div>
-                <div class="col-md-3 col-sm-3 col-xs-3 widget widget_tally_box">
+                <div class="col-md-3 col-sm-3 col-xs-3">
                   <div class="x_panel fixed_height_320">
 				    <div class="x_title" style="margin-bottom: 2px;">
                       <h2>扩增子明细</h2>
@@ -254,9 +254,9 @@
 
                       <h3 id="amplicon_chr_num" class="name_title"><strong>Chr </strong>?</h3>
 					  <div class="divider"></div>
-					  <p id="apmlicon_gene" style="text-align: left;"><strong>基因 :</strong>???</p>
-                      <p id="apmlicon_pos" style="text-align: left;"><strong>位置 :</strong>??? - ???</p>
-                      <p id="apmlicon_len" style="text-align: left;"><strong>长度 :</strong>???</p>
+					  <p id="amplicon_gene" style="text-align: left;"><strong>基因 :</strong>???</p>
+                      <p id="amplicon_pos" style="text-align: left;"><strong>位置 :</strong>??? - ???</p>
+                      <p id="amplicon_len" style="text-align: left;"><strong>长度 :</strong>???</p>
 					</div>
 				  </div>
                 </div>
@@ -325,10 +325,6 @@
 	<!-- Custom Theme Scripts -->
     <script src="./build/js/custom.min.js"></script>
 	
-	<!-- Amplicon Pass Scripts -->
-	<script src="./js/loaddata.js"></script>
-	<script src="./js/loadamplicongraph.js"></script>
-	
 	<!-- easypie -->
     <!-- <script src="js/easypie/jquery.easypiechart.min.js"></script> -->
     <script>
@@ -348,6 +344,10 @@
         });
       });
     </script>
+
+    <!-- Amplicon Pass Scripts -->
+	<script src="./js/loaddata.js"></script>
+	<script src="./js/loadamplicongraph.js"></script>
 	
   </body>
 </html>
