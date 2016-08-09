@@ -14,13 +14,15 @@ function loadAmpliconGraph(path_amplicon) {
       var json = JSON.parse(xhttp.responseText);
 
       // update amplicon pass percent
-      document.getElementById("amplicon_pass_percent").setAttribute("data-percent", Math.round(json.pass / (json.pass + json.failed) * 100 * 10) / 10);
+      var percent = Math.round(json.pass / (json.pass + json.failed) * 100 * 10) / 10;
+      document.getElementById("amplicon_pass_percent").setAttribute("data-percent", percent);
       document.getElementById("amplicon_pass_num").innerHTML = json.pass + "/" + (json.pass + json.failed);
       document.getElementById("amplicon_chr_num").innerHTML = "<strong>Chr </strong> " + json.chr_num;
       document.getElementById("amplicon_gene").innerHTML = "<strong>基因 :</strong> " + json.gene_name;
       document.getElementById("amplicon_pos").innerHTML = "<strong>位置 :</strong> " + json.pos_s + "-" + json.pos_e;
       document.getElementById("amplicon_len").innerHTML = "<strong>长度 :</strong> " + json.len;
-
+      $('.chart').data('easyPieChart').update(percent);
+      
       // create amplicon depth graph controllers
 
       // draw amplicon depth graph

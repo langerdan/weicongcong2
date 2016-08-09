@@ -60,11 +60,14 @@
               <div class="menu_section">
                 <h3>    </h3>
                 <ul class="nav side-menu">
-                  <li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
+                  <li><a><i class="fa fa-home"></i> 质量控制 <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="index.html">质量控制</a></li>
-                      <li><a href="index_largeindel.html">大片段缺失</a></li>
-                      <li><a href="index_dev.html">DEVELOP</a></li>
+                      <li><a href="qc_amplicon.html">扩增子</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-database"></i> 数据库 <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="db_.html">  </a></li>
                     </ul>
                   </li>
                   <li><a><i class="fa fa-laptop"></i> Administration <span class="fa fa-chevron-down"></span></a>
@@ -274,7 +277,7 @@
                   </div>
 				  <div class="x_content">
 			        <!-- graph control-->
-			        <div class="col-md-3 col-sm-3 col-xs-3">
+			        <div class="col-md-12 col-sm-12 col-xs-12">
 					  <div class="x_panel">
 					    <div class="x_title">
 						  <h2>控制面板</h2>
@@ -286,7 +289,7 @@
 				    </div>
 				    <!-- /graph control-->
 				
-				    <div class="col-md-9 col-sm-9 col-xs-9">
+				    <div class="col-md-12 col-sm-12 col-xs-12">
 				      <div style="width: 100%;">
                         <canvas id="canvas_amplicon_depth"></canvas>
 					  </div>
