@@ -1,7 +1,7 @@
 <!-- 
- * PAGE     : index
+ * PAGE     : qc_amplicon
  * AUTHOR   : codeunsolved@gmail.com
- * CREATED  : August 10 2016
+ * CREATED  : August 7 2016
  * VERSION  : v0.0.1a
 -->
 
@@ -162,11 +162,163 @@
         
         <!-- page content -->
         <div class="right_col" role="main">
-          <h4>目前开放页面：</h4>
-          <ul>
-            <li><h3>质量控制－样本覆盖度</h3></li>
-            <li><h3>质量控制－扩增子检测</h3></li>
+
+          <!-- top tiles -->
+          <div class="row">
+            <!-- data select-->
+            <div class="col-md-3 col-sm-3 col-xs-3">
+              <br />
+              <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true" style="width: 69%;">选择批次<span class="caret"></span></button>
+                <ul id="data_select" class="dropdown-menu" style="width:69%">
+                  <?php
+                    $data_dir = "data";
+                    $dirs = array();
+                    
+                    if (is_dir($data_dir)) {
+                      if ($dh = opendir($data_dir)) {
+                        while ($dirs[] = readdir($dh));
+                        sort($dirs);
+                        closedir($dh);
+                        } else {
+                        echo "<li><a href=\"#\"> ！数据文件夹无法读取 ！</a></li>";
+                      }
+                    } else {
+                      echo "<li><a href=\"#\"> ！数据文件夹不存在 ！</a></li>";
+                    }
+                    
+                    foreach ($dirs as $dir) {
+                      $path_dir = $data_dir.'/'.$dir;
+                      if (is_dir($path_dir) && $dir <> "." && $dir <> ".." && !preg_match("/^[#.]/i",$dir)) {
+                        if ($sub_dh = opendir($path_dir)) {
+                          while ($sub_dirs[] = readdir($sub_dh));
+                          closedir($sub_dh);
+                          foreach ($sub_dirs as $sub_dir) {
+                            if (is_dir($path_dir.'/'.$sub_dir) and $sub_dir == "amplicon") {
+                              echo "<li><a href=\"#\" onclick=\"loadData('".$dir."');return false;\">".$dir."</a></li>";
+                              break;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ?>
+                </ul>
+              </div>
+            </div>
+            <!-- /data select-->
+      
+            <div class="tile_count">
+              <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
+                <span class="count_top"><i class="fa fa-circle"></i> 数据批次</span>
+
+                <br />
+
+                <div id="data_name" class="count green">--</div>
+              </div>
+              <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
+                <span class="count_top"><i class="fa fa-circle"></i> 样本数量</span>
+
+                <br />
+
+                <div id="sample_num" class="count green">--</div>
+              </div>
+              <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
+                <span class="count_top"><i class="fa fa-circle"></i>扩增子数量</span>
+
+                <br />
+
+                <div id="amplicon_num" class="count green">--</div>
+              </div>
+            </div>
+          </div>
+          <!-- /top tiles -->
+          
+          <br />
+          
+          <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#amplicon_pass">扩增子检测</a></li>
           </ul>
+          
+          <div class="tab-content">
+      
+            <!-- amplicon pass -->
+            <div id="amplicon_pass" class="tab-pane fade in active">
+              <!-- amplicon pass general -->
+              <div class="row fixed_height_320">
+                <div class="col-md-9 col-sm-9 col-xs-9">
+                  <div class="x_panel fixed_height_320">
+                    <div class="x_title">
+                      <h2>Pass Check</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content pre-scrollable" style="max-height: 241px;">
+                      <table id="amplicon_pass_table" class="table table-bordered"></table>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-3">
+                  <div class="x_panel fixed_height_320">
+                    <div class="x_title" style="margin-bottom: 2px;">
+                      <h2>扩增子明细</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div style="text-align: center; margin-bottom: 7px">
+                        <span id="amplicon_pass_percent" class="chart" data-percent="100">
+                          <span id="amplicon_pass_num" style="display: inline-block; line-height: 110px; z-index: 2; font-size: 18px;">100/100</span>
+                          <canvas></canvas>
+                        </span>
+                      </div>
+
+                      <h3 id="amplicon_chr_num" class="name_title"><strong>Chr </strong>?</h3>
+                      <div class="divider"></div>
+                      <p id="amplicon_gene" style="text-align: left;"><strong>基因 :</strong>???</p>
+                      <p id="amplicon_pos" style="text-align: left;"><strong>位置 :</strong>??? - ???</p>
+                      <p id="amplicon_len" style="text-align: left;"><strong>长度 :</strong>???</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /amplicon pass general -->
+              
+              <br />
+              
+              <!-- amplicon pass graph -->
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h3><strong>扩增子位点覆盖图</strong></h3>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+
+                    <!-- graph control-->
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                      <div class="x_panel">
+                        <div class="x_title">
+                          <h2>控制面板</h2>
+                          <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /graph control-->
+        
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                      <div style="width: 100%;">
+                        <canvas id="canvas_amplicon_depth"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /amplicon pass graph -->
+            </div>
+            <!-- /amplicon pass -->
+              
+          </div>
         </div>
         <!-- /page content -->
         

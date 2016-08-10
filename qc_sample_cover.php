@@ -1,5 +1,5 @@
-<!-- 
- * PAGE     : index
+<!--
+ * PAGE     : qc_sample_cover
  * AUTHOR   : codeunsolved@gmail.com
  * CREATED  : August 10 2016
  * VERSION  : v0.0.1a
@@ -24,20 +24,20 @@
     <!-- Custom Theme Style -->
     <link href="./build/css/custom.min.css" rel="stylesheet">
   </head>
-  
+
   <body class="nav-md">
     <div class="container body">
       <div class="main_container">
-        
+
         <!-- left navigation -->
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
               <a href="index.php" class="site_title">Topgen Dashboard</a>
             </div>
-                
+
             <div class="clearfix"></div>
-                
+
             <!-- menu profile quick info -->
             <div class="profile">
               <div class="profile_pic">
@@ -49,12 +49,12 @@
               </div>
             </div>
             <!-- /menu profile quick info -->
-                
+
             <br />
             <br />
             <br />
             <br />
-                
+
             <!-- sidebar menu -->
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
               <div class="menu_section">
@@ -80,7 +80,7 @@
               </div>
             </div>
             <!-- /sidebar menu -->
-                
+
             <!-- /menu footer buttons -->
             <div class="sidebar-footer hidden-small">
               <a href="#" data-toggle="tooltip" data-placement="top" title="Settings">
@@ -100,7 +100,7 @@
           </div>
         </div>
         <!-- /left navigation -->
-        
+
         <!-- top navigation -->
         <div class="top_nav">
           <div class="nav_menu">
@@ -126,7 +126,7 @@
                     <li><a href="#"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
                   </ul>
                 </li>
-                
+
                 <li role="presentation" class="dropdown">
                   <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
                     <i class="fa fa-envelope-o"></i>
@@ -159,17 +159,133 @@
           </div>
         </div>
         <!-- /top navigation -->
-        
+
         <!-- page content -->
         <div class="right_col" role="main">
-          <h4>目前开放页面：</h4>
-          <ul>
-            <li><h3>质量控制－样本覆盖度</h3></li>
-            <li><h3>质量控制－扩增子检测</h3></li>
+
+          <!-- top tiles -->
+          <div class="row">
+            <!-- data select-->
+            <div class="col-md-3 col-sm-3 col-xs-3">
+              <br />
+              <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true" style="width: 69%;">选择批次<span class="caret"></span></button>
+                <ul id="data_select" class="dropdown-menu" style="width:69%">
+                  <?php
+                    $data_dir = "data";
+                    $dirs = array();
+
+                    if (is_dir($data_dir)) {
+                      if ($dh = opendir($data_dir)) {
+                        while ($dirs[] = readdir($dh));
+                        sort($dirs);
+                        closedir($dh);
+                        } else {
+                        echo "<li><a href=\"#\"> ！数据文件夹无法读取 ！</a></li>";
+                      }
+                    } else {
+                      echo "<li><a href=\"#\"> ！数据文件夹不存在 ！</a></li>";
+                    }
+
+                    foreach ($dirs as $dir) {
+                      $path_dir = $data_dir.'/'.$dir;
+                      if (is_dir($path_dir) && $dir <> "." && $dir <> ".." && !preg_match("/^[#.]/i",$dir)) {
+                        if ($sub_dh = opendir($path_dir)) {
+                          while ($sub_dirs[] = readdir($sub_dh));
+                          closedir($sub_dh);
+                          foreach ($sub_dirs as $sub_dir) {
+                            if (is_dir($path_dir.'/'.$sub_dir) and $sub_dir == "sample_cover") {
+                              echo "<li><a href=\"#\" onclick=\"loadData('".$dir."');return false;\">".$dir."</a></li>";
+                              break;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ?>
+                </ul>
+              </div>
+            </div>
+            <!-- /data select-->
+
+            <div class="tile_count">
+              <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
+                <span class="count_top"><i class="fa fa-circle"></i> 数据批次</span>
+
+                <br />
+
+                <div id="data_name" class="count blue">--</div>
+              </div>
+              <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
+                <span class="count_top"><i class="fa fa-circle"></i> 样本数量</span>
+
+                <br />
+
+                <div id="sample_num" class="count blue">--</div>
+              </div>
+              <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
+                <span class="count_top"><i class="fa fa-circle"></i>探针数量</span>
+
+                <br />
+
+                <div id="probes_num" class="count blue">--</div>
+              </div>
+            </div>
+          </div>
+          <!-- /top tiles -->
+
+          <br />
+
+          <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#amplicon_pass">样本覆盖度</a></li>
           </ul>
+
+          <div class="tab-content">
+
+            <!-- sample coverage -->
+            <div id="sample_cover" class="tab-pane fade in active">
+              <!-- sample coverage general -->
+              <div class="row fixed_height_320">
+                <div class="col-md-9 col-sm-9 col-xs-9">
+                    <div class="x_panel fixed_height_320">
+                      <div class="x_title">
+                      <h2>Pass Check</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content pre-scrollable" style="max-height: 241px;">
+                      <table id="sample_pass_table" class="table table-bordered"></table>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-3">
+                  <div class="x_panel fixed_height_320">
+                    <div class="x_title" style="margin-bottom: 2px;">
+                      <h2>样本覆盖度概况</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div style="text-align: center; margin-bottom: 7px">
+                        <span id="sample_pass_percent" class="chart" data-percent="100">
+                          <span class="percent">100</span>
+                          <canvas></canvas>
+                        </span>
+                      </div>
+
+                      <div class="divider"></div>
+                      <p id="amplicon_gene" style="text-align: left;"><strong>基因 :</strong>???</p>
+                      <p id="amplicon_pos" style="text-align: left;"><strong>位置 :</strong>??? - ???</p>
+                      <p id="amplicon_len" style="text-align: left;"><strong>长度 :</strong>???</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /sample pass general -->
+            
+
+          </div>
         </div>
         <!-- /page content -->
-        
+
         <!-- footer content -->
         <footer style="background: #F7F7F7;">
           <div class="pull-right">
@@ -180,7 +296,7 @@
         <!-- /footer content -->
       </div>
     </div>
-  
+
     <!-- jQuery -->
     <script src="./vendors/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
@@ -189,10 +305,10 @@
     <script src="./vendors/Chart.js/dist/Chart.min.js"></script>
     <!-- easy-pie-chart -->
     <script src="./vendors/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
-  
+
     <!-- Custom Theme Scripts -->
     <script src="./build/js/custom.min.js"></script>
-  
+
     <!-- easypie -->
     <!-- <script src="js/easypie/jquery.easypiechart.min.js"></script> -->
     <script>
@@ -200,7 +316,7 @@
         $('.chart').easyPieChart({
           easing: 'easeOutElastic',
           delay: 3000,
-          barColor: '#26B99A',
+          barColor: '#3498DB',
           trackColor: '#E74C3C',
           scaleColor: false,
           lineWidth: 20,
@@ -213,9 +329,8 @@
       });
     </script>
 
-    <!-- Amplicon Pass Scripts -->
-    <script src="js/loadamplicondata.js"></script>
-    <script src="./js/loadamplicongraph.js"></script>
-  
+    <!-- Sample Coverage Scripts -->
+
+
   </body>
 </html>

@@ -7,34 +7,14 @@
 
 import os
 import re
-import shutil
 import json
+from BASE import read_bed
+from BASE import clean_output
 
 # CONFIG AREA #
 path_bed = r'/Users/codeunsolved/Downloads/NGS-data/bed/BRAC-1606-2.bed'
 dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-data/BRAC160322-2'
 dir_output = r'/Users/codeunsolved/NGS/Topgen-Dashboard/data/BRAC160322'
-
-
-def read_bed(path_b):
-    a_details = {}
-    with open(path_b, 'rb') as r_obj_b:
-        for line_no, line_b in enumerate(r_obj_b):
-            if line_no > 0:
-                chr_n = re.match('([^\t]+)\t', line_b).group(1)
-                pos_s = int(re.match('[^\t]+\t([^\t]+\t)', line_b).group(1))
-                pos_e = int(re.match('(?:[^\t]+\t){2}([^\t]+\t)', line_b).group(1))
-                gene_name = re.match('(?:[^\t]+\t){3}([^\t\n\r]+)', line_b).group(1)
-                if re.search('[:\-_]', gene_name):
-                    gene_name = ' '
-                a_details["%s-%s-%s" % (chr_n, gene_name, pos_s)] = [chr_n, pos_s, pos_e, gene_name]
-    return a_details
-
-
-def clean_output():
-    if os.path.isdir(os.path.join(dir_output, "amplicon")):
-        shutil.rmtree(os.path.join(dir_output, "amplicon"))
-    os.mkdir(os.path.join(dir_output, "amplicon"))
 
 
 def output_amplicon_data(data, sample_n, amplicon_n):
@@ -51,7 +31,7 @@ def output_amplicon_data(data, sample_n, amplicon_n):
         w_obj.write(json.dumps(data_pointer))
 
 
-clean_output()
+clean_output(dir_output, "amplicon")
 amplicon_details = read_bed(path_bed)
 
 amplicon_data = {}
