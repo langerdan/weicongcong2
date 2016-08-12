@@ -50,10 +50,10 @@
             </div>
             <!-- /menu profile quick info -->
                 
-            <br />
-            <br />
-            <br />
-            <br />
+            <br>
+            <br>
+            <br>
+            <br>
                 
             <!-- sidebar menu -->
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
@@ -167,9 +167,9 @@
           <div class="row">
             <!-- data select-->
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <br />
+              <br>
               <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true" style="width: 69%;">选择批次<span class="caret"></span></button>
+                <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true" style="width: 69%;">选择批次<span class="caret"></span></button>
                 <ul id="data_select" class="dropdown-menu" style="width:69%">
                   <?php
                     $data_dir = "data";
@@ -212,21 +212,21 @@
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
                 <span class="count_top"><i class="fa fa-circle"></i> 数据批次</span>
 
-                <br />
+                <br>
 
                 <div id="data_name" class="count green">--</div>
               </div>
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
                 <span class="count_top"><i class="fa fa-circle"></i> 样本数量</span>
 
-                <br />
+                <br>
 
                 <div id="sample_num" class="count green">--</div>
               </div>
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
                 <span class="count_top"><i class="fa fa-circle"></i>扩增子数量</span>
 
-                <br />
+                <br>
 
                 <div id="amplicon_num" class="count green">--</div>
               </div>
@@ -234,18 +234,18 @@
           </div>
           <!-- /top tiles -->
           
-          <br />
+          <br>
           
           <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#amplicon_pass">扩增子检测</a></li>
+            <li class="active"><a data-toggle="tab" href="#tb_amplicon_pass">扩增子检测</a></li>
           </ul>
           
           <div class="tab-content">
       
             <!-- amplicon pass -->
-            <div id="amplicon_pass" class="tab-pane fade in active">
+            <div id="tb_amplicon_pass" class="tab-pane fade in active">
               <!-- amplicon pass general -->
-              <div class="row fixed_height_320">
+              <div class="row">
                 <div class="col-md-9 col-sm-9 col-xs-9">
                   <div class="x_panel fixed_height_320">
                     <div class="x_title">
@@ -271,7 +271,7 @@
                         </span>
                       </div>
 
-                      <h3 id="amplicon_chr_num" class="name_title"><strong>Chr </strong>?</h3>
+                      <h3 id="amplicon_chr_num" class="name_title" style="text-align: center;"><strong>Chr </strong>?</h3>
                       <div class="divider"></div>
                       <p id="amplicon_gene" style="text-align: left;"><strong>基因 :</strong>???</p>
                       <p id="amplicon_pos" style="text-align: left;"><strong>位置 :</strong>??? - ???</p>
@@ -282,7 +282,7 @@
               </div>
               <!-- /amplicon pass general -->
               
-              <br />
+              <br>
               
               <!-- amplicon pass graph -->
               <div class="col-md-12 col-sm-12 col-xs-12">
@@ -367,7 +367,6 @@
 
     <!-- Amplicon Pass Scripts -->
     <script src="js/loadamplicondata.js"></script>
-    <script src="./js/loadamplicongraph.js"></script>
   
   </body>
 </html>

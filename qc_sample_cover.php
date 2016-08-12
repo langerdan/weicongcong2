@@ -50,10 +50,10 @@
             </div>
             <!-- /menu profile quick info -->
 
-            <br />
-            <br />
-            <br />
-            <br />
+            <br>
+            <br>
+            <br>
+            <br>
 
             <!-- sidebar menu -->
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
@@ -167,7 +167,7 @@
           <div class="row">
             <!-- data select-->
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <br />
+              <br>
               <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true" style="width: 69%;">选择批次<span class="caret"></span></button>
                 <ul id="data_select" class="dropdown-menu" style="width:69%">
@@ -212,77 +212,136 @@
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
                 <span class="count_top"><i class="fa fa-circle"></i> 数据批次</span>
 
-                <br />
+                <br>
 
                 <div id="data_name" class="count blue">--</div>
               </div>
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
                 <span class="count_top"><i class="fa fa-circle"></i> 样本数量</span>
 
-                <br />
+                <br>
 
                 <div id="sample_num" class="count blue">--</div>
               </div>
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
-                <span class="count_top"><i class="fa fa-circle"></i>探针数量</span>
+                <span class="count_top"><i class="fa fa-circle"></i>片段数量</span>
 
-                <br />
+                <br>
 
-                <div id="probes_num" class="count blue">--</div>
+                <div id="frag_num" class="count blue">--</div>
               </div>
             </div>
           </div>
           <!-- /top tiles -->
 
-          <br />
+          <br>
 
           <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#amplicon_pass">样本覆盖度</a></li>
+            <li class="active"><a data-toggle="tab" href="#tb_sample_cover">样本覆盖度</a></li>
           </ul>
 
           <div class="tab-content">
 
-            <!-- sample coverage -->
-            <div id="sample_cover" class="tab-pane fade in active">
-              <!-- sample coverage general -->
-              <div class="row fixed_height_320">
+            <!-- sample cover -->
+            <div id="tb_sample_cover" class="tab-pane fade in active">
+              <!-- sample cover general -->
+              <div class="row">
                 <div class="col-md-9 col-sm-9 col-xs-9">
-                    <div class="x_panel fixed_height_320">
-                      <div class="x_title">
-                      <h2>Pass Check</h2>
-                      <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content pre-scrollable" style="max-height: 241px;">
-                      <table id="sample_pass_table" class="table table-bordered"></table>
+                  <div class="x_panel fixed_height_390">
+                    <div class="x_content" style="max-height: 311px;">
+                      <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#tb_sample_cover_table">样本覆盖梯度</a></li>
+                        <li><a data-toggle="tab" href="#tb_sample_cover_graph">样本覆盖对比图</a></li>
+                      </ul>
+
+                      <div class="tab-content">
+
+                        <!-- sample cover table -->
+                        <div id="tb_sample_cover_table" class="tab-pane fade in active pre-scrollable">
+                          <table id="sample_cover_table" class="table table-bordered table-fixed"></table>
+                        </div>
+                        <!-- /smaple coover table -->
+
+                        <!-- sample cover graph -->
+                        <div id="tb_sample_cover_graph" class="tab-pane fade in active" style="width: 100%;">
+                          <canvas id="sample_cover_graph"></canvas>
+                        </div>
+                        <!-- /smaple coover graph -->
+
+                      </div>
                     </div>
                   </div>
                 </div>
+
                 <div class="col-md-3 col-sm-3 col-xs-3">
-                  <div class="x_panel fixed_height_320">
-                    <div class="x_title" style="margin-bottom: 2px;">
+                  <div class="x_panel fixed_height_390">
+                    <div class="x_title">
                       <h2>样本覆盖度概况</h2>
                       <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                      <div style="text-align: center; margin-bottom: 7px">
-                        <span id="sample_pass_percent" class="chart" data-percent="100">
-                          <span class="percent">100</span>
-                          <canvas></canvas>
-                        </span>
-                      </div>
-
-                      <div class="divider"></div>
-                      <p id="amplicon_gene" style="text-align: left;"><strong>基因 :</strong>???</p>
-                      <p id="amplicon_pos" style="text-align: left;"><strong>位置 :</strong>??? - ???</p>
-                      <p id="amplicon_len" style="text-align: left;"><strong>长度 :</strong>???</p>
+                      <p id="sample_depth_aver" style="text-align: left;"><strong>平均深度 :</strong>???</p>
+                      <p id="sample_depth_max" style="text-align: left;"><strong>最大深度 :</strong>???</p>
+                      <p id="sample_depth_min" style="text-align: left;"><strong>最小深度 :</strong>???</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <!-- /sample pass general -->
-            
+              <!-- /sample cover general -->
 
+              <!-- frag cover -->
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-9 col-sm-9 col-xs-9">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2><strong>片段覆盖梯度</strong></h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content pre-scrollable">
+                      <table id="frag_cover_table" class="table table-bordered table-fixed"></table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-3 col-sm-3 col-xs-3">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2>片段覆盖度概况</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <h3 class="name_title" style="text-align: center;"><strong id="sample_num">???</strong></h3>
+                      <div class="divider"></div>
+                      <h2 id="frag_chr_num" class="name_title" style="text-align: center;"><strong>Chr </strong>?</h2>
+                      <p id="frag_gene" style="text-align: left;"><strong>基因 : </strong>???</p>
+                      <p id="frag_pos" style="text-align: left;"><strong>位置 : </strong>??? - ???</p>
+                      <p id="frag_len" style="text-align: left;"><strong>长度 : </strong>???</p>
+                      <br>
+                      <p id="frag_depth_aver" style="text-align: left;"><strong>平均深度 : </strong>???</p>
+                      <p id="frag_depth_max" style="text-align: left;"><strong>最大深度 : </strong>???</p>
+                      <p id="frag_depth_min" style="text-align: left;"><strong>最小深度 : </strong>???</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /frag cover -->
+
+              <!-- frag cover graph -->
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2><strong>片段覆盖图</strong></h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <canvas id="frag_cover_graph"></canvas>
+                  </div>
+                </div>
+              </div>
+              <!-- /frag cover graph -->
           </div>
+          <!-- /sample cover -->
+
         </div>
         <!-- /page content -->
 
