@@ -306,10 +306,8 @@
                     </div>
                     <!-- /graph control-->
         
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                      <div style="width: 100%;">
-                        <canvas id="canvas_amplicon_depth"></canvas>
-                      </div>
+                    <div class="col-md-12 col-sm-12 col-xs-12" style="width: 100%; height: 1000px;">
+                      <canvas id="canvas_amplicon_depth"></canvas>
                     </div>
                   </div>
                 </div>

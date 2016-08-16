@@ -83,54 +83,54 @@ function loadAmpliconGraph(path_amplicon) {
             document.getElementById("amplicon_pass_num").innerHTML = json.pass + "/" + (json.pass + json.failed);
             document.getElementById("amplicon_chr_num").innerHTML = "<strong>Chr </strong> " + json.chr_num;
             document.getElementById("amplicon_gene").innerHTML = "<strong>基因 : </strong> " + json.gene_name;
-            document.getElementById("amplicon_pos").innerHTML = "<strong>位置 : </strong> " + json.pos_s + "-" + json.pos_e;
+            document.getElementById("amplicon_pos").innerHTML = "<strong>位置 : </strong> " + json.pos_s + " - " + json.pos_e;
             document.getElementById("amplicon_len").innerHTML = "<strong>长度 : </strong> " + json.len;
             $('.chart').data('easyPieChart').update(percent);
             
             // create amplicon depth graph controllers
 
             // draw amplicon depth graph
-            var x_labels = new Array(); 
-            for (var i = 0, v = json.pos_s + 1; v <= json.pos_e; i++, v++) { 
+            var x_labels = new Array();
+            for (var i = 0, v = json.pos_s + 1; v <= json.pos_e; i++, v++) {
                 x_labels[i] = v;
             }
-            //console.log(x_labels);  
+            //console.log(x_labels);
 
-            var graph_datasets = new Array(); 
-            var keys = Object.keys(json.depth); 
-            var data_lables_list = keys.sort(); 
-            for (var i in data_lables_list) { 
-                var r = color_sheet[i].r; 
-                var g = color_sheet[i].g; 
-                var b = color_sheet[i].b; 
-                //console.log("sample " + i + " use color r:" + r + ", g:" + g + ", b:" + b); 
-                var sample_data = {}; 
-                var sample_name = data_lables_list[i]; 
-                var y_data = new Array(); 
-                for (var j in json.depth[sample_name]) { 
-                    y_data.push(json.depth[sample_name][j].depth); 
-                } 
-                sample_data = { 
-                    label: sample_name, 
-                    fill: false, 
-                    lineTension: 0.05, 
+            var graph_datasets = new Array();
+            var keys = Object.keys(json.depth);
+            var data_lables_list = keys.sort();
+            for (var i in data_lables_list) {
+                var r = color_sheet[i].r;
+                var g = color_sheet[i].g;
+                var b = color_sheet[i].b;
+                //console.log("sample " + i + " use color r:" + r + ", g:" + g + ", b:" + b);
+                var sample_data = {};
+                var sample_name = data_lables_list[i];
+                var y_data = new Array();
+                for (var j in json.depth[sample_name]) {
+                    y_data.push(json.depth[sample_name][j].depth);
+                }
+                sample_data = {
+                    label: sample_name,
+                    fill: false,
+                    lineTension: 0.05,
                     backgroundColor: "rgba(" + r + "," + g + "," + b + ",0.4)",
-                    borderColor: "rgba(" + r + "," + g + "," + b + ",1)", 
+                    borderColor: "rgba(" + r + "," + g + "," + b + ",1)",
                     borderCapStyle: 'butt',
                     borderDash: [],
-                    borderDashOffset: 0.0, 
+                    borderDashOffset: 0.0,
                     borderJoinStyle: 'miter',
                     pointBorderColor: "rgba(" + r + "," + g + "," + b + ",1)",
                     pointBackgroundColor: "#fff",
                     //pointBorderWidth: 1,
-                    //pointHoverRadius: 5, 
-                    pointHoverBackgroundColor: "rgba(" + r + "," + g + "," + b + ",1)", 
+                    //pointHoverRadius: 5,
+                    pointHoverBackgroundColor: "rgba(" + r + "," + g + "," + b + ",1)",
                     pointHoverBorderColor: "rgba(" + r + "," + g + "," + b + ",1)",
                     //pointHoverBorderWidth: 2,
-                    pointRadius: 1, 
+                    pointRadius: 1,
                     //pointHitRadius: 10,
                     data: y_data,
-                    spanGaps: false 
+                    spanGaps: false
                 };
                 //console.log(y_data);
                 graph_datasets.push(sample_data);
@@ -144,13 +144,12 @@ function loadAmpliconGraph(path_amplicon) {
 
 function drawAmpliconDepth(data) {
     var ctx = document.getElementById("canvas_amplicon_depth").getContext("2d");
-    ctx.canvas.height = 1000;
 
     var lineChart = new Chart(ctx, {
         type: 'line',
         data: data,
-        option: {
-            responsive:false,
+        options: {
+            responsive: true,
             maintainAspectRatio: false
         }
     });

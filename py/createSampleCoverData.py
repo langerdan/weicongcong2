@@ -13,9 +13,9 @@ from BASE import read_bed
 from BASE import clean_output
 
 # CONFIG AREA #
-path_bed = r'/Users/codeunsolved/Downloads/NGS-data/bed/onco-1606-probes.bed'
-dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-data/onco160802/tst'
-dir_output = r'/Users/codeunsolved/NGS/Topgen-Dashboard/data/tst'
+path_bed = r'F:\NGS\RUN\1_rawdata\bed\onco-1606-probes.bed'
+dir_depth_data = r'F:\NGS\RUN\1_rawdata\onco160811'
+dir_output = r'E:\CodeUnsolved\Topgen-Dashboard\data\onco160811'
 depth_level = [20, 50, 100, 200, 500, 1000]
 depth_ext = "p-depth"
 
@@ -52,23 +52,34 @@ def init_sample_cover(sample_name):
     def init_frag_cover():
         frag_c = {}
         for f_key in frag_details:
-            frag_c[f_key] = {"depth_level": [],
+            frag_c[f_key] = {"frag_name": f_key,
+                             "depth_level": [],
                              "path": "",
-                             "frag_data": {"sample_name": sample_name,
+                             "frag_data": {"frag_name": f_key,
                                            "chr_num": re.match('chr(.+)', frag_details[f_key][0]).group(1),
                                            "pos_s": frag_details[f_key][1], "pos_e": frag_details[f_key][2],
                                            "gene_name": frag_details[f_key][3],
                                            "len": frag_details[f_key][2] - frag_details[f_key][1] + 1,
                                            "aver_depth": None, "max_depth": None, "min_depth": None,
-                                           "x_label": [], "depth": []}}
+                                           "x_labels": [], "depths": []}}
         return frag_c
 
     sample_c = {"sample_name": sample_name, "depth_level": [], "path": "",
-                "sdp": {"aver_depth": None, "max_depth": None, "min_depth": None, "frag_cover": init_frag_cover()}}
+                "sdp": {"sample_name": sample_name,
+                        "aver_depth": None, "max_depth": None, "min_depth": None, "frag_cover": init_frag_cover()}}
     return sample_c
 
 
+def init_depth_level_stat():
+    dls = {}
+    for each_dl in depth_level:
+        dls[str(each_dl)] = 0
+    return dls
+
+
+print "clean dir output...",
 clean_output(dir_output, "sample_cover")
+print "OK!"
 frag_details = read_bed(path_bed)
 frag_details_sorted = sorted(frag_details.iteritems(), key=lambda d: (d[1][0], d[1][1]))
 
@@ -81,76 +92,84 @@ for each_file in os.listdir(dir_depth_data):
         file_name = re.match('(.+)_S\d+_L\d+\.%s' % depth_ext, each_file).group(1)
         with open(os.path.join(dir_depth_data, each_file), 'rb') as r_obj:
             sample_cover.append(init_sample_cover(file_name))
-            depth_level_stat = {"sample": {}}
-            depth_digest_stat = {"sample": {"sum": 0, "len": 0, "max": None, "min": None}}
+            depth_level_stat = {"sample": init_depth_level_stat(), "frag": {}}
+            depth_digest_stat = {"sample": {"sum": 0, "len": 0, "max": None, "min": None}, "frag": {}}
             for line_depth in r_obj:
                 chr_n = re.match('([^\t]+)\t', line_depth).group(1)
                 pos = int(re.match('[^\t]+\t([^\t]+\t)', line_depth).group(1))
                 depth = int(re.match('(?:[^\t]+\t){2}([^\t\n\r]+)', line_depth).group(1))
                 for key, value in frag_details_sorted:
-                    # init depth_level_stat[key]
-                    if key not in depth_level_stat:
-                        depth_level_stat[key] = {}
-                        for each_depth_level in depth_level:
-                            depth_level_stat[key][str(each_depth_level)] = 0
-                            depth_level_stat["sample"][str(each_depth_level)] = 0
-                    # init depth_digest_stat[key]
-                    if key not in depth_digest_stat:
-                        depth_digest_stat[key] = {"sum": 0, "len": 0, "max": None, "min": None}
+                    # init depth_level_stat["frag"]
+                    if key not in depth_level_stat["frag"]:
+                        depth_level_stat["frag"][key] = init_depth_level_stat()
+                    # init depth_digest_stat["frag"]
+                    if key not in depth_digest_stat["frag"]:
+                        depth_digest_stat["frag"][key] = {"sum": 0, "len": 0, "max": None, "min": None}
 
                     if chr_n == value[0] and value[1] <= pos <= value[2]:
-                        # count depth_level_stat[key] and "sample"
+                        # count depth_level_stat["sample"] and ["frag"]
                         for each_depth_level in depth_level:
                             if depth >= each_depth_level:
-                                depth_level_stat[key][str(each_depth_level)] += 1
                                 depth_level_stat["sample"][str(each_depth_level)] += 1
+                                depth_level_stat["frag"][key][str(each_depth_level)] += 1
+
                         # count depth_digest_stat sum
                         depth_digest_stat["sample"]["sum"] += depth
-                        depth_digest_stat[key]["sum"] += depth
+                        depth_digest_stat["frag"][key]["sum"] += depth
                         # count depth_digest_stat max
                         if depth > depth_digest_stat["sample"]["max"] or depth_digest_stat["sample"]["max"] is None:
                             depth_digest_stat["sample"]["max"] = depth
-                        if depth > depth_digest_stat[key]["max"] or depth_digest_stat[key]["max"] is None:
-                            depth_digest_stat[key]["max"] = depth
+                        if depth > depth_digest_stat["frag"][key]["max"] or depth_digest_stat["frag"][key]["max"] is None:
+                            depth_digest_stat["frag"][key]["max"] = depth
                         # count depth_digest_stat min
                         if depth < depth_digest_stat["sample"]["min"] or depth_digest_stat["sample"]["min"] is None:
                             depth_digest_stat["sample"]["min"] = depth
-                        if depth < depth_digest_stat[key]["min"] or depth_digest_stat[key]["min"] is None:
-                            depth_digest_stat[key]["min"] = depth
+                        if depth < depth_digest_stat["frag"][key]["min"] or depth_digest_stat["frag"][key]["min"] is None:
+                            depth_digest_stat["frag"][key]["min"] = depth
 
-                        # add x_label and depth
+                        # add x_labels and depths
                         frag_data = sample_cover[-1]["sdp"]["frag_cover"][key]["frag_data"]
                         if "sample_name" not in frag_data:
                             frag_data["sample_name"] = file_name
-                        frag_data["x_label"].append(pos)
-                        frag_data["depth"].append(depth)
+                        frag_data["x_labels"].append(pos)
+                        frag_data["depths"].append(depth)
                         break
             frag_cover = sample_cover[-1]["sdp"]["frag_cover"]
             pop_list = []
             for key in frag_cover:
-                if len(frag_cover[key]["frag_data"]["x_label"]) != 0:
+                if len(frag_cover[key]["frag_data"]["x_labels"]) != 0:
+                    # get frag len and sample len
+                    depth_digest_stat["sample"]["len"] += len(frag_cover[key]["frag_data"]["x_labels"])
+                    depth_digest_stat["frag"][key]["len"] = len(frag_cover[key]["frag_data"]["x_labels"])
+                    # add frag depth aver max min
+                    frag_cover[key]["frag_data"]["aver_depth"] = round(
+                        depth_digest_stat["frag"][key]["sum"] / depth_digest_stat["frag"][key]["len"], 2)
+                    frag_cover[key]["frag_data"]["max_depth"] = depth_digest_stat["frag"][key]["max"]
+                    frag_cover[key]["frag_data"]["min_depth"] = depth_digest_stat["frag"][key]["min"]
+                    # add frag depth level
                     for each_depth_level in depth_level:
-                        depth_digest_stat[key]["len"] = len(frag_cover[key]["frag_data"]["x_label"])
-                        depth_digest_stat["sample"]["len"] += len(frag_cover[key]["frag_data"]["x_label"])
-
                         frag_cover[key]["depth_level"].append([str(each_depth_level), round(
-                            depth_level_stat[key][str(each_depth_level)] / depth_digest_stat[key]["len"] * 100, 2)])
-
-                        frag_cover[key]["frag_data"]["aver_depth"] = round(depth_digest_stat[key]["sum"] / depth_digest_stat[key]["len"], 2)
-                        frag_cover[key]["frag_data"]["max_depth"] = depth_digest_stat[key]["max"]
-                        frag_cover[key]["frag_data"]["min_depth"] = depth_digest_stat[key]["min"]
+                            depth_level_stat["frag"][key][str(each_depth_level)] /
+                            depth_digest_stat["frag"][key]["len"] * 100, 2)])
                 else:
                     pop_list.append(key)
                     print "[WARNING] %s popped" % key
             for p_key in pop_list:
                 frag_cover.pop(p_key)
+            if len(pop_list) != 0:
+                print "-------popped %d frags-------" % len(pop_list)
             for each_depth_level in depth_level:
+                # add sample depth level
                 sample_cover[-1]["depth_level"].append([str(each_depth_level), round(
                     depth_level_stat["sample"][str(each_depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2)])
                 print depth_level_stat["sample"][str(each_depth_level)]
+                print depth_digest_stat["sample"]["len"]
                 print sample_cover[-1]["depth_level"][-1]
-
-                sample_cover[-1]["sdp"]["aver_depth"] = round(depth_digest_stat["sample"]["sum"] / depth_digest_stat["sample"]["len"], 2)
-                sample_cover[-1]["sdp"]["max_depth"] = depth_digest_stat["sample"]["max"]
-                sample_cover[-1]["sdp"]["min_depth"] = depth_digest_stat["sample"]["min"]
+            # add sample depth aver max min
+            sample_cover[-1]["sdp"]["aver_depth"] = round(
+                depth_digest_stat["sample"]["sum"] / depth_digest_stat["sample"]["len"], 2)
+            sample_cover[-1]["sdp"]["max_depth"] = depth_digest_stat["sample"]["max"]
+            sample_cover[-1]["sdp"]["min_depth"] = depth_digest_stat["sample"]["min"]
+print "output data...",
 output_sample_cover_data(sample_cover, sample_num, len(frag_details))
+print "OK!"

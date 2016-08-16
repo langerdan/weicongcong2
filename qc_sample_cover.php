@@ -248,22 +248,22 @@
               <div class="row">
                 <div class="col-md-9 col-sm-9 col-xs-9">
                   <div class="x_panel fixed_height_390">
-                    <div class="x_content" style="max-height: 311px;">
+                    <div class="x_content">
                       <ul class="nav nav-tabs">
                         <li class="active"><a data-toggle="tab" href="#tb_sample_cover_table">样本覆盖梯度</a></li>
-                        <li><a data-toggle="tab" href="#tb_sample_cover_graph">样本覆盖对比图</a></li>
+                        <li><a data-toggle="tab" href="#tb_sample_cover_graph" onclick="loadSampleCoverGraph();return false;">样本覆盖对比图</a></li>
                       </ul>
 
                       <div class="tab-content">
 
                         <!-- sample cover table -->
-                        <div id="tb_sample_cover_table" class="tab-pane fade in active pre-scrollable">
+                        <div id="tb_sample_cover_table" class="tab-pane fade in active pre-scrollable" style="max-height: 311px;">
                           <table id="sample_cover_table" class="table table-bordered table-fixed"></table>
                         </div>
                         <!-- /smaple coover table -->
 
                         <!-- sample cover graph -->
-                        <div id="tb_sample_cover_graph" class="tab-pane fade in active" style="width: 100%;">
+                        <div id="tb_sample_cover_graph" class="tab-pane fade in active" style="width: 100%; height: 311px;">
                           <canvas id="sample_cover_graph"></canvas>
                         </div>
                         <!-- /smaple coover graph -->
@@ -280,6 +280,8 @@
                       <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
+                      <h3 class="name_title" style="text-align: center;"><strong id="sample_name">???</strong></h3>
+                      <div class="divider"></div>
                       <p id="sample_depth_aver" style="text-align: left;"><strong>平均深度 :</strong>???</p>
                       <p id="sample_depth_max" style="text-align: left;"><strong>最大深度 :</strong>???</p>
                       <p id="sample_depth_min" style="text-align: left;"><strong>最小深度 :</strong>???</p>
@@ -292,25 +294,25 @@
               <!-- frag cover -->
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="col-md-9 col-sm-9 col-xs-9">
-                  <div class="x_panel">
+                  <div class="x_panel fixed_height_390">
                     <div class="x_title">
                       <h2><strong>片段覆盖梯度</strong></h2>
                       <div class="clearfix"></div>
                     </div>
-                    <div class="x_content pre-scrollable">
+                    <div class="x_content pre-scrollable" style="max-height: 311px;">
                       <table id="frag_cover_table" class="table table-bordered table-fixed"></table>
                     </div>
                   </div>
                 </div>
 
                 <div class="col-md-3 col-sm-3 col-xs-3">
-                  <div class="x_panel">
+                  <div class="x_panel fixed_height_390">
                     <div class="x_title">
                       <h2>片段覆盖度概况</h2>
                       <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                      <h3 class="name_title" style="text-align: center;"><strong id="sample_num">???</strong></h3>
+                      <h3 class="name_title" style="text-align: center;"><strong id="frag_name">???</strong></h3>
                       <div class="divider"></div>
                       <h2 id="frag_chr_num" class="name_title" style="text-align: center;"><strong>Chr </strong>?</h2>
                       <p id="frag_gene" style="text-align: left;"><strong>基因 : </strong>???</p>
@@ -333,7 +335,7 @@
                     <h2><strong>片段覆盖图</strong></h2>
                     <div class="clearfix"></div>
                   </div>
-                  <div class="x_content">
+                  <div class="x_content" style="width: 100%; height: 711px;">
                     <canvas id="frag_cover_graph"></canvas>
                   </div>
                 </div>

@@ -42,7 +42,9 @@ def init_amplicon_data():
     return amplicon_d
 
 
+print "clean dir output...",
 clean_output(dir_output, "amplicon")
+print "OK!"
 amplicon_details = read_bed(path_bed)
 amplicon_data = init_amplicon_data()
 
