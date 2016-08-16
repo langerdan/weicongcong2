@@ -193,29 +193,5 @@
     <!-- Custom Theme Scripts -->
     <script src="./build/js/custom.min.js"></script>
   
-    <!-- easypie -->
-    <!-- <script src="js/easypie/jquery.easypiechart.min.js"></script> -->
-    <script>
-      $(function() {
-        $('.chart').easyPieChart({
-          easing: 'easeOutElastic',
-          delay: 3000,
-          barColor: '#26B99A',
-          trackColor: '#E74C3C',
-          scaleColor: false,
-          lineWidth: 20,
-          trackWidth: 16,
-          lineCap: 'butt',
-          onStep: function(from, to, percent) {
-            $(this.el).find('.percent').text(Math.round(percent));
-          }
-        });
-      });
-    </script>
-
-    <!-- Amplicon Pass Scripts -->
-    <script src="js/loadamplicondata.js"></script>
-    <script src="./js/loadamplicongraph.js"></script>
-  
   </body>
 </html>

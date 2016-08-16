@@ -22,7 +22,7 @@ def output_amplicon_data(data, sample_n, amplicon_n):
                     "amplicon_data": []}
     data_sorted = sorted(data.iteritems(), key=lambda d: (d[1][0], d[1][1]))
     for d_key, d_value in data_sorted:
-        path_amplicon_depth = "data/%s/amplicon/%s" % (os.path.basename(dir_output), d_key)
+        path_amplicon_depth = "data/%s/amplicon/%s.json" % (os.path.basename(dir_output), d_key)
         with open(os.path.join(os.path.join(dir_output, "amplicon"), "%s.json" % d_key), 'wb') as w_obj:
             w_obj.write(json.dumps(d_value))
             data_pointer["amplicon_data"].append({"name": d_value["gene_name"], "path": path_amplicon_depth,
@@ -68,6 +68,7 @@ for each_file in os.listdir(dir_depth_data):
                         # print "add %s" % {"pos": pos, "depth": depth}
                         if depth < 10:
                             pass_dict[key] = 0
+                        break
             for pass_key in pass_dict:
                 if pass_dict[pass_key] == 0:
                     amplicon_data[pass_key]["failed"] += 1
