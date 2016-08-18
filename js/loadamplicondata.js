@@ -79,7 +79,7 @@ function loadAmpliconGraph(path_amplicon) {
 
             // update amplicon pass percent
             var percent = Math.round(json.pass / (json.pass + json.failed) * 100 * 10) / 10;
-            document.getElementById("amplicon_pass_percent").setAttribute("data-percent", percent);
+            //document.getElementById("amplicon_pass_percent").setAttribute("data-percent", percent);
             document.getElementById("amplicon_pass_num").innerHTML = json.pass + "/" + (json.pass + json.failed);
             document.getElementById("amplicon_chr_num").innerHTML = "<strong>Chr </strong> " + json.chr_num;
             document.getElementById("amplicon_gene").innerHTML = "<strong>基因 : </strong> " + json.gene_name;

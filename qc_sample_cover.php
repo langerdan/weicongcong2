@@ -23,6 +23,7 @@
 
     <!-- Custom Theme Style -->
     <link href="./build/css/custom.min.css" rel="stylesheet">
+
   </head>
 
   <body class="nav-md">
@@ -257,8 +258,8 @@
                       <div class="tab-content">
 
                         <!-- sample cover table -->
-                        <div id="tb_sample_cover_table" class="tab-pane fade in active pre-scrollable" style="max-height: 311px;">
-                          <table id="sample_cover_table" class="table table-bordered table-fixed"></table>
+                        <div id="tb_sample_cover_table" class="tab-pane fade in active pre-scrollable" style="width: 100%; max-height: 311px;">
+                          <table id="sample_cover_table" class="table table-bordered table-head-fixed"></table>
                         </div>
                         <!-- /smaple coover table -->
 
@@ -282,9 +283,15 @@
                     <div class="x_content">
                       <h3 class="name_title" style="text-align: center;"><strong id="sample_name">???</strong></h3>
                       <div class="divider"></div>
-                      <p id="sample_depth_aver" style="text-align: left;"><strong>平均深度 :</strong>???</p>
-                      <p id="sample_depth_max" style="text-align: left;"><strong>最大深度 :</strong>???</p>
-                      <p id="sample_depth_min" style="text-align: left;"><strong>最小深度 :</strong>???</p>
+                      <p id="sample_depth_aver" style="text-align: left;"><strong>平均深度 :</strong> ???</p>
+                      <p id="sample_depth_cutoff" style="text-align: left;"><strong>cutoff深度 :</strong> ???</p>
+                      <p id="sample_depth_max" style="text-align: left;"><strong>最大深度 :</strong> ???</p>
+                      <p id="sample_depth_min" style="text-align: left;"><strong>最小深度 :</strong> ???</p>
+                      <br>
+                      <div id="sample_absent_frag" class="panel panel-default">
+                        <div id="sample_absent_frag_heading" class="panel-heading"><strong>缺失片段 :</strong> ???</div>
+                        <div id="sample_absent_frag_body" class="panel-body pre-scrollable" style="width: 100%; max-height: 70px;"></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -299,8 +306,8 @@
                       <h2><strong>片段覆盖梯度</strong></h2>
                       <div class="clearfix"></div>
                     </div>
-                    <div class="x_content pre-scrollable" style="max-height: 311px;">
-                      <table id="frag_cover_table" class="table table-bordered table-fixed"></table>
+                    <div class="x_content pre-scrollable" style="width: 100%; max-height: 311px;">
+                      <table id="frag_cover_table" class="table table-bordered table-head-fixed"></table>
                     </div>
                   </div>
                 </div>

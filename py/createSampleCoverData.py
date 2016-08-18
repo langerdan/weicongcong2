@@ -13,10 +13,10 @@ from BASE import read_bed
 from BASE import clean_output
 
 # CONFIG AREA #
-path_bed = r'F:\NGS\RUN\1_rawdata\bed\onco-1606-probes.bed'
-dir_depth_data = r'F:\NGS\RUN\1_rawdata\onco160811'
-dir_output = r'E:\CodeUnsolved\Topgen-Dashboard\data\onco160811'
-depth_level = [20, 50, 100, 200, 500, 1000]
+path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/onco-1606-probes.bed'
+dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/onco160729'
+dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/onco160729'
+depth_level = [0, 20, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 1000]
 depth_ext = "p-depth"
 
 
@@ -66,7 +66,8 @@ def init_sample_cover(sample_name):
 
     sample_c = {"sample_name": sample_name, "depth_level": [], "path": "",
                 "sdp": {"sample_name": sample_name,
-                        "aver_depth": None, "max_depth": None, "min_depth": None, "frag_cover": init_frag_cover()}}
+                        "aver_depth": None, "max_depth": None, "min_depth": None, "frag_cover": init_frag_cover(),
+                        "absent_frag": []}}
     return sample_c
 
 
@@ -87,7 +88,7 @@ sample_num = 0
 sample_cover = []
 for each_file in os.listdir(dir_depth_data):
     if re.match('^.+\.%s$' % depth_ext, each_file):
-        print "processing %s..." % each_file
+        print "processing with %s..." % each_file
         sample_num += 1
         file_name = re.match('(.+)_S\d+_L\d+\.%s' % depth_ext, each_file).group(1)
         with open(os.path.join(dir_depth_data, each_file), 'rb') as r_obj:
@@ -109,7 +110,10 @@ for each_file in os.listdir(dir_depth_data):
                     if chr_n == value[0] and value[1] <= pos <= value[2]:
                         # count depth_level_stat["sample"] and ["frag"]
                         for each_depth_level in depth_level:
-                            if depth >= each_depth_level:
+                            if each_depth_level == 0 and depth > each_depth_level:
+                                depth_level_stat["sample"][str(each_depth_level)] += 1
+                                depth_level_stat["frag"][key][str(each_depth_level)] += 1
+                            elif each_depth_level != 0 and depth >= each_depth_level:
                                 depth_level_stat["sample"][str(each_depth_level)] += 1
                                 depth_level_stat["frag"][key][str(each_depth_level)] += 1
 
@@ -135,7 +139,6 @@ for each_file in os.listdir(dir_depth_data):
                         frag_data["depths"].append(depth)
                         break
             frag_cover = sample_cover[-1]["sdp"]["frag_cover"]
-            pop_list = []
             for key in frag_cover:
                 if len(frag_cover[key]["frag_data"]["x_labels"]) != 0:
                     # get frag len and sample len
@@ -152,19 +155,19 @@ for each_file in os.listdir(dir_depth_data):
                             depth_level_stat["frag"][key][str(each_depth_level)] /
                             depth_digest_stat["frag"][key]["len"] * 100, 2)])
                 else:
-                    pop_list.append(key)
+                    sample_cover[-1]["sdp"]["absent_frag"].append(key)
                     print "[WARNING] %s popped" % key
-            for p_key in pop_list:
-                frag_cover.pop(p_key)
-            if len(pop_list) != 0:
-                print "-------popped %d frags-------" % len(pop_list)
+            if len(sample_cover[-1]["sdp"]["absent_frag"]) != 0:
+                for p_key in sample_cover[-1]["sdp"]["absent_frag"]:
+                    frag_cover.pop(p_key)
+                print "-------popped %d frags-------" % len(sample_cover[-1]["sdp"]["absent_frag"])
             for each_depth_level in depth_level:
                 # add sample depth level
                 sample_cover[-1]["depth_level"].append([str(each_depth_level), round(
                     depth_level_stat["sample"][str(each_depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2)])
-                print depth_level_stat["sample"][str(each_depth_level)]
-                print depth_digest_stat["sample"]["len"]
-                print sample_cover[-1]["depth_level"][-1]
+                print "=>depth level: %s, len: %s, sum: %s" % (sample_cover[-1]["depth_level"][-1],
+                                                               depth_level_stat["sample"][str(each_depth_level)],
+                                                               depth_digest_stat["sample"]["len"])
             # add sample depth aver max min
             sample_cover[-1]["sdp"]["aver_depth"] = round(
                 depth_digest_stat["sample"]["sum"] / depth_digest_stat["sample"]["len"], 2)

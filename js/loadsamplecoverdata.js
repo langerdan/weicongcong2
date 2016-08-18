@@ -94,16 +94,24 @@ function loadSampleCoverTable() {
         var each_sample = sample_cover[i];
         //console.log(each_sample);
         if (i == 0) {
-            table_body += "<tr><th> 样本名称 </th>";
+            table_body += "</tr><tr><th> 样本名称 </th>";
             for (var m in each_sample.depth_level) {
-                table_body += "<th> ≥" + each_sample.depth_level[m][0] + " </th>";
+                if (each_sample.depth_level[m][0] == 0) {
+                    table_body += "<th> =" + each_sample.depth_level[m][0] + " </th>";
+                }else {
+                    table_body += "<th> ≥" + each_sample.depth_level[m][0] + " </th>";
+                }
             }
-            table_body += "</tr>";
+            table_body += "</tr></thead>";
         }
         table_body += "<tr><td><a href=\"#\" onclick=\"loadSampleDataPointer('" + each_sample.path + "');return false;\">" + each_sample.sample_name + "</a></td>";
         for (var j in each_sample.depth_level) {
             var percent = each_sample.depth_level[j][1];
-            table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + percent + "% </td>";
+            if (each_sample.depth_level[j][0] == 0){
+                table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + Math.floor((100 - percent) * 100) / 100 + "% </td>";
+            }else {
+                table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + percent + "% </td>";
+            }
         }
         table_body += "</tr>"
     }
@@ -188,10 +196,28 @@ function loadSampleDataPointer(path_sdp) {
             //console.log(json);
             document.getElementById("sample_name").innerHTML = json.sample_name;
             document.getElementById("sample_depth_aver").innerHTML = "<strong>平均深度 :</strong> " + json.aver_depth;
+            document.getElementById("sample_depth_cutoff").setAttribute("class", "text-primary");
+            document.getElementById("sample_depth_cutoff").innerHTML = "<strong>cutoff深度 :</strong> " + Math.floor(json.aver_depth*0.2 * 100) / 100;
             document.getElementById("sample_depth_max").innerHTML = "<strong>最大深度 :</strong> " + json.max_depth;
             document.getElementById("sample_depth_min").innerHTML = "<strong>最小深度 :</strong> " + json.min_depth;
 
             loadFragCoverTable(json.frag_cover_list);
+
+            if (json.absent_frag.length == 0) {
+                document.getElementById("sample_absent_frag").setAttribute("class", "panel panel-success");
+                document.getElementById("sample_absent_frag_heading").innerHTML = "<strong>缺失片段 :</strong> 0";
+                document.getElementById("sample_absent_frag_body").innerHTML = "";
+            }else {
+                document.getElementById("sample_absent_frag").setAttribute("class", "panel panel-danger");
+                document.getElementById("sample_absent_frag_heading").innerHTML = "<strong>缺失片段 :</strong> " + json.absent_frag.length;
+
+                var absent_frag_details = "";
+                for (var i in json.absent_frag) {
+                    absent_frag_details += "<p class=\"text-danger\">" + json.absent_frag[i] + "</p>";
+                }
+                document.getElementById("sample_absent_frag_body").innerHTML = absent_frag_details;
+
+            }
         }
     };
     xhttp.open("GET", path_sdp, true);
@@ -204,21 +230,55 @@ function loadFragCoverTable(data_list) {
         var each_frag = data_list[i];
         //console.log(each_frag);
         if (i == 0) {
-            table_body += "<tr><th> 片段名称 </th>";
-            for (var m in each_frag.depth_level) {
-                table_body += "<th> ≥" + each_frag.depth_level[m][0] + " </th>";
+            table_body += "<thead><tr><th><label><input type=\"radio\" name=\"frag_filter\" onclick=\"filterFrag('all')\"> Level All </label></th>";
+            for (var n in each_frag.depth_level) {
+                table_body += "<th><label><input type=\"radio\" name=\"frag_filter\" onclick=\"filterFrag('" + each_frag.depth_level[n][0] + "')\"> Level " + each_frag.depth_level[n][0] + " </label></th>";
             }
-            table_body += "</tr>";
+            table_body += "</tr><tr><th> 样本名称 </th>";
+            for (var m in each_frag.depth_level) {
+                if (each_frag.depth_level[m][0] == 0) {
+                    table_body += "<th> =" + each_frag.depth_level[m][0] + " </th>";
+                }else {
+                    table_body += "<th> ≥" + each_frag.depth_level[m][0] + " </th>";
+                }
+            }
+            table_body += "</thead></tr>"
         }
-        table_body += "<tr><td><a href=\"#\" onclick=\"loadFragData('" + each_frag.path + "');return false;\">" + each_frag.frag_name + "</a></td>";
+        table_body += "<tr class=\"" + tagLevel(each_frag.depth_level) + "\"><td><a href=\"#\" onclick=\"loadFragData('" + each_frag.path + "');return false;\">" + each_frag.frag_name + "</a></td>";
         for (var j in each_frag.depth_level) {
             var percent = each_frag.depth_level[j][1];
-            table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + percent + "% </td>";
+            if (each_frag.depth_level[j][0] == 0){
+                table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + Math.floor((100 - percent) * 100) / 100 + "% </td>";
+            }else {
+                table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + percent + "% </td>";
+            }
         }
         table_body += "</tr>"
     }
     table_body += "</tbody>";
     document.getElementById("frag_cover_table").innerHTML = table_body;
+}
+
+function tagLevel(depth_level) {
+    var level_tag = "";
+    for (var i in depth_level) {
+        if (depth_level[i][1] == 100) {
+            continue;
+        }else {
+            level_tag = "level-" + depth_level[i][0];
+            break;
+        }
+    }
+    return "level-all " + level_tag;
+}
+
+function filterFrag(l_index) {
+    if (l_index != "all") {
+        $(".level-all").hide();
+        $(".level-" + l_index).show();
+    }else {
+        $(".level-all").show();
+    }
 }
 
 function loadFragData(path_fd) {
