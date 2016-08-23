@@ -7,6 +7,7 @@
  */
 
 var color_sheet = new Array();
+var lineChart;
 
 function dynamicColors() {
     var r = Math.floor(Math.random() * 255);
@@ -145,7 +146,11 @@ function loadAmpliconGraph(path_amplicon) {
 function drawAmpliconDepth(data) {
     var ctx = document.getElementById("canvas_amplicon_depth").getContext("2d");
 
-    var lineChart = new Chart(ctx, {
+    if(window.lineChart !== undefined && window.lineChart !== null){
+            window.lineChart.destroy();
+    }
+
+    window.lineChart = new Chart(ctx, {
         type: 'line',
         data: data,
         options: {

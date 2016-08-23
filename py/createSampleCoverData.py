@@ -13,11 +13,11 @@ from BASE import read_bed
 from BASE import clean_output
 
 # CONFIG AREA #
-path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/onco-1606-probes.bed'
-dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/onco160729'
-dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/onco160729'
+path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/BRAC-1606-3.bed'
+dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/BRAC160727-3'
+dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/BRAC160727'
 depth_level = [0, 20, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 1000]
-depth_ext = "p-depth"
+depth_ext = "depth"
 
 
 def output_sample_cover_data(data, sample_n, frag_n):
@@ -65,7 +65,7 @@ def init_sample_cover(sample_name):
         return frag_c
 
     sample_c = {"sample_name": sample_name, "depth_level": [], "path": "",
-                "sdp": {"sample_name": sample_name,
+                "sdp": {"sample_name": sample_name, "depth_level": [],
                         "aver_depth": None, "max_depth": None, "min_depth": None, "frag_cover": init_frag_cover(),
                         "absent_frag": []}}
     return sample_c
@@ -173,6 +173,9 @@ for each_file in os.listdir(dir_depth_data):
                 depth_digest_stat["sample"]["sum"] / depth_digest_stat["sample"]["len"], 2)
             sample_cover[-1]["sdp"]["max_depth"] = depth_digest_stat["sample"]["max"]
             sample_cover[-1]["sdp"]["min_depth"] = depth_digest_stat["sample"]["min"]
+
+            # add sdp sample depth level
+            sample_cover[-1]["sdp"]["depth_level"] = sample_cover[-1]["depth_level"]
 print "output data...",
 output_sample_cover_data(sample_cover, sample_num, len(frag_details))
 print "OK!"

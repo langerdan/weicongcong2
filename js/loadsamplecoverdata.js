@@ -8,6 +8,7 @@
 
 var color_sheet = new Array();
 var sample_cover;
+var lineChart;  // lineChart needs to be global to clear/destroy it before next rendering
 
 function dynamicColors() {
     var r = Math.floor(Math.random() * 255);
@@ -175,13 +176,17 @@ function loadSampleCoverGraph() {
             }
         }
     }
-    drawGraph({labels: x_labels, datasets: graph_datasets}, "sample_cover_graph", options);
+    drawGraph("sample_cover_graph", {labels: x_labels, datasets: graph_datasets}, options);
 }
 
-function drawGraph(graph_data, graph_id, graph_options) {
+function drawGraph(graph_id, graph_data, graph_options) {
     var ctx = document.getElementById(graph_id).getContext("2d");
 
-    var lineChart = new Chart(ctx, {
+    if(window.lineChart !== undefined && window.lineChart !== null){
+            window.lineChart.destroy();
+    }
+
+    window.lineChart = new Chart(ctx, {
         type: 'line',
         data: graph_data,
         options: graph_options
@@ -327,7 +332,7 @@ function loadFragData(path_fd) {
                     data: json.depths,
                     spanGaps: false
         	}];
-        	drawGraph({labels: json.x_labels, datasets: graph_data}, "frag_cover_graph", options);
+        	drawGraph("frag_cover_graph", {labels: json.x_labels, datasets: graph_data}, options);
         }
     };
     xhttp.open("GET", path_fd, true);
