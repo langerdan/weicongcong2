@@ -86,6 +86,7 @@ function loadAmpliconGraph(path_amplicon) {
             document.getElementById("amplicon_gene").innerHTML = "<strong>基因 : </strong> " + json.gene_name;
             document.getElementById("amplicon_pos").innerHTML = "<strong>位置 : </strong> " + json.pos_s + " - " + json.pos_e;
             document.getElementById("amplicon_len").innerHTML = "<strong>长度 : </strong> " + json.len;
+            // update easyPieChart
             $('.chart').data('easyPieChart').update(percent);
             
             // create amplicon depth graph controllers

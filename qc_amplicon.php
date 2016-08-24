@@ -216,9 +216,8 @@
     <script src="./build/js/custom.min.js"></script>
   
     <!-- easypie -->
-    <!-- <script src="js/easypie/jquery.easypiechart.min.js"></script> -->
     <script>
-      $(function() {
+      $(document).ready(function() {
         $('.chart').easyPieChart({
           easing: 'easeOutElastic',
           delay: 3000,
