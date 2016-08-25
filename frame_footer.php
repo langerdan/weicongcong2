@@ -1,5 +1,5 @@
 <!--
- * PAGE     : footer
+ * PAGE     : frame_footer
  * AUTHOR   : codeunsolved@gmail.com
  * CREATED  : August 23 2016
  * VERSION  : v0.0.1a

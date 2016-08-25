@@ -1,5 +1,5 @@
 /**
- * PROGRAM  : loadAmpliconData
+ * PROGRAM  : QC_loadAmpliconData
  * PURPOSE  :
  * AUTHOR   : codeunsolved@gmail.com
  * CREATED  : August 6 2016
@@ -200,11 +200,11 @@ function loadSampleDataPointer(path_sdp) {
             var json = JSON.parse(xhttp.responseText);
             //console.log(json);
             document.getElementById("sample_name").innerHTML = json.sample_name;
-            document.getElementById("sample_depth_aver").innerHTML = "<strong>平均深度 :</strong> " + json.aver_depth;
-            document.getElementById("sample_depth_cutoff").setAttribute("class", "text-primary");
-            document.getElementById("sample_depth_cutoff").innerHTML = "<strong>cutoff深度 :</strong> " + Math.floor(json.aver_depth*0.2 * 100) / 100;
-            document.getElementById("sample_depth_max").innerHTML = "<strong>最大深度 :</strong> " + json.max_depth;
-            document.getElementById("sample_depth_min").innerHTML = "<strong>最小深度 :</strong> " + json.min_depth;
+            document.getElementById("aver_sample_depth").innerHTML = "<strong>平均深度 :</strong> " + json.aver_depth;
+            document.getElementById("cutoff_sample_depth").setAttribute("class", "text-primary");
+            document.getElementById("cutoff_sample_depth").innerHTML = "<strong>cutoff深度 :</strong> " + Math.floor(json.aver_depth*0.2 * 100) / 100;
+            document.getElementById("max_sample_depth").innerHTML = "<strong>最大深度 :</strong> " + json.max_depth;
+            document.getElementById("min_sample_depth").innerHTML = "<strong>最小深度 :</strong> " + json.min_depth;
 
             loadFragCoverTable(json.frag_cover_list);
 
@@ -297,9 +297,9 @@ function loadFragData(path_fd) {
             document.getElementById("frag_gene").innerHTML = "<strong>基因 :</strong> " + json.gene_name;
             document.getElementById("frag_pos").innerHTML = "<strong>位置 :</strong> " + json.pos_s + " - " + json.pos_e;
             document.getElementById("frag_len").innerHTML = "<strong>长度 :</strong> " + json.len;
-            document.getElementById("frag_depth_aver").innerHTML = "<strong>平均深度 :</strong> " + json.aver_depth;
-            document.getElementById("frag_depth_max").innerHTML = "<strong>最大深度 :</strong> " + json.max_depth;
-            document.getElementById("frag_depth_min").innerHTML = "<strong>最小深度 :</strong> " + json.min_depth;
+            document.getElementById("aver_frag_depth").innerHTML = "<strong>平均深度 :</strong> " + json.aver_depth;
+            document.getElementById("max_frag_depth").innerHTML = "<strong>最大深度 :</strong> " + json.max_depth;
+            document.getElementById("min_frag_depth").innerHTML = "<strong>最小深度 :</strong> " + json.min_depth;
 
             // draw frag depth graph
             var r = color_sheet[0].r;

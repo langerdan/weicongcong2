@@ -30,11 +30,11 @@
       <div class="main_container">
         
         <!-- left navigation -->
-        <?php include 'leftNav.php';?>
+        <?php include 'frame_leftNav.php';?>
         <!-- /left navigation -->
         
         <!-- top navigation -->
-        <?php include 'topNav.php';?>
+        <?php include 'frame_topNav.php';?>
         <!-- /top navigation -->
         
         <!-- page content -->
@@ -198,7 +198,7 @@
         <!-- /page content -->
         
         <!-- footer content -->
-        <?php include 'footer.php';?>
+        <?php include 'frame_footer.php';?>
         <!-- /footer content -->
       </div>
     </div>
@@ -235,7 +235,7 @@
     </script>
 
     <!-- Amplicon Pass Scripts -->
-    <script src="js/loadamplicondata.js"></script>
+    <script src="js/qc_loadamplicondata.js"></script>
   
   </body>
 </html>

@@ -1,5 +1,5 @@
 /**
- * PROGRAM    : loadAmpliconData
+ * PROGRAM    : QC_loadAmpliconData
  * PURPOSE    :
  * AUTHOR     : codeunsolved@gmail.com
  * CREATED    : August 6 2016

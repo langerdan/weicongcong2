@@ -1,5 +1,5 @@
 <!-- 
- * PAGE     : leftNav
+ * PAGE     : frame_leftNav
  * AUTHOR   : codeunsolved@gmail.com
  * CREATED  : August 23 2016
  * VERSION  : v0.0.1a
@@ -39,13 +39,14 @@ echo <<<LEFT_NAV
                 <ul class="nav side-menu">
                   <li><a><i class="fa fa-cube"></i> 质量控制 <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
+                      <li><a href="qc_report.php">质控报告</a></li>
                       <li><a href="qc_sample_cover.php">样本覆盖度</a></li>
                       <li><a href="qc_amplicon.php">扩增子检测</a></li>
                     </ul>
                   </li>
                   <li><a><i class="fa fa-database"></i> 数据库 <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="db_lab.php">NGS lab 数据库</a></li>
+                      <li><a href="db_lab.php">NGS lab</a></li>
                     </ul>
                   </li>
                   <li><a><i class="fa fa-laptop"></i> Administration <span class="fa fa-chevron-down"></span></a>

@@ -30,25 +30,27 @@
       <div class="main_container">
         
         <!-- left navigation -->
-        <?php include 'leftNav.php';?>
+        <?php include 'frame_leftNav.php';?>
         <!-- /left navigation -->
         
         <!-- top navigation -->
-        <?php include 'topNav.php';?>
+        <?php include 'frame_topNav.php';?>
         <!-- /top navigation -->
         
         <!-- page content -->
         <div class="right_col" role="main">
           <h4>目前开放页面：</h4>
           <ul>
+            <li><h3>质量控制－质控报告（开发中）</h3></li>
             <li><h3>质量控制－样本覆盖度</h3></li>
             <li><h3>质量控制－扩增子检测</h3></li>
+            <li><h3>数据库－NGS lab管理检索系统（开发中）</h3></li>
           </ul>
         </div>
         <!-- /page content -->
         
         <!-- footer content -->
-        <?php include 'footer.php';?>
+        <?php include 'frame_footer.php';?>
         <!-- /footer content -->
       </div>
     </div>

@@ -1,5 +1,5 @@
 /**
- * PROGRAM  : queryDBlab
+ * PROGRAM  : DB_queryDBlab
  * PURPOSE  :
  * AUTHOR   : codeunsolved@gmail.com
  * CREATED  : August 23 2016
@@ -14,9 +14,9 @@ $('#search_go').click(function () {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (xhttp.readyState == 4 && xhttp.status == 200) {
-            ;
+            document.getElementById('datatable-buttons').innerHTML = xhttp.responseText;
         }
     };
-    xhttp.open("GET", "db_lab_query.php?p=" + project + "term=" + search_term + "type=" + search_type, true);
+    xhttp.open("GET", "db_lab_query.php?f=db&p=" + project + "&term=" + search_term + "&type=" + search_type, true);
     xhttp.send();
 })

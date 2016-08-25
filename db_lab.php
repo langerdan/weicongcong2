@@ -35,22 +35,23 @@
       <div class="main_container">
 
         <!-- left navigation -->
-        <?php include 'leftNav.php';?>
+        <?php include 'frame_leftNav.php';?>
         <!-- /left navigation -->
 
         <!-- top navigation -->
-        <?php include 'topNav.php';?>
+        <?php include 'frame_topNav.php';?>
         <!-- /top navigation -->
 
         <!-- page content -->
         <div class="right_col" role="main">
           <div class="page-title">
             <div class="title_left">
-              <h3>NGS lab 数据库 <small>抽提、建库、上机相关数据</small></h3>
+              <h3>NGS lab管理检索系统 <small>抽提、建库、上机</small></h3>
             </div>
             <div class="title_right"></div>
           </div>
           <div class="clearfix"></div>
+
           <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
               <div class="x_panel">
@@ -102,7 +103,7 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                   <div class="x_panel">
                     <div class="x_title">
-                      <h2>搜索结果</h2>
+                      <h4>搜索结果</h4>
                       <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
@@ -586,7 +587,7 @@
         <!-- /page content -->
 
         <!-- footer content -->
-        <?php include 'footer.php';?>
+        <?php include 'frame_footer.php';?>
         <!-- /footer content -->
       </div>
     </div>

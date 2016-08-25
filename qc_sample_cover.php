@@ -37,11 +37,11 @@
       <div class="main_container">
 
         <!-- left navigation -->
-        <?php include 'leftNav.php';?>
+        <?php include 'frame_leftNav.php';?>
         <!-- /left navigation -->
 
         <!-- top navigation -->
-        <?php include 'topNav.php';?>
+        <?php include 'frame_topNav.php';?>
         <!-- /top navigation -->
 
         <!-- page content -->
@@ -128,7 +128,6 @@
 
             <!-- sample cover -->
             <div id="tb_sample_cover" class="tab-pane fade in active">
-              <!-- sample cover general -->
               <div class="row">
                 <div class="col-md-9 col-sm-9 col-xs-9">
                   <div class="x_panel fixed_height_390">
@@ -140,17 +139,13 @@
 
                       <div class="tab-content">
 
-                        <!-- sample cover table -->
                         <div id="tb_sample_cover_table" class="tab-pane fade in active pre-scrollable" style="width: 100%; max-height: 311px;">
                           <table id="sample_cover_table" class="table table-bordered table-head-fixed"></table>
                         </div>
-                        <!-- /smaple coover table -->
 
-                        <!-- sample cover graph -->
                         <div id="tb_sample_cover_graph" class="tab-pane fade in active" style="width: 100%; height: 311px;">
                           <canvas id="sample_cover_graph"></canvas>
                         </div>
-                        <!-- /smaple coover graph -->
 
                       </div>
                     </div>
@@ -166,10 +161,10 @@
                     <div class="x_content">
                       <h3 class="name_title" style="text-align: center;"><strong id="sample_name">???</strong></h3>
                       <div class="divider"></div>
-                      <p id="sample_depth_aver" style="text-align: left;"><strong>平均深度 :</strong> ???</p>
-                      <p id="sample_depth_cutoff" style="text-align: left;"><strong>cutoff深度 :</strong> ???</p>
-                      <p id="sample_depth_max" style="text-align: left;"><strong>最大深度 :</strong> ???</p>
-                      <p id="sample_depth_min" style="text-align: left;"><strong>最小深度 :</strong> ???</p>
+                      <p id="aver_sample_depth" style="text-align: left;"><strong>平均深度 :</strong> ???</p>
+                      <p id="cutoff_sample_depth" style="text-align: left;"><strong>cutoff深度 :</strong> ???</p>
+                      <p id="max_sample_depth" style="text-align: left;"><strong>最大深度 :</strong> ???</p>
+                      <p id="min_sample_depth" style="text-align: left;"><strong>最小深度 :</strong> ???</p>
                       <br>
                       <div id="sample_absent_frag" class="panel panel-default">
                         <div id="sample_absent_frag_heading" class="panel-heading"><strong>缺失片段 :</strong> ???</div>
@@ -179,9 +174,7 @@
                   </div>
                 </div>
               </div>
-              <!-- /sample cover general -->
 
-              <!-- frag cover -->
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="col-md-9 col-sm-9 col-xs-9">
                   <div class="x_panel fixed_height_390">
@@ -209,16 +202,14 @@
                       <p id="frag_pos" style="text-align: left;"><strong>位置 : </strong>??? - ???</p>
                       <p id="frag_len" style="text-align: left;"><strong>长度 : </strong>???</p>
                       <br>
-                      <p id="frag_depth_aver" style="text-align: left;"><strong>平均深度 : </strong>???</p>
-                      <p id="frag_depth_max" style="text-align: left;"><strong>最大深度 : </strong>???</p>
-                      <p id="frag_depth_min" style="text-align: left;"><strong>最小深度 : </strong>???</p>
+                      <p id="aver_frag_depth" style="text-align: left;"><strong>平均深度 : </strong>???</p>
+                      <p id="max_frag_depth" style="text-align: left;"><strong>最大深度 : </strong>???</p>
+                      <p id="min_frag_depth" style="text-align: left;"><strong>最小深度 : </strong>???</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <!-- /frag cover -->
 
-              <!-- frag cover graph -->
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
@@ -230,15 +221,15 @@
                   </div>
                 </div>
               </div>
-              <!-- /frag cover graph -->
+            </div>
+            <!-- /sample cover -->
           </div>
-          <!-- /sample cover -->
 
         </div>
         <!-- /page content -->
 
         <!-- footer content -->
-        <?php include 'footer.php';?>
+        <?php include 'frame_footer.php';?>
         <!-- /footer content -->
       </div>
     </div>
@@ -256,7 +247,7 @@
     <script src="./build/js/custom.min.js"></script>
 
     <!-- Sample Coverage Scripts -->
-    <script src="js/loadsamplecoverdata.js"></script>
+    <script src="js/qc_loadsamplecoverdata.js"></script>
 
   </body>
 </html>
