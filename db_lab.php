@@ -46,7 +46,7 @@
         <div class="right_col" role="main">
           <div class="page-title">
             <div class="title_left">
-              <h3>NGS lab管理检索系统 <small>抽提、建库、上机</small></h3>
+              <h3>NGS lab管理检索系统 <small>收样、抽提、建库、上机</small></h3>
             </div>
             <div class="title_right"></div>
           </div>
@@ -68,7 +68,7 @@
           <div class="row" >
             <div class="x_panel">
               <div class="x_title">
-                <h2>检索数据库</h2>
+                <h2>检索NGS lab数据库</h2>
                 <div class="clearfix"></div>
               </div>
               <div class="x_content">

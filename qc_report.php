@@ -39,11 +39,11 @@
         
         <!-- page content -->
         <div class="right_col" role="main">
-          <!-- search NGS lab database -->
+          <!-- search QC report database -->
           <div class="row" >
             <div class="x_panel">
               <div class="x_title">
-                <h2>检索数据库</h2>
+                <h2>检索质控报告</h2>
                 <div class="clearfix"></div>
               </div>
               <div class="x_content">
@@ -56,19 +56,19 @@
                   </div>
                 </div>
                 <div class="col-md-12 col-sm-12 col-xs-12 form-group">
-                  <div class="col-md-2 col-sm-2 col-xs-2">
+                  <div class="col-md-1 col-sm-1 col-xs-1">
                     <select name="project" class="form-control">
                       <option value="onco"> onco </option>
                       <option value="brac" selected> BRAC </option>
                     </select>
                   </div>
-                  <div class="col-md-10 col-sm-10 col-xs-10">
-                    <input type="radio" name="search_type" value="all" checked> All&nbsp;&nbsp;
-                    <input type="radio" name="search_type" value="sample_id"> 样本编号&nbsp;&nbsp;
-                    <input type="radio" name="search_type" value="sample_type"> 样本类型&nbsp;&nbsp;
-                    <input type="radio" name="search_type" value="lib_reagent"> 建库试剂&nbsp;&nbsp;
-                    <input type="radio" name="search_type" value="lib_id"> 建库批次&nbsp;&nbsp;
-                    <input type="radio" name="search_type" value="run_id"> 上机批次&nbsp;&nbsp;
+                  <div class="col-md-2 col-sm-2 col-xs-2">
+                    <select name="report_type" class="form-control" onchange="getSearchOptions()">
+                      <option value=0 selected> － 选择报告类型 － </option>
+                      <option value="sequencing_data" > 测序数据质量报告 </option>
+                    </select>
+                  </div>
+                  <div id="search_options" class="col-md-9 col-sm-9 col-xs-9">
                   </div>
                 </div>
                 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -89,141 +89,13 @@
               </div>
             </div>
           </div>
-          <!-- /search NGS lab database -->
+          <!-- /search QC report database -->
 
-          <!-- Sample Sequencing QC report -->
-          <div class="row">
-            <div class="x_panel">
-              <div class="x_title">
-                <h2>样品下机质量控制报告 v0.1a</h2>
-                <div class="clearfix"></div>
-              </div>
-              <div class="x_content">
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                  <div class="x_panel">
-                    <div class="x_title">
-                      <h4>概览</h4>
-                      <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                      <div class="col-md-4 col-sm-4 col-xs-4">
-                        <h3 class="name_title"><strong id="sample_name">???</strong></h3>
-                        <div class="divider"></div>
-                        <table style="width: 100%">
-                          <tbody>
-                            <tr>
-                              <td><p style="text-align: left;"><strong>回帖reads数</strong></p></td>
-                              <td><p><strong>&nbsp;:&nbsp;</strong></p></td>
-                              <td><p id="num_mapped_reads" style="text-align: left;">???</p></td>
-                            </tr>
-                            <tr>
-                              <td><p style="text-align: left;"><strong>目标区段reads百分比</strong></p></td>
-                              <td><p><strong>&nbsp;:&nbsp;</strong></p></td>
-                              <td><p id="per_target_reads" style="text-align: left;">???</p></td>
-                            </tr>
-                            <tr>
-                              <td><p style="text-align: left;"><strong>平均深度</strong></p></td>
-                              <td><p><strong>&nbsp;:&nbsp;</strong></p></td>
-                              <td><p id="aver_smaple_depth" style="text-align: left;">???</p></td>
-                            </tr>
-                             <tr>
-                              <td><p style="text-align: left;"><strong>最大深度</strong></p></td>
-                              <td><p><strong>&nbsp;:&nbsp;</strong></p></td>
-                              <td><p id="max_smaple_depth" style="text-align: left;">???</p></td>
-                            </tr>
-                            <tr>
-                              <td><p style="text-align: left;"><strong>最小深度</strong></p></td>
-                              <td><p><strong>&nbsp;:&nbsp;</strong></p></td>
-                              <td><p id="min_smaple_depth" style="text-align: left;">???</p></td>
-                            </tr>
-                            <tr>
-                              <td colspan="3">
-                                <div class="divider-dashed"></div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td colspan="3"><p style="text-align: left;"><strong>缺失片段 :</strong></p></td>
-                            </tr>
-                            <tr>
-                              <td colspan="3">
-                                <div id="sample_absent_frag" class="panel panel-default">
-                                  <div id="sample_absent_frag_heading" class="panel-heading"></div>
-                                  <div id="sample_absent_frag_body" class="panel-body pre-scrollable" style="width: 100%; max-height: 70px;"></div>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-
-                      <div class="col-md-8 col-sm-8 col-xs-8">
-                        <canvas id="sample_cover_overview"></canvas>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- target base coverage -->
-                  <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="x_panel">
-                      <div class="x_title">
-                        <h4>目标碱基覆盖度</h4>
-                        <div class="clearfix"></div>
-                      </div>
-                      <div class="x_content">
-                        <div class="col-md-12 col-sm-12 col-xs-12">
-                          <table style="width: 100%">
-                            <tbody>
-                              <tr>
-                                <td><p style="text-align: left;"><strong>目标碱基数</strong></p></td>
-                                <td><p><strong>&nbsp;:&nbsp;</strong></p></td>
-                                <td><p id="num_target_bp" style="text-align: left;">???</p></td>
-                              </tr>
-                              <tr>
-                                <td colspan="3">
-                                  <div class="divider-dashed"></div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td colspan="3"><p style="text-align: left;"><strong>碱基覆盖梯度 :</strong></p></td>
-                              </tr>
-                              <tr>
-                                <td colspan="3"><table id="depth_level" style="text-align: left;"></table></td>
-                              </tr>
-                              <tr>
-                                <td colspan="3">
-                                  <div class="divider-dashed"></div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td colspan="3"><p><strong>0x 片段 :</strong></p></td>
-                              </tr>
-                              <tr>
-                                <td colspan="3"><table id="0x_frag"></table></td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-
-                        <div class="col-md-12 col-sm-12 col-xs-12">
-                          <div class="x_panel fixed_height_390">
-                            <div class="x_title">
-                              <h2><strong>片段覆盖梯度</strong></h2>
-                              <div class="clearfix"></div>
-                            </div>
-                            <div class="x_content pre-scrollable" style="width: 100%; max-height: 311px;">
-                              <table id="frag_cover_table" class="table table-bordered table-head-fixed"></table>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- /target base coverage -->
-                </div>
-              </div>
-            </div>            
+          <!-- QC report -->
+          <div id="report_container" class="row">
+        
           </div>
-          <!-- /Sample Sequencing QC report -->
+          <!-- /QC report -->
         </div>
         <!-- /page content -->
         
@@ -244,6 +116,9 @@
   
     <!-- Custom Theme Scripts -->
     <script src="./build/js/custom.min.js"></script>
-  
+    
+    <!-- QC report js -->
+    <script src="./js/qc_queryreport.js"></script>
+
   </body>
 </html>
