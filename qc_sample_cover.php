@@ -20,12 +20,6 @@
     <link href="./vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="./vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <!-- Datatables -->
-    <link href="../vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-    <link href="../vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
-    <link href="../vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
-    <link href="../vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
-    <link href="../vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
     
     <!-- Custom Theme Style -->
     <link href="./build/css/custom.min.css" rel="stylesheet">
@@ -54,7 +48,7 @@
               <br>
               <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true" style="width: 69%;">选择批次<span class="caret"></span></button>
-                <ul id="data_select" class="dropdown-menu" style="width:69%">
+                <ul id="data_select" class="dropdown-menu" style="width: 69%;">
                   <?php
                     $data_dir = "data";
                     $dirs = array();
@@ -108,7 +102,7 @@
                 <div id="sample_num" class="count blue">--</div>
               </div>
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
-                <span class="count_top"><i class="fa fa-circle"></i>片段数量</span>
+                <span class="count_top"><i class="fa fa-circle"></i> 片段数量</span>
 
                 <br>
 

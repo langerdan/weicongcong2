@@ -93,7 +93,6 @@
 
           <!-- QC report -->
           <div id="report_container" class="row">
-        
           </div>
           <!-- /QC report -->
         </div>

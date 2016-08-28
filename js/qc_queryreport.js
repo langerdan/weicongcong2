@@ -36,7 +36,7 @@ $('#search_go').click(function () {
             document.getElementById('datatable-buttons').innerHTML = xhttp.responseText;
         }
     };
-    xhttp.open("GET", "db_lab_query.php?f=qc&p=" + project + "&type=" + report_type + "&term=" + search_term + "&options=" + search_options, true);
+    xhttp.open("GET", "db_lab_query.php?func=qc&proj=" + project + "&type=" + report_type + "&term=" + search_term + "&opt=" + search_options, true);
     xhttp.send();
 })
 

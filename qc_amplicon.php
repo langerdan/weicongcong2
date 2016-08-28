@@ -47,7 +47,7 @@
               <br>
               <div class="dropdown">
                 <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true" style="width: 69%;">选择批次<span class="caret"></span></button>
-                <ul id="data_select" class="dropdown-menu" style="width:69%">
+                <ul id="data_select" class="dropdown-menu" style="width: 69%;">
                   <?php
                     $data_dir = "data";
                     $dirs = array();
@@ -141,7 +141,7 @@
                       <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                      <div style="text-align: center; margin-bottom: 7px">
+                      <div style="text-align: center; margin-bottom: 7px;">
                         <span id="amplicon_pass_percent" class="chart" data-percent="100">
                           <span id="amplicon_pass_num" style="display: inline-block; line-height: 110px; z-index: 2; font-size: 18px;">100/100</span>
                           <canvas></canvas>

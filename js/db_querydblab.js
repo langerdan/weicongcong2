@@ -17,6 +17,6 @@ $('#search_go').click(function () {
             document.getElementById('datatable-buttons').innerHTML = xhttp.responseText;
         }
     };
-    xhttp.open("GET", "db_lab_query.php?f=db&p=" + project + "&term=" + search_term + "&type=" + search_type, true);
+    xhttp.open("GET", "db_lab_query.php?func=lab_search&proj=" + project + "&term=" + search_term + "&type=" + search_type, true);
     xhttp.send();
 })
