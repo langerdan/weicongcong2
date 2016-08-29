@@ -1,4 +1,10 @@
 <?php
+/* PAGE     : DB_Lab_query
+ * AUTHOR   : codeunsolved@gmail.com
+ * CREATED  : August 28 2016
+ * VERSION  : v0.0.1a
+ */
+
 require 'mysql_config.php';
 
 $query = null;
@@ -23,7 +29,7 @@ if (!$con) {
 mysql_select_db("TopgenNGS", $con);
 
 switch ($query['func']) {
-    case 'lab_unhs':
+    case 'lab_unhs_stat':
         switch ($query['proj']) {
             case 'onco':
                 $SAP_num = count(mysql_fetch_array(mysql_query("SELECT id FROM onco_Lab WHERE STATE='SAP'")));
@@ -32,12 +38,30 @@ switch ($query['func']) {
                 $RUN_num = count(mysql_fetch_array(mysql_query("SELECT id FROM onco_Lab WHERE STATE='RUN'")));
                 $INIT_num = count(mysql_fetch_array(mysql_query("SELECT id FROM onco_Lab WHERE STATE='INIT'")));
 
+                $response = array(
+                    'SAP_num' => $SAP_num,
+                    'EXTR_num' => $EXTR_num,
+                    'LIB_num' => $LIB_num,
+                    'RUN_num' => $RUN_num,
+                    'INIT_num' => $INIT_num,
+                );
+                echo json_encode($response);
+                break;
+
+            case 'brac':
+                break;
+        }
+        break;
+
+    case 'lab_unhs_tb':
+        switch ($query['proj']) {
+            case 'onco':
                 $result = mysql_query("SELECT id, SAP_id, STATE FROM onco_Lab WHERE STATE!='FINISH'") or die('Query Error: ' . mysql_error());
                 $tb_content .= "<thead><tr><th>序号</th><th>样本名称</th><th>进度</th><th>说明</th><th>操作</th></tr></thead><tbody>";
                 $index = 1;
                 while($row = mysql_fetch_array($result)) {
                     changeProgState($row['STATE']);
-                    $tb_content .= "<tr><td>".$index."</td><td>".$row['SAP_id']."</td><td >"."<div class=\"progress progress-striped\"><div class=\"progress-bar ".$bar."\" data-transitiongoal=\"".$degree."\" aria-valuenow=\"".$degree."\" style=\"width: ".$degree."%;\"></div></div></td><td>".$state_desc."</td><td><a href=\"#\" onclick=\"process('".$row['id']."');return false;\">跟进</a></td></tr>";
+                    $tb_content .= "<tr><td>".$index."</td><td>".$row['SAP_id']."</td><td >"."<div class=\"progress progress-striped\" style=\"margin-bottom: 0px;\"><div class=\"progress-bar ".$bar."\" data-transitiongoal=\"".$degree."\" aria-valuenow=\"".$degree."\" style=\"width: ".$degree."%;\"></div></div></td><td>".$state_desc."</td><td><a href=\"#\" onclick=\"process('".$row['id']."');return false;\">跟进</a></td></tr>";
                     $index += 1;
                 }
                 $tb_content .= "</tbody>";
@@ -47,7 +71,7 @@ switch ($query['func']) {
                     'LIB_num' => $LIB_num,
                     'RUN_num' => $RUN_num,
                     'INIT_num' => $INIT_num,
-                    'tbody' => $tb_content 
+                    'tb_content' => $tb_content 
                 );
                 echo json_encode($response);
                 break;

@@ -1,11 +1,9 @@
-<!--
- * PAGE     : frame_topNav
+<?php
+/* PAGE     : frame_topNav
  * AUTHOR   : codeunsolved@gmail.com
  * CREATED  : August 23 2016
  * VERSION  : v0.0.1a
--->
-
-<?php
+ */
 echo <<<TOP_NAV
         <div class="top_nav">
           <div class="nav_menu">
@@ -50,6 +48,7 @@ echo <<<TOP_NAV
                         </span>
                       </a>
                     </li>
+                    <li>
                       <div class="text-center">
                         <a>
                           <strong>See All Alerts</strong>

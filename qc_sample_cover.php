@@ -1,11 +1,10 @@
+<!DOCTYPE html>
 <!--
  * PAGE     : qc_sample_cover
  * AUTHOR   : codeunsolved@gmail.com
  * CREATED  : August 10 2016
  * VERSION  : v0.0.1a
 -->
-
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">

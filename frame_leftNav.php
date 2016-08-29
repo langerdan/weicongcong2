@@ -1,11 +1,9 @@
-<!-- 
- * PAGE     : frame_leftNav
+<?php
+/* PAGE     : frame_leftNav
  * AUTHOR   : codeunsolved@gmail.com
  * CREATED  : August 23 2016
  * VERSION  : v0.0.1a
--->
-
-<?php
+ */
 echo <<<LEFT_NAV
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">

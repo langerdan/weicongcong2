@@ -1,11 +1,10 @@
+<!DOCTYPE html>
 <!--
  * PAGE     : db_lab
  * AUTHOR   : codeunsolved@gmail.com
  * CREATED  : August 23 2016
  * VERSION  : v0.0.1a
 -->
-
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -113,8 +112,22 @@
 
                       <div class="row">
                         <div class="col-md-12 col-sm-12 col-xs-12">
-                          <table id="datatable_unHS"></table>
-                          <div><button class="btn btn-success" onclick="addNewItem();"><i class="fa fa-plus"></i> 添加新样本</button></div>
+                          <div class="x_panel">
+                            <div class="x_content">
+                              <table id="datatable_unHS_onco" class="table table-striped table-bordered">
+                                <thead>
+                                  <tr>
+                                    <th>序号</th>
+                                    <th>样本名称</th>
+                                    <th>进度</th>
+                                    <th>说明</th>
+                                    <th>操作</th>
+                                  </tr>
+                                </thead>
+                              </table>
+                              
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -167,11 +180,12 @@
                   <div class="x_panel">
                     <div class="x_title">
                       <h4>搜索结果</h4>
-                      <div class="progress progress-striped"><div class="progress-bar progress-bar-info" data-transitiongoal="10" aria-valuenow="10" style="width: 10%;"></div></div>
                       <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                      <table id="datatable_searchresult" class="table table-striped table-bordered"></table>
+                      <table id="datatable_searchresult" class="table table-striped table-bordered">
+                        
+                      </table>
                     </div>
                   </div>
                 </div>
@@ -215,33 +229,31 @@
 
     <!-- Datatables -->
     <script>
+      $(document).ready(function() {
+        loadunHandleSample('onco');
+        $("#datatable_unHS_onco").dataTable( {
+          "processing": true,
+          "serverSide": true,
+          "ajax": "db_lab_query.php?func=lab_unhs_tb&proj=onco"
+        });
+      });
+
       function loadunHandleSample(project) {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
           if (xhttp.readyState == 4 && xhttp.status == 200) {
             var json =  JSON.parse(xhttp.responseText);
-            document.getElementById('SAP_num').innerHTML = json .SAP_num;
-            document.getElementById('EXTR_num').innerHTML = json .EXTR_num;
-            document.getElementById('LIB_num').innerHTML = json .LIB_num;
-            document.getElementById('RUN_num').innerHTML = json .RUN_num;
-            document.getElementById('INIT_num').innerHTML = json .INIT_num;
-            document.getElementById('datatable_unHS').innerHTML = json .tbody;
+            document.getElementById('SAP_num').innerHTML = json.SAP_num;
+            document.getElementById('EXTR_num').innerHTML = json.EXTR_num;
+            document.getElementById('LIB_num').innerHTML = json.LIB_num;
+            document.getElementById('RUN_num').innerHTML = json.RUN_num;
           }
         };
-        xhttp.open("GET", "db_lab_query.php?func=lab_unhs&proj=" + project, true);
+        xhttp.open("GET", "db_lab_query.php?func=lab_unhs_stat&proj=" + project, true);
         xhttp.send();
       }
 
-      $(document).ready(function() {
-        loadunHandleSample('onco');
-        $('#datatable_unHS').dataTable({
-          bSort: false,
-          aoColumns: [ { sWidth: "10%" }, { sWidth: "11%" }, { sWidth: "10%", bSearchable: false, bSortable: false }, { sWidth: "59%" }, { sWidth: "10%" } ]
-        });
-      });
-
-      /* format datatable */
-      $("#datatable_searchresult").change(function() {
+      function formatDataTable() {
         var handleDataTableButtons = function() {
           if ($("#datatable_searchresult").length) {
             $("#datatable_searchresult").DataTable({
@@ -283,7 +295,7 @@
         }();
 
         TableManageButtons.init();
-      });
+      };
     </script>
     <!-- /Datatables -->
   </body>

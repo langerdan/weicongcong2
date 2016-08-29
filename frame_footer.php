@@ -1,11 +1,9 @@
-<!--
- * PAGE     : frame_footer
+<?php
+/* PAGE     : frame_footer
  * AUTHOR   : codeunsolved@gmail.com
  * CREATED  : August 23 2016
  * VERSION  : v0.0.1a
--->
-
-<?php
+ */
 echo <<<FOOTER
         <footer style="background: #F7F7F7;">
           <div class="pull-right">
