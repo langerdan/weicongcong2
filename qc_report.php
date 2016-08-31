@@ -19,6 +19,13 @@
     <link href="./vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="./vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="./vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="./vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <link href="./vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
+    <!-- Datatables -->
+    <link href="./vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="./vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom Theme Style -->
     <link href="./build/css/custom.min.css" rel="stylesheet">
@@ -55,19 +62,25 @@
                   </div>
                 </div>
                 <div class="col-md-12 col-sm-12 col-xs-12 form-group">
-                  <div class="col-md-1 col-sm-1 col-xs-1">
+                  <div class="col-md-2 col-sm-2 col-xs-2">
                     <select name="project" class="form-control">
-                      <option value="onco"> onco </option>
+                      <option value="56gene"> 56gene </option>
                       <option value="brac" selected> BRAC </option>
                     </select>
                   </div>
-                  <div class="col-md-2 col-sm-2 col-xs-2">
-                    <select name="report_type" class="form-control" onchange="getSearchOptions()">
+                  <div class="col-md-3 col-sm-3 col-xs-3">
+                    <select name="report_type" class="form-control" onchange="showSearchOptions()">
                       <option value=0 selected> － 选择报告类型 － </option>
-                      <option value="sequencing_data" > 测序数据质量报告 </option>
+                      <option value="sequencing_data"> 测序数据质量报告 </option>
                     </select>
                   </div>
-                  <div id="search_options" class="col-md-9 col-sm-9 col-xs-9">
+                  <div id="search_options" class="col-md-7 col-sm-7 col-xs-7">
+                    <input type="radio" name="search_options" value="all" checked> All&nbsp;&nbsp;
+                    <input type="radio" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
+                    <input type="radio" name="search_options" value="sample_type"> 样本类型&nbsp;&nbsp;
+                    <input type="radio" name="search_options" value="lib_reagent"> 建库试剂&nbsp;&nbsp;
+                    <input type="radio" name="search_options" value="lib_id"> 建库批次&nbsp;&nbsp;
+                    <input type="radio" name="search_options" value="run_id"> 上机批次&nbsp;&nbsp;
                   </div>
                 </div>
                 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -81,7 +94,19 @@
                       <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                      <table id="datatable-buttons" class="table table-striped table-bordered"></table>
+                      <table id="datatable_searchresults" class="table table-striped table-bordered">
+                        <thead>
+                          <tr>
+                            <th>序号</th>
+                            <th>样本编号</th>
+                            <th>样本类型</th>
+                            <th>建库试剂</th>
+                            <th>建库批次</th>
+                            <th>样本批次</th>
+                            <th>报告</th>
+                          </tr>
+                        </thead>
+                      </table>
                     </div>
                   </div>
                 </div>
@@ -107,10 +132,23 @@
     <script src="./vendors/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
     <script src="./vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- PNotify -->
+    <script src="./vendors/pnotify/dist/pnotify.js"></script>
+    <script src="./vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script src="./vendors/pnotify/dist/pnotify.nonblock.js"></script>
+    <!-- Datatables -->
+    <script src="./vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="./vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="./vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="./vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+    <script src="./vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script src="./vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="./vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="./vendors/jszip/dist/jszip.min.js"></script>
+    <script src="./vendors/pdfmake/build/pdfmake.min.js"></script>
+    <script src="./vendors/pdfmake/build/vfs_fonts.js"></script>
     <!-- Chart.js -->
     <script src="./vendors/Chart.js/dist/Chart.min.js"></script>
-    <!-- easy-pie-chart -->
-    <script src="./vendors/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
   
     <!-- Custom Theme Scripts -->
     <script src="./build/js/custom.min.js"></script>
