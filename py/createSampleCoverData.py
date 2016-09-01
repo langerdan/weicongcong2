@@ -1,14 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# PROGRAM  : createSampleCoverData_v0.01a
+# PROGRAM  : createSampleCoverData_v0.01
 # PURPOSE  :
 # AUTHOR   : codeunsolved@gmail.com
 # CREATED  : August 10 2016
+# UPDATE   ：[v0.01] September 1 2016
+#1. complete data structure ({data_pinter[sample_cover]=>{sample_data_pointer[frag_cover]=>{frag_data}}};
+#2. add (pass, depth_level, len_bp, total_reads, mapped_reads, target_reads, 0x_frag) to sdp;
 
 from __future__ import division
 import os
 import re
 import json
+import subprocess
 from BASE import read_bed
 from BASE import clean_output
 
@@ -84,8 +88,13 @@ def init_depth_level_stat():
         dls[str(each_dl)] = 0
     return dls
 
+
 def getReadsStat(file_name):
     mismatch_fn = re.match('(.+)\.', file_name).group(1) + '-mismatch.log'
+    path_mismatch = os.path.join(dir_depth_data, mismatch_fn)
+    mismatch_head = subprocess.Popen(['head', '-n1', path_mismatch], stdout=subprocess.PIPE)
+    mismatch_head.wait()
+    unmapped_reads_num = re.search('\t(\d+)', )
 
 
 print "clean dir output...",
