@@ -29,37 +29,62 @@ $('#search_go').click(function () {
             styling: 'bootstrap3'
             });
     }else {
+        // draw datatable
         if ($.fn.dataTable.isDataTable('#datatable_searchresults')) {
             dt_hs.destroy();
         }
         dt_hs = $("#datatable_searchresults").DataTable( {
-            ajax: "db_report_query.php?func=search&r_type=" + report_type + "&proj=" + project + "&opt=" + search_options + "&term=" + search_term
+            ajax: "db_report_query.php?func=search&r_type=" + report_type + "&proj=" + project + "&opt=" + search_options + "&term=" + search_term,
+            drawCallback: function(settings) {
+                $("input[name='sdp']").iCheck({
+                    checkboxClass: 'icheckbox_flat-green'
+                });
+                $(".bulk_action input#check-all").iCheck("uncheck");
+                $("input[name='sdp']").on("ifChecked", function() {
+                    $("#sample_comparision").show();
+                });
+                $("input[name='sdp']").on("ifUnchecked", function() {
+                    if ($("input[name='sdp']:checked").length == 0) {
+                        $("#sample_comparision").hide();
+                    }
+                });
+            }
         });
         
-        var temp;
+        // load template and js
+        var template;
         switch (report_type) {
             case 'sequencing_data':
-                temp = "./template/temp_qc_report_sequencing_data";
+                template = "./template/temp_qc_report_sequencing_data";
+                if (typeof loadReport_SD == "undefined") {
+                    loadScript("./js/qc_report_sd.js");
+                }
                 break;
         }
-
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState == 4 && xhttp.status == 200) {
                 document.getElementById('report_container').innerHTML = xhttp.responseText;
             }
         };
-        xhttp.open("GET", temp, true);
+        xhttp.open("GET", template, true);
         xhttp.send();
     }
 })
 
-function loadReport($report_type, $sdp) {
-    switch ($report_type) {
-        case 'sequencing_data':
-            $.getScript('qc_report_sd.js');
-            
-            break;
-    }
+function loadScript(url, callback) {
+    // Adding the script tag to the head as suggested before
+    var head = document.getElementsByTagName('head')[0];
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = url;
+
+    // Then bind the event to the callback function.
+    // There are several events for cross browser compatibility.
+    script.onreadystatechange = callback;
+    script.onload = callback;
+
+    // Fire the loading
+    head.appendChild(script);
 }
 

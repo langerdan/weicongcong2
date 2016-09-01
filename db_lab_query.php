@@ -33,8 +33,8 @@ switch ($query['proj']) {
         $table = '56gene_lab';
         break;
 
-    case 'brac':
-        $table = 'brac_lab';
+    case 'brca':
+        $table = 'BRCA_lab';
         break;
 }
 

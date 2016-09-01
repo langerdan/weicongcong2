@@ -34,8 +34,8 @@ switch ($query['func']) {
                         $table = '56gene_lab';
                         break;
 
-                    case 'brac':
-                        $table = 'brac_lab';
+                    case 'brca':
+                        $table = 'BRCA_lab';
                         break;
                 }
                 switch ($query['opt']) {
@@ -69,12 +69,13 @@ switch ($query['func']) {
                     $response['data'][$i] = array();
                     for ($j = 0; $j < mysql_num_fields($result); $j++) {
                         if ($j == 0) {
-                            $response['data'][$i][0] = $i + 1;
-                            $response['data'][$i][$j+1] = $row[$j];
+                            $response['data'][$i][0] = getSDP('checkbox', $query['r_type'], $query['proj'], $row['SAP_id'], $row['RUN_id']);
+                            $response['data'][$i][1] = $i + 1;
+                            $response['data'][$i][$j+2] = $row[$j];
                         }else {
-                            $response['data'][$i][$j+1] = $row[$j];
+                            $response['data'][$i][$j+2] = $row[$j];
                         }
-                        $response['data'][$i][] = getReportAnchor($query['proj'], $row['SAP_id'], $row['RUN_id'], $query['r_type']);
+                        $response['data'][$i][] = getSDP('anchor', $query['r_type'], $query['proj'], $row['SAP_id'], $row['RUN_id']);
                     }
                 }
                 echo json_encode($response);
@@ -83,18 +84,40 @@ switch ($query['func']) {
         break;
 }
 
-function getReportAnchor($proj, $sap_id, $run_bn, $report_type) {
-    $result = mysql_query("SELECT sdp FROM QC_SeqData WHERE Project='$proj' AND SAP_id='$sap_id' AND RUN_bn='$run_bn'");
+function getSDP($col, $report_type, $proj, $sap_id, $run_bn) {
+    $table = null;
+    switch ($report_type) {
+        case 'sequencing_data':
+            $table = 'QC_SeqData';
+            break;
+    }
+    $result = mysql_query("SELECT SDP, PASS FROM $table WHERE Project='$proj' AND SAP_id='$sap_id' AND RUN_bn='$run_bn'");
     if (!$result) {
         die('Query Error: '.mysql_error());
         return "Error";
     }else {
         $row_num = mysql_num_rows($result);
-        if ($row_num == 0) {
-            return "暂无";
-        }else {
-            $sdp = mysql_fetch_array($result)[0];
-            return "<a href=\"#\" onclick=\"loadReport($report_type, $sdp);return false;\">查看</a>";
+        switch ($col) {
+            case 'checkbox':
+                if ($row_num == 0) {
+                    return "<input type=\"checkbox\" class=\"flat\" name=\"sdp\" value=\"\">";
+                }else {
+                    $sdp = mysql_fetch_array($result)[0];
+                    return "<input type=\"checkbox\" class=\"flat\" name=\"sdp\" value=\"$sdp\">";
+                }
+                break;
+            case 'anchor':
+                if ($row_num == 0) {
+                    return "暂无";
+                }else {
+                    $sdp = mysql_fetch_array($result)[0];
+                    if (mysql_fetch_array($result)[1]) {
+                        return "<a href=\"#\" onclick=\"loadReport_SD($report_type, $sdp);return false;\">查看</a><span style=\"color: green;\"><strong> PASS </strong></span>";
+                    }else {
+                        return "<a href=\"#\" onclick=\"loadReport_SD($report_type, $sdp);return false;\">查看</a><span style=\"color: red;\"><strong> FAILED </strong></span>";
+                    }
+                }
+                break;
         }
     }
 }

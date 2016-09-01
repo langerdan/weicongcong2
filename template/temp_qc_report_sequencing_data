@@ -10,6 +10,7 @@
     <div class="clearfix"></div>
   </div>
   <div class="x_content">
+    <!-- summary -->
     <div class="col-md-12 col-sm-12 col-xs-12">
       <div class="x_panel">
         <div class="x_title">
@@ -26,6 +27,16 @@
                   <td><p style="text-align: left;"><strong>回帖reads数</strong></p></td>
                   <td><p><strong>&nbsp;:&nbsp;</strong></p></td>
                   <td><p id="num_mapped_reads" style="text-align: left;">???</p></td>
+                </tr>
+                <tr>
+                  <td><p style="text-align: left;"><strong>回帖reads百分比</strong></p></td>
+                  <td><p><strong>&nbsp;:&nbsp;</strong></p></td>
+                  <td><p id="per_mapped_reads" style="text-align: left;">???</p></td>
+                </tr>
+                <tr>
+                  <td><p style="text-align: left;"><strong>目标区段reads数</strong></p></td>
+                  <td><p><strong>&nbsp;:&nbsp;</strong></p></td>
+                  <td><p id="num_target_reads" style="text-align: left;">???</p></td>
                 </tr>
                 <tr>
                   <td><p style="text-align: left;"><strong>目标区段reads百分比</strong></p></td>
@@ -72,64 +83,79 @@
           </div>
         </div>
       </div>
+    </div>
+    <!-- /summary -->
 
-      <!-- target base coverage -->
-      <div class="col-md-12 col-sm-12 col-xs-12">
-        <div class="x_panel">
-          <div class="x_title">
-            <h4>目标碱基覆盖度</h4>
-            <div class="clearfix"></div>
-          </div>
-          <div class="x_content">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-              <table style="width: 100%">
-                <tbody>
-                  <tr>
-                    <td><p style="text-align: left;"><strong>目标碱基数</strong></p></td>
-                    <td><p><strong>&nbsp;:&nbsp;</strong></p></td>
-                    <td><p id="num_target_bp" style="text-align: left;">???</p></td>
-                  </tr>
-                  <tr>
-                    <td colspan="3">
-                      <div class="divider-dashed"></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="3"><p style="text-align: left;"><strong>碱基覆盖梯度 :</strong></p></td>
-                  </tr>
-                  <tr>
-                    <td colspan="3"><table id="depth_level" style="text-align: left;"></table></td>
-                  </tr>
-                  <tr>
-                    <td colspan="3">
-                      <div class="divider-dashed"></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="3"><p><strong>0x 片段 :</strong></p></td>
-                  </tr>
-                  <tr>
-                    <td colspan="3"><table id="0x_frag"></table></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="col-md-12 col-sm-12 col-xs-12">
-              <div class="x_panel fixed_height_390">
-                <div class="x_title">
-                  <h2><strong>片段覆盖梯度</strong></h2>
-                  <div class="clearfix"></div>
-                </div>
-                <div class="x_content pre-scrollable" style="width: 100%; max-height: 311px;">
-                  <table id="frag_cover_table" class="table table-bordered table-head-fixed"></table>
-                </div>
-              </div>
-            </div>
+    <!-- target base coverage -->
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+        <div class="x_title">
+          <h4>目标区段碱基覆盖度</h4>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <table style="width: 100%">
+              <tbody>
+                <tr>
+                  <td><p style="text-align: left;"><strong>目标碱基数</strong></p></td>
+                  <td><p><strong>&nbsp;:&nbsp;</strong></p></td>
+                  <td><p id="num_target_bp" style="text-align: left;">???</p></td>
+                </tr>
+                <tr>
+                  <td colspan="3">
+                    <div class="divider-dashed"></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3"><p style="text-align: left;"><strong>碱基覆盖梯度 :</strong></p></td>
+                </tr>
+                <tr>
+                  <td colspan="3"><table id="depth_level" style="text-align: left;"></table></td>
+                </tr>
+                <tr>
+                  <td colspan="3">
+                    <div class="divider-dashed"></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3"><p><strong>0x 片段 :</strong></p></td>
+                </tr>
+                <tr>
+                  <td colspan="3"><table id="0x_frag"></table></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-      <!-- /target base coverage -->
     </div>
+    <!-- /target base coverage -->
+
+    <!-- frag base coverage -->
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+        <div class="x_title">
+          <h4>片段碱基覆盖度</h4>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+        </div>
+      </div>
+    </div>
+    <!-- /frag base coverage -->
+
+    <!-- frag base coverage graph -->
+        <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+        <div class="x_title">
+          <h4>片段碱基覆盖度</h4>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+        </div>
+      </div>
+    </div>
+    <!-- /frag base coverage graph -->
   </div>
 </div>

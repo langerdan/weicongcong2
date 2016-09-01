@@ -61,13 +61,20 @@ def init_sample_cover(sample_name):
                                            "gene_name": frag_details[f_key][3],
                                            "len": frag_details[f_key][2] - frag_details[f_key][1] + 1,
                                            "aver_depth": None, "max_depth": None, "min_depth": None,
-                                           "x_labels": [], "depths": []}}
+                                           "x_labels": [], "depths": []
+                                           }
+                             }
         return frag_c
 
     sample_c = {"sample_name": sample_name, "depth_level": [], "path": "",
-                "sdp": {"sample_name": sample_name, "depth_level": [], "len_bp": None,
-                        "aver_depth": None, "max_depth": None, "min_depth": None, "frag_cover": init_frag_cover(),
-                        "absent_frag": []}}
+                "sdp": {"sample_name": sample_name, "pass": None,
+                        "depth_level": [], "len_bp": None,
+                        "total_reads": None, "mapped_reads": None, "target_reads": None,
+                        "aver_depth": None, "max_depth": None, "min_depth": None,
+                        "absent_frag": [], "0x_frag": [],
+                        "frag_cover": init_frag_cover()
+                        }
+                }
     return sample_c
 
 
@@ -76,6 +83,9 @@ def init_depth_level_stat():
     for each_dl in depth_level:
         dls[str(each_dl)] = 0
     return dls
+
+def getReadsStat(file_name):
+    mismatch_fn = re.match('(.+)\.', file_name).group(1) + '-mismatch.log'
 
 
 print "clean dir output...",

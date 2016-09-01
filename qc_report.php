@@ -19,6 +19,8 @@
     <link href="./vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="./vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="./vendors/iCheck/skins/flat/green.css" rel="stylesheet">
     <!-- PNotify -->
     <link href="./vendors/pnotify/dist/pnotify.css" rel="stylesheet">
     <link href="./vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
@@ -65,7 +67,7 @@
                   <div class="col-md-2 col-sm-2 col-xs-2">
                     <select name="project" class="form-control">
                       <option value="56gene"> 56gene </option>
-                      <option value="brac" selected> BRAC </option>
+                      <option value="brca" selected> BRCA </option>
                     </select>
                   </div>
                   <div class="col-md-3 col-sm-3 col-xs-3">
@@ -75,12 +77,12 @@
                     </select>
                   </div>
                   <div id="search_options" class="col-md-7 col-sm-7 col-xs-7">
-                    <input type="radio" name="search_options" value="all" checked> All&nbsp;&nbsp;
-                    <input type="radio" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
-                    <input type="radio" name="search_options" value="sample_type"> 样本类型&nbsp;&nbsp;
-                    <input type="radio" name="search_options" value="lib_reagent"> 建库试剂&nbsp;&nbsp;
-                    <input type="radio" name="search_options" value="lib_id"> 建库批次&nbsp;&nbsp;
-                    <input type="radio" name="search_options" value="run_id"> 上机批次&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="all" checked> All&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="sample_type"> 样本类型&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="lib_reagent"> 建库试剂&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="lib_id"> 建库批次&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="run_id"> 上机批次&nbsp;&nbsp;
                   </div>
                 </div>
                 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -94,20 +96,27 @@
                       <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                      <table id="datatable_searchresults" class="table table-striped table-bordered">
+                      <table id="datatable_searchresults" class="table table-striped table-bordered jambo_table bulk_action">
                         <thead>
-                          <tr>
-                            <th>序号</th>
-                            <th>样本编号</th>
-                            <th>样本类型</th>
-                            <th>建库试剂</th>
-                            <th>建库批次</th>
-                            <th>样本批次</th>
-                            <th>报告</th>
+                          <tr class="headings">
+                            <th>
+                              <input type="checkbox" id="check-all" class="flat">
+                            </th>
+                            <th class="column-title">序号</th>
+                            <th class="column-title">样本编号</th>
+                            <th class="column-title">样本类型</th>
+                            <th class="column-title">建库试剂</th>
+                            <th class="column-title">建库批次</th>
+                            <th class="column-title">上机批次</th>
+                            <th class="column-title">报告</th>
+                            <th class="bulk-actions" colspan="7">
+                              <a class="antoo" style="color:#fff; font-weight:500;">样本比较 ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
+                            </th>
                           </tr>
                         </thead>
                       </table>
                     </div>
+                    <div id="sample_comparision" style="display: none;"><button class="btn btn-success" onclick="compareSample();"><i class="fa fa-bar-chart"></i> 比较样本 </button></div>
                   </div>
                 </div>
               </div>
@@ -132,6 +141,8 @@
     <script src="./vendors/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
     <script src="./vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- iCheck -->
+    <script src="./vendors/iCheck/icheck.min.js"></script>
     <!-- PNotify -->
     <script src="./vendors/pnotify/dist/pnotify.js"></script>
     <script src="./vendors/pnotify/dist/pnotify.buttons.js"></script>
@@ -151,7 +162,7 @@
     <script src="./vendors/Chart.js/dist/Chart.min.js"></script>
   
     <!-- Custom Theme Scripts -->
-    <script src="./build/js/custom.min.js"></script>
+    <script src="./build/js/custom.min-qc_report.js"></script>
     
     <!-- QC report js -->
     <script src="./js/qc_queryreport.js"></script>

@@ -19,6 +19,8 @@
     <link href="./vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="./vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="./vendors/iCheck/skins/flat/green.css" rel="stylesheet">
     <!-- bootstrap-progressbar -->
     <link href="./vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
     <!-- Datatables -->
@@ -61,7 +63,7 @@
                 <div class="x_content">
                   <ul class="nav nav-tabs">
                     <li class="active"><a data-toggle="tab" href="#" onclick="loadunHandleSample('56gene');return false;"> 56gene </a></li>
-                    <li><a data-toggle="tab" href="#" onclick="loadunHandleSample('brac');return false;"> BRAC </a></li>
+                    <li><a data-toggle="tab" href="#" onclick="loadunHandleSample('brca');return false;"> BRCA </a></li>
                   </ul>
 
                   <div class="tab-content">
@@ -122,7 +124,7 @@
                               </thead>
                             </table>
                           </div>
-                          <div><button class="btn btn-success" onclick="addNewItem();"><i class="fa fa-plus"></i> 添加新样本</button></div>
+                          <div><button class="btn btn-success" onclick="addNewItem();"><i class="fa fa-plus"></i> 添加新样本 </button></div>
                         </div>
                       </div>
                     </div>
@@ -151,16 +153,16 @@
                   <div class="col-md-2 col-sm-2 col-xs-2">
                     <select name="project" class="form-control">
                       <option value="56gene" selected> 56gene </option>
-                      <option value="brac"> BRAC </option>
+                      <option value="brca"> BRCA </option>
                     </select>
                   </div>
                   <div class="col-md-10 col-sm-10 col-xs-10">
-                    <input type="radio" name="search_options" value="all" checked> All&nbsp;&nbsp;
-                    <input type="radio" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
-                    <input type="radio" name="search_options" value="sample_type"> 样本类型&nbsp;&nbsp;
-                    <input type="radio" name="search_options" value="lib_reagent"> 建库试剂&nbsp;&nbsp;
-                    <input type="radio" name="search_options" value="lib_bn"> 建库批次&nbsp;&nbsp;
-                    <input type="radio" name="search_options" value="run_bn"> 上机批次&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="all" checked> All&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="sample_type"> 样本类型&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="lib_reagent"> 建库试剂&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="lib_bn"> 建库批次&nbsp;&nbsp;
+                    <input type="radio" class="flat" name="search_options" value="run_bn"> 上机批次&nbsp;&nbsp;
                   </div>
                 </div>
                 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -235,6 +237,8 @@
     <script src="./vendors/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
     <script src="./vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- iCheck -->
+    <script src="./vendors/iCheck/icheck.min.js"></script>
     <!-- bootstrap-progressbar -->
     <script src="./vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
     <!-- Datatables -->
