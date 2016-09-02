@@ -67,13 +67,13 @@
                   <div class="col-md-2 col-sm-2 col-xs-2">
                     <select name="project" class="form-control">
                       <option value="56gene"> 56gene </option>
-                      <option value="brca" selected> BRCA </option>
+                      <option value="BRCA" selected> BRCA </option>
                     </select>
                   </div>
                   <div class="col-md-3 col-sm-3 col-xs-3">
                     <select name="report_type" class="form-control" onchange="showSearchOptions()">
-                      <option value=0 selected> － 选择报告类型 － </option>
-                      <option value="sequencing_data"> 测序数据质量报告 </option>
+                      <option value=0> － 选择报告类型 － </option>
+                      <option value="sequencing_data" selected> 测序数据质量报告 </option>
                     </select>
                   </div>
                   <div id="search_options" class="col-md-7 col-sm-7 col-xs-7">

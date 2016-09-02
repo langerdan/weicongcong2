@@ -5,11 +5,23 @@
 # AUTHOR   : codeunsolved@gmail.com
 # CREATED  : August 22 2016
 
-import mysql
+import mysql.connector
+from mysql.connector import errorcode
+
+# CONFIG AREA
+mysql_config_example = {
+    'user': 'username',
+    'password': 'password',
+    'host': '127.0.0.1',
+    'raise_on_warnings': True
+}
+
+db_name_example = 'database'
 
 
 class MysqlConnector(object):
-    def __int__(self, config, db_name):
+    def __init__(self, config, db_name):
+        self.cnx = None
         self.connect(config)
         self.cursor = self.cnx.cursor()
         self.select_db(db_name)
@@ -45,10 +57,34 @@ class MysqlConnector(object):
         else:
             print "OK!"
 
-    def insert(self, data_form, data):
+    def insert(self, add_grammar, data):
+        """
+        add_employee = ("INSERT INTO employees "
+                        "(first_name, last_name, hire_date, gender, birth_date) "
+                        "VALUES (%s, %s, %s, %s, %s)")
+        data_employee = ('Geert', 'Vanderkelen', tomorrow, 'M', date(1977, 6, 14))
+        # Insert new employee
+        cursor.execute(add_employee, data_employee)
+        emp_no = cursor.lastrowid
+
+        add_salary = ("INSERT INTO salaries "
+                        "(emp_no, salary, from_date, to_date) "
+                        "VALUES (%(emp_no)s, %(salary)s, %(from_date)s, %(to_date)s)")
+        data_salary = {
+            'emp_no': emp_no,
+            'salary': 50000,
+            'from_date': tomorrow,
+            'to_date': date(9999, 1, 1),
+        }
+        # Insert salary information
+        cursor.execute(add_salary, data_salary)
+        # Make sure data is committed to the database
+        cnx.commit()
+        """
+
         print "=>Insert item ... ",
         try:
-            self.cursor.execute(data_form, data)
+            self.cursor.execute(add_grammar, data)
         except mysql.connector.errors.IntegrityError, e:
             if e.errno == 1062:
                 print "PASS! %s" % e

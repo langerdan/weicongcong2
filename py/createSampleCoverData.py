@@ -15,11 +15,13 @@ import json
 import subprocess
 from BASE import read_bed
 from BASE import clean_output
+from Mysql_Connector import MysqlConnector
+from mysql_config import config
 
 # CONFIG AREA #
-path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/BRAC-1606-3.bed'
-dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/BRAC160724-3-2'
-dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/BRAC160724-2'
+path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/BRCA-1606-3.bed'
+dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/BRCA160811'
+dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/BRCA160811'
 depth_level = [0, 20, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 1000]
 depth_ext = "depth"
 
@@ -38,13 +40,10 @@ def output_sample_cover_data(data, sample_n, frag_n):
                 with open(os.path.join(dir_sample, "%s.json" % f_key), 'wb') as w_obj_f:
                     w_obj_f.write(json.dumps(sdp["frag_cover"][f_key]["frag_data"]))
                 sdp["frag_cover_list"].append(sdp["frag_cover"][f_key])
-                sdp["frag_cover_list"][-1]["path"] = \
-                    "data/%s/sample_cover/%s/%s.json" % (os.path.basename(dir_output), sample_name, f_key)
                 sdp["frag_cover_list"][-1].pop("frag_data")
         sdp.pop("frag_cover")
         with open(os.path.join(dir_sample, "sample_data_pointer.json"), 'wb') as w_obj_s:
             w_obj_s.write(json.dumps(sdp))
-        each_sample["path"] = "data/%s/sample_cover/%s/sample_data_pointer.json" % (os.path.basename(dir_output), sample_name)
         each_sample.pop("sdp")
     dp["sample_num"] = sample_n
     dp["frag_num"] = frag_n
@@ -71,7 +70,7 @@ def init_sample_cover(sample_name):
         return frag_c
 
     sample_c = {"sample_name": sample_name, "depth_level": [], "path": "",
-                "sdp": {"sample_name": sample_name, "pass": {"0x_frag": None, "absent_frag": None},
+                "sdp": {"sample_name": sample_name, "pass": {"0x_frag": 1, "absent_frag": 1, "ALL": 1},
                         "depth_level": [], "len_bp": None,
                         "total_reads": None, "mapped_reads": None, "target_reads": None,
                         "aver_depth": None, "max_depth": None, "min_depth": None,
@@ -93,15 +92,26 @@ def get_reads_stat(file_n):
     mismatch_fn = re.match('(.+)\.', file_n).group(1) + '-mismatch.log'
     path_mismatch = os.path.join(dir_depth_data, mismatch_fn)
     mismatch_head = subprocess.Popen(['head', '-n1', path_mismatch], stdout=subprocess.PIPE)
-    mismatch_head.wait()
-    unmapped_reads_num = int(re.match('[^\t]+\t(\d+)', mismatch_head.communicate()[0]).group(1))
+    mismatch_head_stdout = mismatch_head.communicate()[0]
+    unmapped_reads_num = int(re.match('[^\t]+\t(\d+)', mismatch_head_stdout).group(1))
     mismatch_tail = subprocess.Popen(['tail', '-n2', path_mismatch], stdout=subprocess.PIPE)
-    mismatch_tail.wait()
-    total_reads_num = int(re.search('[^\t]+\t(\d+)', mismatch_tail.communicate()[0]).group(1))
-    mismatch_reads_num = int(re.search('\n[^\t]+\t(\d+)', mismatch_tail.communicate()[0]).group(1))
+    mismatch_tail_stdout = mismatch_tail.communicate()[0]
+    total_reads_num = int(re.search('[^\t]+\t(\d+)', mismatch_tail_stdout).group(1))
+    mismatch_reads_num = int(re.search('\n[^\t]+\t(\d+)', mismatch_tail_stdout).group(1))
     mapped_reads_num = total_reads_num - unmapped_reads_num
     target_reads_num = total_reads_num - mismatch_reads_num
     return total_reads_num, mapped_reads_num, target_reads_num
+
+
+def insert_mysql_qc_sd(data):
+    m_con = MysqlConnector(config, 'TopgenNGS')
+    add_g = ("INSERT INTO QC_SeqData "
+             "(Project, SAP_id, RUN_bn, SDP, PASS) "
+             "VALUES (%s, %s, %s, %s, %s)")
+    for each_data in data:
+        print "=>insert %s" % each_data
+        m_con.insert(add_g, each_data)
+    m_con.done()
 
 
 print "clean dir output...",
@@ -109,6 +119,16 @@ clean_output(dir_output, "sample_cover")
 print "OK!"
 frag_details = read_bed(path_bed)
 frag_details_sorted = sorted(frag_details.iteritems(), key=lambda d: (d[1][0], d[1][1]))
+
+mysql_qc_sd = []
+data_basename = os.path.basename(dir_depth_data)
+if re.search('BRCA', data_basename):
+    project = 'BRCA'
+elif re.search('onco|56gene', data_basename):
+    project = '56gene'
+else:
+    project = 'unknown'
+run_bn = re.search('(\d+)', data_basename).group(1)
 
 sample_num = 0
 sample_cover = []
@@ -183,11 +203,18 @@ for each_file in os.listdir(dir_depth_data):
                         frag_cover[key]["depth_level"].append([str(each_depth_level), round(
                             depth_level_stat["frag"][key][str(each_depth_level)] /
                             depth_digest_stat["frag"][key]["len"] * 100, 2)])
+                    # add frag cover path
+                    frag_cover[key]["path"] = "data/%s/sample_cover/%s/%s.json" % \
+                                              (os.path.basename(dir_output), file_name, key)
 
                     # add 0x frag 0-percent
                     sample_cover[-1]["sdp"]["0x_frag"][key] = round(
                         depth_level_stat["frag"][key]["0"] / depth_digest_stat["frag"][key]["len"], 2)
                 else:
+                    # add absent frag
+                    if sample_cover[-1]["sdp"]["pass"]["absent_frag"] == 1:
+                        sample_cover[-1]["sdp"]["pass"]["absent_frag"] = 0
+                        sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
                     sample_cover[-1]["sdp"]["absent_frag"].append(key)
                     print "[WARNING] %s popped" % key
             if len(sample_cover[-1]["sdp"]["absent_frag"]) != 0:
@@ -198,10 +225,18 @@ for each_file in os.listdir(dir_depth_data):
                 # add sample depth level
                 sample_cover[-1]["depth_level"].append([str(each_depth_level), round(
                     depth_level_stat["sample"][str(each_depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2)])
-                sample_cover[-1]["len_bp"] = depth_digest_stat["sample"]["len"]
+                if each_depth_level == 0 and round(depth_level_stat["sample"][str(each_depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2) < 99:
+                    sample_cover[-1]["sdp"]["pass"]["0x_frag"] = 0
+                    sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
                 print "=>depth level: %s, len: %s, sum: %s" % (sample_cover[-1]["depth_level"][-1],
                                                                depth_level_stat["sample"][str(each_depth_level)],
                                                                depth_digest_stat["sample"]["len"])
+                # add sample_cover path
+                sample_cover[-1]["path"] = "data/%s/sample_cover/%s/sample_data_pointer.json" % \
+                                           (os.path.basename(dir_output), file_name)
+
+                # add total length of bp
+                sample_cover[-1]["sdp"]["len_bp"] = depth_digest_stat["sample"]["len"]
             # add sample depth aver max min
             sample_cover[-1]["sdp"]["aver_depth"] = round(
                 depth_digest_stat["sample"]["sum"] / depth_digest_stat["sample"]["len"], 2)
@@ -212,11 +247,22 @@ for each_file in os.listdir(dir_depth_data):
             sample_cover[-1]["sdp"]["depth_level"] = sample_cover[-1]["depth_level"]
 
             # add reads statistics
-            print "get reads statistics from mismatch...",
+            print "get reads statistics from mismatch..."
             (sample_cover[-1]["sdp"]["total_reads"],
              sample_cover[-1]["sdp"]["mapped_reads"],
-             sample_cover[-1]["sdp"]["target_reads"]) = get_reads_stat(file_name)
+             sample_cover[-1]["sdp"]["target_reads"]) = get_reads_stat(each_file)
+            print "=>total_reads: %d, mapped_reads: %d, target_reads: %d" % (
+                sample_cover[-1]["sdp"]["total_reads"],
+                sample_cover[-1]["sdp"]["mapped_reads"],
+                sample_cover[-1]["sdp"]["target_reads"])
 
+            # add item to QC_SeqData
+            mysql_qc_sd.append([project, file_name, run_bn, sample_cover[-1]["path"],
+                                sample_cover[-1]["sdp"]["pass"]["ALL"]])
+
+print "insert data..."
+insert_mysql_qc_sd(mysql_qc_sd)
+print "OK!"
 print "output data...",
 output_sample_cover_data(sample_cover, sample_num, len(frag_details))
 print "OK!"

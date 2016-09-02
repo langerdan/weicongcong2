@@ -18,17 +18,17 @@ function dynamicColors() {
 }
 
 function getHeatColor(percent) {
-	var r, g, b;
-	if (percent > 50) {
-    	r= Math.floor(6 + (((255 - 6) / 50) * (100 - percent)));
-    	g = Math.floor(170 + (((255 - 170) / 50) * (100 - percent)));
-    	b = Math.floor(60 + (((255 - 60) / 50) * (100 - percent)));
-	}else {
-		percent = 100 - (100 - percent) % 51;
-    	r= Math.floor(255 + (((232 - 255) / 50) * (100 - percent)));
-    	g = Math.floor(255 + (((9 - 255) / 50) * (100 - percent)));
-    	b = Math.floor(255 + (((26 - 255) / 50) * (100 - percent)));
-	}
+    var r, g, b;
+    if (percent > 50) {
+        r= Math.floor(6 + (((255 - 6) / 50) * (100 - percent)));
+        g = Math.floor(170 + (((255 - 170) / 50) * (100 - percent)));
+        b = Math.floor(60 + (((255 - 60) / 50) * (100 - percent)));
+    }else {
+        percent = 100 - (100 - percent) % 50;
+        r= Math.floor(255 + (((232 - 255) / 50) * (100 - percent)));
+        g = Math.floor(255 + (((9 - 255) / 50) * (100 - percent)));
+        b = Math.floor(255 + (((26 - 255) / 50) * (100 - percent)));
+    }
     return RGBToHex(r, g, b);
 }
 
@@ -95,7 +95,7 @@ function loadSampleCoverTable() {
         var each_sample = sample_cover[i];
         //console.log(each_sample);
         if (i == 0) {
-            table_body += "</tr><tr><th> 样本名称 </th>";
+            table_body += "<tr><th> 样本名称 </th>";
             for (var m in each_sample.depth_level) {
                 if (each_sample.depth_level[m][0] == 0) {
                     table_body += "<th> =" + each_sample.depth_level[m][0] + " </th>";
@@ -221,7 +221,6 @@ function loadSampleDataPointer(path_sdp) {
                     absent_frag_details += "<p class=\"text-danger\">" + json.absent_frag[i] + "</p>";
                 }
                 document.getElementById("sample_absent_frag_body").innerHTML = absent_frag_details;
-
             }
         }
     };
@@ -230,7 +229,7 @@ function loadSampleDataPointer(path_sdp) {
 }
 
 function loadFragCoverTable(data_list) {
-	var table_body = "<tbody>";
+    var table_body = "<tbody>";
     for (var i in data_list) {
         var each_frag = data_list[i];
         //console.log(each_frag);
@@ -303,12 +302,12 @@ function loadFragData(path_fd) {
 
             // draw frag depth graph
             var r = color_sheet[0].r;
-	        var g = color_sheet[0].g;
-	        var b = color_sheet[0].b;
-		    var options = {
-	            responsive: true,
-	            maintainAspectRatio: false,
-	        };
+            var g = color_sheet[0].g;
+            var b = color_sheet[0].b;
+            var options = {
+                responsive: true,
+                maintainAspectRatio: false,
+            };
 
             graph_data = [{
                     label: json.frag_name,
@@ -331,8 +330,8 @@ function loadFragData(path_fd) {
                     //pointHitRadius: 10,
                     data: json.depths,
                     spanGaps: false
-        	}];
-        	drawGraph("frag_cover_graph", {labels: json.x_labels, datasets: graph_data}, options);
+            }];
+            drawGraph("frag_cover_graph", {labels: json.x_labels, datasets: graph_data}, options);
         }
     };
     xhttp.open("GET", path_fd, true);

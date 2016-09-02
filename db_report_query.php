@@ -34,7 +34,7 @@ switch ($query['func']) {
                         $table = '56gene_lab';
                         break;
 
-                    case 'brca':
+                    case 'BRCA':
                         $table = 'BRCA_lab';
                         break;
                 }
@@ -69,13 +69,13 @@ switch ($query['func']) {
                     $response['data'][$i] = array();
                     for ($j = 0; $j < mysql_num_fields($result); $j++) {
                         if ($j == 0) {
-                            $response['data'][$i][0] = getSDP('checkbox', $query['r_type'], $query['proj'], $row['SAP_id'], $row['RUN_id']);
+                            $response['data'][$i][0] = getSDP('checkbox', $query['r_type'], $query['proj'], $row['SAP_id'], $row['RUN_bn']);
                             $response['data'][$i][1] = $i + 1;
                             $response['data'][$i][$j+2] = $row[$j];
                         }else {
                             $response['data'][$i][$j+2] = $row[$j];
                         }
-                        $response['data'][$i][] = getSDP('anchor', $query['r_type'], $query['proj'], $row['SAP_id'], $row['RUN_id']);
+                        $response['data'][$i][] = getSDP('anchor', $query['r_type'], $query['proj'], $row['SAP_id'], $row['RUN_bn']);
                     }
                 }
                 echo json_encode($response);
@@ -110,11 +110,12 @@ function getSDP($col, $report_type, $proj, $sap_id, $run_bn) {
                 if ($row_num == 0) {
                     return "暂无";
                 }else {
-                    $sdp = mysql_fetch_array($result)[0];
-                    if (mysql_fetch_array($result)[1]) {
-                        return "<a href=\"#\" onclick=\"loadReport_SD($report_type, $sdp);return false;\">查看</a><span style=\"color: green;\"><strong> PASS </strong></span>";
+                    $row = mysql_fetch_array($result);
+                    $sdp = $row[0];
+                    if ($row[1]) {
+                        return "<span style=\"color: green;\"><strong> PASS </strong></span><a href=\"#\" onclick=\"loadReport_SD('$sdp');return false;\">查看</a>";
                     }else {
-                        return "<a href=\"#\" onclick=\"loadReport_SD($report_type, $sdp);return false;\">查看</a><span style=\"color: red;\"><strong> FAILED </strong></span>";
+                        return "<span style=\"color: red;\"><strong> FAILED </strong></span><a href=\"#\" onclick=\"loadReport_SD('$sdp');return false;\">查看</a>";
                     }
                 }
                 break;
