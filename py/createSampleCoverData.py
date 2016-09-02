@@ -5,8 +5,8 @@
 # AUTHOR   : codeunsolved@gmail.com
 # CREATED  : August 10 2016
 # UPDATE   ：[v0.01] September 1 2016
-#1. complete data structure ({data_pinter[sample_cover]=>{sample_data_pointer[frag_cover]=>{frag_data}}};
-#2. add (pass, depth_level, len_bp, total_reads, mapped_reads, target_reads, 0x_frag) to sdp;
+# 1. complete data structure ({data_pinter[sample_cover]=>{sample_data_pointer[frag_cover]=>{frag_data}}};
+# 2. add (pass, depth_level, len_bp, total_reads, mapped_reads, target_reads, 0x_frag) to sdp;
 
 from __future__ import division
 import os
@@ -71,11 +71,11 @@ def init_sample_cover(sample_name):
         return frag_c
 
     sample_c = {"sample_name": sample_name, "depth_level": [], "path": "",
-                "sdp": {"sample_name": sample_name, "pass": None,
+                "sdp": {"sample_name": sample_name, "pass": {"0x_frag": None, "absent_frag": None},
                         "depth_level": [], "len_bp": None,
                         "total_reads": None, "mapped_reads": None, "target_reads": None,
                         "aver_depth": None, "max_depth": None, "min_depth": None,
-                        "absent_frag": [], "0x_frag": [],
+                        "0x_frag": {}, "absent_frag": [],
                         "frag_cover": init_frag_cover()
                         }
                 }
@@ -89,12 +89,19 @@ def init_depth_level_stat():
     return dls
 
 
-def getReadsStat(file_name):
-    mismatch_fn = re.match('(.+)\.', file_name).group(1) + '-mismatch.log'
+def get_reads_stat(file_n):
+    mismatch_fn = re.match('(.+)\.', file_n).group(1) + '-mismatch.log'
     path_mismatch = os.path.join(dir_depth_data, mismatch_fn)
     mismatch_head = subprocess.Popen(['head', '-n1', path_mismatch], stdout=subprocess.PIPE)
     mismatch_head.wait()
-    unmapped_reads_num = re.search('\t(\d+)', )
+    unmapped_reads_num = int(re.match('[^\t]+\t(\d+)', mismatch_head.communicate()[0]).group(1))
+    mismatch_tail = subprocess.Popen(['tail', '-n2', path_mismatch], stdout=subprocess.PIPE)
+    mismatch_tail.wait()
+    total_reads_num = int(re.search('[^\t]+\t(\d+)', mismatch_tail.communicate()[0]).group(1))
+    mismatch_reads_num = int(re.search('\n[^\t]+\t(\d+)', mismatch_tail.communicate()[0]).group(1))
+    mapped_reads_num = total_reads_num - unmapped_reads_num
+    target_reads_num = total_reads_num - mismatch_reads_num
+    return total_reads_num, mapped_reads_num, target_reads_num
 
 
 print "clean dir output...",
@@ -132,6 +139,9 @@ for each_file in os.listdir(dir_depth_data):
                             if each_depth_level == 0 and depth > each_depth_level:
                                 depth_level_stat["sample"][str(each_depth_level)] += 1
                                 depth_level_stat["frag"][key][str(each_depth_level)] += 1
+                                # add 0x frag key
+                                if key not in sample_cover[-1]["sdp"]["0x_frag"]:
+                                    sample_cover[-1]["sdp"]["0x_frag"][key] = None
                             elif each_depth_level != 0 and depth >= each_depth_level:
                                 depth_level_stat["sample"][str(each_depth_level)] += 1
                                 depth_level_stat["frag"][key][str(each_depth_level)] += 1
@@ -173,6 +183,10 @@ for each_file in os.listdir(dir_depth_data):
                         frag_cover[key]["depth_level"].append([str(each_depth_level), round(
                             depth_level_stat["frag"][key][str(each_depth_level)] /
                             depth_digest_stat["frag"][key]["len"] * 100, 2)])
+
+                    # add 0x frag 0-percent
+                    sample_cover[-1]["sdp"]["0x_frag"][key] = round(
+                        depth_level_stat["frag"][key]["0"] / depth_digest_stat["frag"][key]["len"], 2)
                 else:
                     sample_cover[-1]["sdp"]["absent_frag"].append(key)
                     print "[WARNING] %s popped" % key
@@ -196,6 +210,13 @@ for each_file in os.listdir(dir_depth_data):
 
             # add sdp sample depth level
             sample_cover[-1]["sdp"]["depth_level"] = sample_cover[-1]["depth_level"]
+
+            # add reads statistics
+            print "get reads statistics from mismatch...",
+            (sample_cover[-1]["sdp"]["total_reads"],
+             sample_cover[-1]["sdp"]["mapped_reads"],
+             sample_cover[-1]["sdp"]["target_reads"]) = get_reads_stat(file_name)
+
 print "output data...",
 output_sample_cover_data(sample_cover, sample_num, len(frag_details))
 print "OK!"
