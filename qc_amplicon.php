@@ -13,7 +13,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Topgen Dashboard</title>
+    <title>质量控制 - 扩增子检测</title>
 
     <!-- Bootstrap -->
     <link href="./vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -133,6 +133,7 @@
                     </div>
                   </div>
                 </div>
+                
                 <div class="col-md-3 col-sm-3 col-xs-3">
                   <div class="x_panel fixed_height_320">
                     <div class="x_title" style="margin-bottom: 2px;">
@@ -147,7 +148,7 @@
                         </span>
                       </div>
 
-                      <h3 id="amplicon_chr_num" class="name_title" style="text-align: center;"><strong>Chr </strong>?</h3>
+                      <h2 id="amplicon_chr_num" class="name_title" style="text-align: center;"><strong>Chr </strong>?</h2>
                       <div class="divider"></div>
                       <p id="amplicon_gene" style="text-align: left;"><strong>基因 :</strong>???</p>
                       <p id="amplicon_pos" style="text-align: left;"><strong>位置 :</strong>??? - ???</p>
@@ -161,34 +162,36 @@
               <br>
               
               <!-- amplicon pass graph -->
-              <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h3><strong>扩增子位点覆盖图</strong></h3>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="x_content">
+              <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2><strong>扩增子位点覆盖图</strong></h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
 
-                    <!-- graph control-->
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                      <div class="x_panel">
-                        <div class="x_title">
-                          <h2>控制面板</h2>
-                          <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
+                      <!-- graph control-->
+                      <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                          <div class="x_title">
+                            <h2>控制面板</h2>
+                            <div class="clearfix"></div>
+                          </div>
+                          <div class="x_content">
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <!-- /graph control-->
-        
-                    <div class="col-md-12 col-sm-12 col-xs-12" style="width: 100%; height: 1000px;">
-                      <canvas id="canvas_amplicon_depth"></canvas>
+                      <!-- /graph control-->
+          
+                      <div class="col-md-12 col-sm-12 col-xs-12" style="width: 100%; height: 1000px;">
+                        <canvas id="canvas_amplicon_depth"></canvas>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <!-- /amplicon pass graph -->
               </div>
-              <!-- /amplicon pass graph -->
             </div>
             <!-- /amplicon pass -->
               

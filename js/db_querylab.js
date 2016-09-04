@@ -37,6 +37,7 @@ $('#search_go').click(function () {
     var project = $("select[name='project']").children(':selected').val();
     var search_options = $("input[name='search_options']:checked").val();
     var search_term = $("input[name='search_term']").val();
+    var export_filename = project + "-Lab";
 
     if ($.fn.dataTable.isDataTable('#datatable_searchresults')) {
         dt_sr.destroy();
@@ -51,21 +52,24 @@ $('#search_go').click(function () {
             },
             {
                 extend: "csv",
-                className: "btn-sm"
+                className: "btn-sm",
+                title: export_filename
             },
             {
                 extend: "excel",
-                className: "btn-sm"
+                className: "btn-sm",
+                title: export_filename
             },
             {
                 extend: "pdfHtml5",
-                className: "btn-sm"
+                className: "btn-sm",
+                title: export_filename
             },
             {
                 extend: "print",
                 className: "btn-sm"
                 },
             ],
-            responsive: true
+        responsive: true
     });
 })

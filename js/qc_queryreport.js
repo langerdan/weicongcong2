@@ -48,16 +48,19 @@ $('#search_go').click(function () {
                         $("#sample_comparision").hide();
                     }
                 });
-            }
+            },
+            order: [[6, 'des']],
         });
         
         // load template and js
+        // add sample comparision func
         var template;
         switch (report_type) {
             case 'sequencing_data':
                 template = "./template/temp_qc_report_sequencing_data";
                 if (typeof loadReport_SD == "undefined") {
                     loadScript("./js/qc_report_sd.js");
+                    $("#sample_comparision button").attr("onClick","compSap_QC_SD();");
                 }
                 break;
         }

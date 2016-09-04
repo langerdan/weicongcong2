@@ -13,7 +13,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Topgen Dashboard</title>
+    <title>质量控制 - 样本覆盖度</title>
 
     <!-- Bootstrap -->
     <link href="./vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -152,7 +152,7 @@
                       <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                      <h3 class="name_title" style="text-align: center;"><strong id="sample_name">???</strong></h3>
+                      <h2 class="name_title" style="text-align: center;"><strong id="sample_name">???</strong></h2>
                       <div class="divider"></div>
                       <p id="aver_sample_depth" style="text-align: left;"><strong>平均深度 :</strong> ???</p>
                       <p id="cutoff_sample_depth" style="text-align: left;"><strong>cutoff深度 :</strong> ???</p>
@@ -168,41 +168,43 @@
                 </div>
               </div>
 
-              <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="col-md-9 col-sm-9 col-xs-9">
-                  <div class="x_panel fixed_height_390">
-                    <div class="x_title">
-                      <h2><strong>片段覆盖梯度</strong></h2>
-                      <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content pre-scrollable" style="width: 100%; max-height: 311px;">
-                      <table id="frag_cover_table" class="table table-bordered table-head-fixed"></table>
-                    </div>
+            <div class="row">
+              <div class="col-md-9 col-sm-9 col-xs-9">
+                <div class="x_panel fixed_height_390">
+                  <div class="x_title">
+                    <h2><strong>片段覆盖梯度</strong></h2>
+                    <div class="clearfix"></div>
                   </div>
-                </div>
-
-                <div class="col-md-3 col-sm-3 col-xs-3">
-                  <div class="x_panel fixed_height_390">
-                    <div class="x_title">
-                      <h2>片段覆盖度概况</h2>
-                      <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                      <h3 class="name_title" style="text-align: center;"><strong id="frag_name">???</strong></h3>
-                      <div class="divider"></div>
-                      <h2 id="frag_chr_num" class="name_title" style="text-align: center;"><strong>Chr </strong>?</h2>
-                      <p id="frag_gene" style="text-align: left;"><strong>基因 : </strong>???</p>
-                      <p id="frag_pos" style="text-align: left;"><strong>位置 : </strong>??? - ???</p>
-                      <p id="frag_len" style="text-align: left;"><strong>长度 : </strong>???</p>
-                      <br>
-                      <p id="aver_frag_depth" style="text-align: left;"><strong>平均深度 : </strong>???</p>
-                      <p id="max_frag_depth" style="text-align: left;"><strong>最大深度 : </strong>???</p>
-                      <p id="min_frag_depth" style="text-align: left;"><strong>最小深度 : </strong>???</p>
-                    </div>
+                  <div class="x_content pre-scrollable" style="width: 100%; max-height: 311px;">
+                    <table id="frag_cover_table" class="table table-bordered table-head-fixed"></table>
                   </div>
                 </div>
               </div>
 
+
+              <div class="col-md-3 col-sm-3 col-xs-3">
+                <div class="x_panel fixed_height_390">
+                  <div class="x_title">
+                    <h2>片段覆盖度概况</h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <h2 class="name_title" style="text-align: center;"><strong id="frag_name">???</strong></h2>
+                    <div class="divider"></div>
+                    <h2 id="frag_chr_num" class="name_title" style="text-align: center;"><strong>Chr </strong>?</h2>
+                    <p id="frag_gene" style="text-align: left;"><strong>基因 : </strong>???</p>
+                    <p id="frag_pos" style="text-align: left;"><strong>位置 : </strong>??? - ???</p>
+                    <p id="frag_len" style="text-align: left;"><strong>长度 : </strong>???</p>
+                    <br>
+                    <p id="aver_frag_depth" style="text-align: left;"><strong>平均深度 : </strong>???</p>
+                    <p id="max_frag_depth" style="text-align: left;"><strong>最大深度 : </strong>???</p>
+                    <p id="min_frag_depth" style="text-align: left;"><strong>最小深度 : </strong>???</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">

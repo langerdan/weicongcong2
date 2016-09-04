@@ -30,11 +30,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
 switch ($query['proj']) {
     case '56gene':
-        $table = '56gene_lab';
+        $table = '56gene_Lab';
         break;
 
-    case 'brca':
-        $table = 'BRCA_lab';
+    case 'BRCA':
+        $table = 'BRCA_Lab';
         break;
 }
 

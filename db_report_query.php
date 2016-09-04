@@ -31,11 +31,11 @@ switch ($query['func']) {
             case 'sequencing_data':
                 switch ($query['proj']) {
                     case '56gene':
-                        $table = '56gene_lab';
+                        $table = '56gene_Lab';
                         break;
 
                     case 'BRCA':
-                        $table = 'BRCA_lab';
+                        $table = 'BRCA_Lab';
                         break;
                 }
                 switch ($query['opt']) {
@@ -100,7 +100,7 @@ function getSDP($col, $report_type, $proj, $sap_id, $run_bn) {
         switch ($col) {
             case 'checkbox':
                 if ($row_num == 0) {
-                    return "<input type=\"checkbox\" class=\"flat\" name=\"sdp\" value=\"\">";
+                    return "<input type=\"checkbox\" class=\"flat\" name=\"sdp\" value=0>";
                 }else {
                     $sdp = mysql_fetch_array($result)[0];
                     return "<input type=\"checkbox\" class=\"flat\" name=\"sdp\" value=\"$sdp\">";
@@ -113,9 +113,9 @@ function getSDP($col, $report_type, $proj, $sap_id, $run_bn) {
                     $row = mysql_fetch_array($result);
                     $sdp = $row[0];
                     if ($row[1]) {
-                        return "<span style=\"color: green;\"><strong> PASS </strong></span><a href=\"#\" onclick=\"loadReport_SD('$sdp');return false;\">查看</a>";
+                        return "<span style=\"color: green;\"><strong> PASS </strong></span><a href=\"#\" onclick=\"loadReport_QC_SD('$sdp');return false;\">查看</a>";
                     }else {
-                        return "<span style=\"color: red;\"><strong> FAILED </strong></span><a href=\"#\" onclick=\"loadReport_SD('$sdp');return false;\">查看</a>";
+                        return "<span style=\"color: red;\"><strong> FAILED </strong></span><a href=\"#\" onclick=\"loadReport_QC_SD('$sdp');return false;\">查看</a>";
                     }
                 }
                 break;

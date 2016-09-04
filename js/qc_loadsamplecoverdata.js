@@ -18,18 +18,38 @@ function dynamicColors() {
 }
 
 function getHeatColor(percent) {
+    var h= percent / 100 * 90 / 360;
+    var s = 0.9;
+    var l = 0.5;
+    var rgb = HSLtoRGB(h, s, l);
+    return RGBToHex(rgb.r, rgb.g, rgb.b);
+}
+
+function HSLtoRGB(h, s, l){
     var r, g, b;
-    if (percent > 50) {
-        r= Math.floor(6 + (((255 - 6) / 50) * (100 - percent)));
-        g = Math.floor(170 + (((255 - 170) / 50) * (100 - percent)));
-        b = Math.floor(60 + (((255 - 60) / 50) * (100 - percent)));
-    }else {
-        percent = 100 - (100 - percent) % 50;
-        r= Math.floor(255 + (((232 - 255) / 50) * (100 - percent)));
-        g = Math.floor(255 + (((9 - 255) / 50) * (100 - percent)));
-        b = Math.floor(255 + (((26 - 255) / 50) * (100 - percent)));
+
+    if(s == 0){
+        r = g = b = l; // achromatic
+    }else{
+        var hue2rgb = function hue2rgb(p, q, t){
+            if(t < 0) t += 1;
+            if(t > 1) t -= 1;
+            if(t < 1/6) return p + (q - p) * 6 * t;
+            if(t < 1/2) return q;
+            if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        }
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        var p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
     }
-    return RGBToHex(r, g, b);
+    return {
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
+    };
 }
 
 function HSVtoRGB(h, s, v) {
@@ -98,7 +118,7 @@ function loadSampleCoverTable() {
             table_body += "<tr><th> 样本名称 </th>";
             for (var m in each_sample.depth_level) {
                 if (each_sample.depth_level[m][0] == 0) {
-                    table_body += "<th> =" + each_sample.depth_level[m][0] + " </th>";
+                    table_body += "<th> >" + each_sample.depth_level[m][0] + " </th>";
                 }else {
                     table_body += "<th> ≥" + each_sample.depth_level[m][0] + " </th>";
                 }
@@ -108,13 +128,9 @@ function loadSampleCoverTable() {
         table_body += "<tr><td><a href=\"#\" onclick=\"loadSampleDataPointer('" + each_sample.path + "');return false;\">" + each_sample.sample_name + "</a></td>";
         for (var j in each_sample.depth_level) {
             var percent = each_sample.depth_level[j][1];
-            if (each_sample.depth_level[j][0] == 0){
-                table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + Math.floor((100 - percent) * 100) / 100 + "% </td>";
-            }else {
-                table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + percent + "% </td>";
-            }
+            table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + percent + "% </td>";
         }
-        table_body += "</tr>"
+        table_body += "</tr>";
     }
     table_body += "</tbody>";
     document.getElementById("sample_cover_table").innerHTML = table_body;
@@ -123,7 +139,7 @@ function loadSampleCoverTable() {
 function loadSampleCoverGraph() {
     var x_labels = new Array();
     var graph_datasets = new Array();
-    var options = {
+    var graph_options = {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
@@ -176,7 +192,7 @@ function loadSampleCoverGraph() {
             }
         }
     }
-    drawGraph("sample_cover_graph", {labels: x_labels, datasets: graph_datasets}, options);
+    drawGraph("sample_cover_graph", {labels: x_labels, datasets: graph_datasets}, graph_options);
 }
 
 function drawGraph(graph_id, graph_data, graph_options) {
@@ -241,7 +257,7 @@ function loadFragCoverTable(data_list) {
             table_body += "</tr><tr><th> 样本名称 </th>";
             for (var m in each_frag.depth_level) {
                 if (each_frag.depth_level[m][0] == 0) {
-                    table_body += "<th> =" + each_frag.depth_level[m][0] + " </th>";
+                    table_body += "<th> >" + each_frag.depth_level[m][0] + " </th>";
                 }else {
                     table_body += "<th> ≥" + each_frag.depth_level[m][0] + " </th>";
                 }
@@ -251,13 +267,9 @@ function loadFragCoverTable(data_list) {
         table_body += "<tr class=\"" + tagLevel(each_frag.depth_level) + "\"><td><a href=\"#\" onclick=\"loadFragData('" + each_frag.path + "');return false;\">" + each_frag.frag_name + "</a></td>";
         for (var j in each_frag.depth_level) {
             var percent = each_frag.depth_level[j][1];
-            if (each_frag.depth_level[j][0] == 0){
-                table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + Math.floor((100 - percent) * 100) / 100 + "% </td>";
-            }else {
-                table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + percent + "% </td>";
-            }
+            table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + percent + "% </td>";
         }
-        table_body += "</tr>"
+        table_body += "</tr>";
     }
     table_body += "</tbody>";
     document.getElementById("frag_cover_table").innerHTML = table_body;
@@ -304,7 +316,7 @@ function loadFragData(path_fd) {
             var r = color_sheet[0].r;
             var g = color_sheet[0].g;
             var b = color_sheet[0].b;
-            var options = {
+            var graph_options = {
                 responsive: true,
                 maintainAspectRatio: false,
             };
@@ -331,7 +343,7 @@ function loadFragData(path_fd) {
                     data: json.depths,
                     spanGaps: false
             }];
-            drawGraph("frag_cover_graph", {labels: json.x_labels, datasets: graph_data}, options);
+            drawGraph("frag_cover_graph", {labels: json.x_labels, datasets: graph_data}, graph_options);
         }
     };
     xhttp.open("GET", path_fd, true);

@@ -19,9 +19,12 @@ from Mysql_Connector import MysqlConnector
 from mysql_config import config
 
 # CONFIG AREA #
-path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/BRCA-1606-3.bed'
-dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/BRCA160811'
-dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/BRCA160811'
+#path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/BRCA-1606-3.bed'
+#dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/BRCA160811'
+#dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/BRCA160811'
+path_bed = r'/mnt/hgfs/NGS/RUN/1_rawdata/bed/BRCA-1606-3.bed'
+dir_depth_data = r'/mnt/hgfs/NGS/RUN/1_rawdata/BRCA160824'
+dir_output = r'/var/www/html/Topgen-Dashboard/data/BRCA160824'
 depth_level = [0, 20, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 1000]
 depth_ext = "depth"
 
@@ -70,7 +73,7 @@ def init_sample_cover(sample_name):
         return frag_c
 
     sample_c = {"sample_name": sample_name, "depth_level": [], "path": "",
-                "sdp": {"sample_name": sample_name, "pass": {"0x_frag": 1, "absent_frag": 1, "ALL": 1},
+                "sdp": {"sample_name": sample_name, "pass": {"0x_percent": 1, "absent_frag": 1, "ALL": 1},
                         "depth_level": [], "len_bp": None,
                         "total_reads": None, "mapped_reads": None, "target_reads": None,
                         "aver_depth": None, "max_depth": None, "min_depth": None,
@@ -89,7 +92,7 @@ def init_depth_level_stat():
 
 
 def get_reads_stat(file_n):
-    mismatch_fn = re.match('(.+)\.', file_n).group(1) + '-mismatch.log'
+    mismatch_fn = re.match('(.+)\.', file_n).group(1) + '.sam-mismatch.log'
     path_mismatch = os.path.join(dir_depth_data, mismatch_fn)
     mismatch_head = subprocess.Popen(['head', '-n1', path_mismatch], stdout=subprocess.PIPE)
     mismatch_head_stdout = mismatch_head.communicate()[0]
@@ -159,9 +162,6 @@ for each_file in os.listdir(dir_depth_data):
                             if each_depth_level == 0 and depth > each_depth_level:
                                 depth_level_stat["sample"][str(each_depth_level)] += 1
                                 depth_level_stat["frag"][key][str(each_depth_level)] += 1
-                                # add 0x frag key
-                                if key not in sample_cover[-1]["sdp"]["0x_frag"]:
-                                    sample_cover[-1]["sdp"]["0x_frag"][key] = None
                             elif each_depth_level != 0 and depth >= each_depth_level:
                                 depth_level_stat["sample"][str(each_depth_level)] += 1
                                 depth_level_stat["frag"][key][str(each_depth_level)] += 1
@@ -180,6 +180,10 @@ for each_file in os.listdir(dir_depth_data):
                         if depth < depth_digest_stat["frag"][key]["min"] or depth_digest_stat["frag"][key]["min"] is None:
                             depth_digest_stat["frag"][key]["min"] = depth
 
+                        # add 0x frag key
+                        if depth == 0 and key not in sample_cover[-1]["sdp"]["0x_frag"]:
+                            sample_cover[-1]["sdp"]["0x_frag"][key] = None
+
                         # add x_labels and depths
                         frag_data = sample_cover[-1]["sdp"]["frag_cover"][key]["frag_data"]
                         if "sample_name" not in frag_data:
@@ -187,6 +191,7 @@ for each_file in os.listdir(dir_depth_data):
                         frag_data["x_labels"].append(pos)
                         frag_data["depths"].append(depth)
                         break
+
             frag_cover = sample_cover[-1]["sdp"]["frag_cover"]
             for key in frag_cover:
                 if len(frag_cover[key]["frag_data"]["x_labels"]) != 0:
@@ -206,10 +211,6 @@ for each_file in os.listdir(dir_depth_data):
                     # add frag cover path
                     frag_cover[key]["path"] = "data/%s/sample_cover/%s/%s.json" % \
                                               (os.path.basename(dir_output), file_name, key)
-
-                    # add 0x frag 0-percent
-                    sample_cover[-1]["sdp"]["0x_frag"][key] = round(
-                        depth_level_stat["frag"][key]["0"] / depth_digest_stat["frag"][key]["len"], 2)
                 else:
                     # add absent frag
                     if sample_cover[-1]["sdp"]["pass"]["absent_frag"] == 1:
@@ -221,12 +222,19 @@ for each_file in os.listdir(dir_depth_data):
                 for p_key in sample_cover[-1]["sdp"]["absent_frag"]:
                     frag_cover.pop(p_key)
                 print "-------popped %d frags-------" % len(sample_cover[-1]["sdp"]["absent_frag"])
+
+            # add 0x frag 0-percent
+            for key in sample_cover[-1]["sdp"]["0x_frag"]:
+                sample_cover[-1]["sdp"]["0x_frag"][key] = round(
+                    (depth_digest_stat["frag"][key]["len"] - depth_level_stat["frag"][key]["0"])
+                    / depth_digest_stat["frag"][key]["len"] * 100, 2)
+
             for each_depth_level in depth_level:
                 # add sample depth level
                 sample_cover[-1]["depth_level"].append([str(each_depth_level), round(
                     depth_level_stat["sample"][str(each_depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2)])
                 if each_depth_level == 0 and round(depth_level_stat["sample"][str(each_depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2) < 99:
-                    sample_cover[-1]["sdp"]["pass"]["0x_frag"] = 0
+                    sample_cover[-1]["sdp"]["pass"]["0x_percent"] = 0
                     sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
                 print "=>depth level: %s, len: %s, sum: %s" % (sample_cover[-1]["depth_level"][-1],
                                                                depth_level_stat["sample"][str(each_depth_level)],
