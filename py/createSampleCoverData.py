@@ -19,12 +19,12 @@ from Mysql_Connector import MysqlConnector
 from mysql_config import config
 
 # CONFIG AREA #
-#path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/BRCA-1606-3.bed'
-#dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/BRCA160811'
-#dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/BRCA160811'
-path_bed = r'/mnt/hgfs/NGS/RUN/1_rawdata/bed/BRCA-1606-3.bed'
-dir_depth_data = r'/mnt/hgfs/NGS/RUN/1_rawdata/BRCA160824'
-dir_output = r'/var/www/html/Topgen-Dashboard/data/BRCA160824'
+path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/BRCA-1606-1.bed'
+dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/BRCA160107'
+dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/BRCA160107'
+#path_bed = r'/mnt/hgfs/NGS/RUN/1_rawdata/bed/BRCA-1606-3.bed'
+#dir_depth_data = r'/mnt/hgfs/NGS/RUN/1_rawdata/BRCA160824'
+#dir_output = r'/var/www/html/Topgen-Dashboard/data/BRCA160824'
 depth_level = [0, 20, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 1000]
 depth_ext = "depth"
 
@@ -92,7 +92,7 @@ def init_depth_level_stat():
 
 
 def get_reads_stat(file_n):
-    mismatch_fn = re.match('(.+)\.', file_n).group(1) + '.sam-mismatch.log'
+    mismatch_fn = re.match('(.+)\.', file_n).group(1) + '-mismatch.log'
     path_mismatch = os.path.join(dir_depth_data, mismatch_fn)
     mismatch_head = subprocess.Popen(['head', '-n1', path_mismatch], stdout=subprocess.PIPE)
     mismatch_head_stdout = mismatch_head.communicate()[0]
@@ -131,7 +131,7 @@ elif re.search('onco|56gene', data_basename):
     project = '56gene'
 else:
     project = 'unknown'
-run_bn = re.search('(\d+)', data_basename).group(1)
+run_bn = re.search('[a-zA-Z]+(.+)', data_basename).group(1)
 
 sample_num = 0
 sample_cover = []

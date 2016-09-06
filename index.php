@@ -40,10 +40,35 @@
         <div class="right_col" role="main">
           <h4>目前开放页面：</h4>
           <ul>
-            <li><h3>质量控制－质控报告（开发中）</h3></li>
-            <li><h3>质量控制－样本覆盖度</h3></li>
-            <li><h3>质量控制－扩增子检测</h3></li>
-            <li><h3>数据库－NGS Lab管理检索系统（开发中）</h3></li>
+            <li>
+              <h3>质量控制－质控报告（<strong style="color: green;">推荐</strong>）</h3>
+              <p>通过相关数据库交叉检索报告，提示报告PASS/FAILED情况及相关原因</p>
+              <p>支持多样本自定义比较</p>
+              <p>数据表格均可csv、excel、pdf导出</p>
+            </li>
+
+            <br>
+
+            <li>
+              <h3>质量控制－样本覆盖度</h3>
+              <p>推荐使用<strong>质量控制－质控报告</strong></p>
+              <p>数据与<strong>质量控制－质控报告</strong>兼容</p>
+            </li>
+            
+            <br>
+
+            <li>
+              <h3>质量控制－扩增子检测</h3>
+              <p>暂不更新</p>
+            </li>
+
+            <br>
+
+            <li>
+              <h3>数据库－NGS Lab管理检索系统（暂停开发）</h3>
+              <p>NGS Lab相关实验数据表格可查询检索（数据待补充）</p>
+              <p>样本添加与跟进暂未开发</p>
+            </li>
           </ul>
         </div>
         <!-- /page content -->

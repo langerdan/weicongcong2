@@ -58,6 +58,19 @@ function loadReport_QC_SD(sdp) {
             }
             dt_0xf = $("#datatable_0x_frag").DataTable( {
                 data: get0xFrag(json, sdp),
+                drawCallback: function(settings) {
+                    var td_obj = $("#datatable_0x_frag td");
+                    for (var i = 0; i < td_obj.length; i ++) {
+                        var cell = $("#datatable_0x_frag td:eq(" + i + ")");
+                        var patt = /^[\d.]+%$/;
+                        if (patt.test(cell.text())) {
+                            var percent = cell.text().replace(/%/, "");
+                            if (percent >= 1) {
+                                cell.css("color", "red");
+                            }
+                        }
+                    }
+                },
                 order: [[1, 'des']],
                 dom: "lfrtipB",
                 buttons: [
@@ -176,11 +189,7 @@ function get0xFrag(json, sdp){
     for (var i in frag_0x_sorted) {
         var row = new Array();
         row.push("<a href=\"#\" onclick=\"openFragBaseCoverGraph('" + getFragJsonUrl(sdp, frag_0x_sorted[i][0]) + "');return false;\">" + frag_0x_sorted[i][0] + "</a>");
-        if (frag_0x_sorted[i][1] > 1) {
-            row.push("<strong style=\"color: red\">" + frag_0x_sorted[i][1] + "</strong>");
-        }else {
-            row.push(frag_0x_sorted[i][1]);
-        }
+        row.push(frag_0x_sorted[i][1] + "%");
         data.push(row);
     }
     return data;

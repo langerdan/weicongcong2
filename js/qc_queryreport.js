@@ -30,10 +30,18 @@ $('#search_go').click(function () {
             });
     }else {
         // draw datatable
-        if ($.fn.dataTable.isDataTable('#datatable_searchresults')) {
-            dt_hs.destroy();
+        var report_name = "";
+        switch (report_type) {
+            case 'sequencing_data':
+                report_name = "测序数据质量报告";
+                break;
         }
-        dt_hs = $("#datatable_searchresults").DataTable( {
+        var export_filename_sr = project + "-" + report_name + "-检索结果";
+
+        if ($.fn.dataTable.isDataTable('#datatable_searchresults')) {
+            dt_sr.destroy();
+        }
+        dt_sr = $("#datatable_searchresults").DataTable( {
             ajax: "db_report_query.php?func=search&r_type=" + report_type + "&proj=" + project + "&opt=" + search_options + "&term=" + search_term,
             drawCallback: function(settings) {
                 $("input[name='sdp']").iCheck({
@@ -50,6 +58,34 @@ $('#search_go').click(function () {
                 });
             },
             order: [[6, 'des']],
+            dom: "lfrtipB",
+            buttons: [
+                {
+                    extend: "copy",
+                    className: "btn-sm"
+                },
+                {
+                    extend: "csv",
+                    className: "btn-sm",
+                    title: export_filename_sr
+                },
+                {
+                    extend: "excel",
+                    className: "btn-sm",
+                    title: export_filename_sr
+                },
+                {
+                    extend: "pdfHtml5",
+                    className: "btn-sm",
+                    title: export_filename_sr
+                },
+                {
+                    extend: "print",
+                    className: "btn-sm",
+                    title: export_filename_sr
+                    },
+                ],
+                responsive: true
         });
         
         // load template and js

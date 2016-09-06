@@ -379,16 +379,35 @@
           var x_frag = sdp_list[i][attr];
           var sap_n = sdp_list[i].sample_name;
           for (var key in x_frag) {
-            if (!frag_num.hasOwnProperty(key)) {
-              frag_num[key] = 1;
-            }else {
-              frag_num[key] ++;
-            }
-            if (!frag_sap.hasOwnProperty(key)) {
-              frag_sap[key] = new Array();
-              frag_sap[key].push(sap_n);
-            }else {
-              frag_sap[key].push(sap_n);
+            switch (attr) {
+              case "0x_frag":
+                if (!frag_num.hasOwnProperty(key)) {
+                  frag_num[key] = 1;
+                }else {
+                  frag_num[key] ++;
+                }
+                if (!frag_sap.hasOwnProperty(key)) {
+                  frag_sap[key] = new Array();
+                  frag_sap[key].push(sap_n);
+                }else {
+                  frag_sap[key].push(sap_n);
+                }
+                break;
+
+              case "absent_frag":
+                frag_name = x_frag[key]
+                if (!frag_num.hasOwnProperty(frag_name)) {
+                  frag_num[frag_name] = 1;
+                }else {
+                  frag_num[frag_name] ++;
+                }
+                if (!frag_sap.hasOwnProperty(frag_name)) {
+                  frag_sap[frag_name] = new Array();
+                  frag_sap[frag_name].push(sap_n);
+                }else {
+                  frag_sap[frag_name].push(sap_n);
+                }
+                break;
             }
           }
         }

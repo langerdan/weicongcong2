@@ -83,8 +83,8 @@
                       <input type="radio" class="flat" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
                       <input type="radio" class="flat" name="search_options" value="sample_type"> 样本类型&nbsp;&nbsp;
                       <input type="radio" class="flat" name="search_options" value="lib_reagent"> 建库试剂&nbsp;&nbsp;
-                      <input type="radio" class="flat" name="search_options" value="lib_id"> 建库批次&nbsp;&nbsp;
-                      <input type="radio" class="flat" name="search_options" value="run_id"> 上机批次&nbsp;&nbsp;
+                      <input type="radio" class="flat" name="search_options" value="lib_bn"> 建库批次&nbsp;&nbsp;
+                      <input type="radio" class="flat" name="search_options" value="run_bn"> 上机批次&nbsp;&nbsp;
                     </div>
                   </div>
 
