@@ -19,14 +19,14 @@ from Mysql_Connector import MysqlConnector
 from mysql_config import config
 
 # CONFIG AREA #
-path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/BRCA-1606-1.bed'
-dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/BRCA160107'
-dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/BRCA160107'
+path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/42gene-1606.bed'
+dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/20160906-T042'
+dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/20160906-T042'
 #path_bed = r'/mnt/hgfs/NGS/RUN/1_rawdata/bed/BRCA-1606-3.bed'
 #dir_depth_data = r'/mnt/hgfs/NGS/RUN/1_rawdata/BRCA160824'
 #dir_output = r'/var/www/html/Topgen-Dashboard/data/BRCA160824'
 depth_level = [0, 20, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 1000]
-depth_ext = "depth"
+depth_suffix = "depth"
 
 
 def output_sample_cover_data(data, sample_n, frag_n):
@@ -108,12 +108,22 @@ def get_reads_stat(file_n):
 
 def insert_mysql_qc_sd(data):
     m_con = MysqlConnector(config, 'TopgenNGS')
-    add_g = ("INSERT INTO QC_SeqData "
-             "(Project, SAP_id, RUN_bn, SDP, PASS) "
-             "VALUES (%s, %s, %s, %s, %s)")
+    insert_g = ("INSERT INTO QC_SeqData "
+                "(Project, SAP_id, RUN_bn, SDP, PASS) "
+                "VALUES (%s, %s, %s, %s, %s)")
     for each_data in data:
-        print "=>insert %s" % each_data
-        m_con.insert(add_g, each_data)
+        if m_con.query("SELECT id FROM QC_SeqData "
+                       "WHERE Project=%s AND SAP_id=%s AND RUN_bn=%s",
+                       each_data[:3]).rowcount == 1:
+            print "=>record existed!\n=>update %s" % each_data[4:]
+            m_con.query("UPDATE QC_SeqData "
+                        "SET SDP=%s, PASS=%s "
+                        "WHERE Project=%s AND SAP_id=%s AND RUN_bn=%s",
+                        (each_data[3], each_data[4], each_data[0], each_data[1], each_data[2]))
+            m_con.cnx.commit()
+        else:
+            print "=>insert %s" % each_data
+            m_con.insert(insert_g, each_data)
     m_con.done()
 
 
@@ -127,19 +137,23 @@ mysql_qc_sd = []
 data_basename = os.path.basename(dir_depth_data)
 if re.search('BRCA', data_basename):
     project = 'BRCA'
-elif re.search('onco|56gene', data_basename):
+elif re.search('onco', data_basename):
     project = '56gene'
 else:
     project = 'unknown'
-run_bn = re.search('[a-zA-Z]+(.+)', data_basename).group(1)
+run_bn = data_basename
+if re.match('BRCA|onco', run_bn):
+    run_bn = re.match('(?:BRCA|onco)(.+)', run_bn).group(1)
 
 sample_num = 0
 sample_cover = []
 for each_file in os.listdir(dir_depth_data):
-    if re.match('^.+\.%s$' % depth_ext, each_file):
+    if re.match('^.+\.%s$' % depth_suffix, each_file):
         print "processing with %s..." % each_file
         sample_num += 1
-        file_name = re.match('(.+)_S\d+_L\d+\.%s' % depth_ext, each_file).group(1)
+        file_name = re.match('(.+)\.%s' % depth_suffix, each_file).group(1)
+        if re.search('_S\d+_L\d+', file_name):
+            file_name = re.match('(.+)_S\d+_L\d+', file_name).group(1)
         with open(os.path.join(dir_depth_data, each_file), 'rb') as r_obj:
             sample_cover.append(init_sample_cover(file_name))
             depth_level_stat = {"sample": init_depth_level_stat(), "frag": {}}
@@ -147,7 +161,7 @@ for each_file in os.listdir(dir_depth_data):
             for line_depth in r_obj:
                 chr_n = re.match('([^\t]+)\t', line_depth).group(1)
                 pos = int(re.match('[^\t]+\t([^\t]+\t)', line_depth).group(1))
-                depth = int(re.match('(?:[^\t]+\t){2}([^\t\n\r]+)', line_depth).group(1))
+                depth = int(re.match('(?:[^\t]+\t){2}([^\t\r\n]+)', line_depth).group(1))
                 for key, value in frag_details_sorted:
                     # init depth_level_stat["frag"]
                     if key not in depth_level_stat["frag"]:
@@ -268,9 +282,10 @@ for each_file in os.listdir(dir_depth_data):
             mysql_qc_sd.append([project, file_name, run_bn, sample_cover[-1]["path"],
                                 sample_cover[-1]["sdp"]["pass"]["ALL"]])
 
-print "insert data..."
-insert_mysql_qc_sd(mysql_qc_sd)
-print "OK!"
 print "output data...",
 output_sample_cover_data(sample_cover, sample_num, len(frag_details))
 print "OK!"
+print "insert data..."
+insert_mysql_qc_sd(mysql_qc_sd)
+print "OK!"
+

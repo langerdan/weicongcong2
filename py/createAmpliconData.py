@@ -59,7 +59,7 @@ for each_file in os.listdir(dir_depth_data):
             for line_depth in r_obj:
                 chr_n = re.match('([^\t]+)\t', line_depth).group(1)
                 pos = int(re.match('[^\t]+\t([^\t]+\t)', line_depth).group(1))
-                depth = int(re.match('(?:[^\t]+\t){2}([^\t\n\r]+)', line_depth).group(1))
+                depth = int(re.match('(?:[^\t]+\t){2}([^\t\r\n]+)', line_depth).group(1))
                 for key in amplicon_details:
                     if file_name not in amplicon_data[key]["depth"]:
                         amplicon_data[key]["depth"][file_name] = []

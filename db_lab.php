@@ -63,7 +63,7 @@
                 <div class="x_content">
                   <ul class="nav nav-tabs">
                     <li class="active"><a data-toggle="tab" href="#" onclick="loadunHandleSample('56gene');return false;"> 56gene </a></li>
-                    <li><a data-toggle="tab" href="#" onclick="loadunHandleSample('BRCA');return false;"> BRCA </a></li>
+                    <li><a data-toggle="tab" href="#" onclick="loadunHandleSample('brca');return false;"> BRCA </a></li>
                   </ul>
 
                   <div class="tab-content">
@@ -156,7 +156,7 @@
                     <div class="col-md-2 col-sm-2 col-xs-2">
                       <select name="project" class="form-control">
                         <option value="56gene" selected> 56gene </option>
-                        <option value="BRCA"> BRCA </option>
+                        <option value="brca"> BRCA </option>
                       </select>
                     </div>
                     <div class="col-md-10 col-sm-10 col-xs-10">

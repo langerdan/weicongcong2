@@ -23,7 +23,8 @@ class MysqlConnector(object):
     def __init__(self, config, db_name):
         self.cnx = None
         self.connect(config)
-        self.cursor = self.cnx.cursor()
+        # needs to be buffered to use .fetch* methods, .rowcount attribute ...
+        self.cursor = self.cnx.cursor(buffered=True)
         self.select_db(db_name)
 
     def connect(self, config):
@@ -57,7 +58,7 @@ class MysqlConnector(object):
         else:
             print "OK!"
 
-    def insert(self, add_grammar, data):
+    def insert(self, i_grammar, data):
         """
         add_employee = ("INSERT INTO employees "
                         "(first_name, last_name, hire_date, gender, birth_date) "
@@ -84,7 +85,7 @@ class MysqlConnector(object):
 
         print "=>Insert item ... ",
         try:
-            self.cursor.execute(add_grammar, data)
+            self.cursor.execute(i_grammar, data)
         except mysql.connector.errors.IntegrityError, e:
             if e.errno == 1062:
                 print "PASS! %s" % e
@@ -93,6 +94,10 @@ class MysqlConnector(object):
         else:
             print "Done!"
         self.cnx.commit()
+
+    def query(self, q_grammar, data):
+        self.cursor.execute(q_grammar, data)
+        return self.cursor
 
     def done(self):
         self.cursor.close()
