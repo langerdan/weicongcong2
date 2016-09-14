@@ -42,7 +42,7 @@ $('#search_go').click(function () {
             dt_sr.destroy();
         }
         dt_sr = $("#datatable_searchresults").DataTable( {
-            ajax: "db_report_query.php?func=search&r_type=" + report_type + "&proj=" + project + "&opt=" + search_options + "&term=" + search_term,
+            ajax: "qc_report_query.php?func=search&r_type=" + report_type + "&proj=" + project + "&opt=" + search_options + "&term=" + search_term,
             drawCallback: function(settings) {
                 $("input[name='sdp']").iCheck({
                     checkboxClass: 'icheckbox_flat-green'

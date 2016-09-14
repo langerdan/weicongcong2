@@ -23,8 +23,6 @@
     <link href="./vendors/iCheck/skins/flat/green.css" rel="stylesheet">
     <!-- PNotify -->
     <link href="./vendors/pnotify/dist/pnotify.css" rel="stylesheet">
-    <link href="./vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
-    <link href="./vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
     <!-- Datatables -->
     <link href="./vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
     <link href="./vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
@@ -68,8 +66,8 @@
 
                     <div class="col-md-2 col-sm-2 col-xs-2">
                       <select name="project" class="form-control">
-                        <option value="56gene"> 56gene </option>
-                        <option value="brca" selected> BRCA </option>
+                        <option value="56gene" selected> 56gene </option>
+                        <option value="brca"> BRCA </option>
                       </select>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-3">
@@ -151,8 +149,6 @@
     <script src="./vendors/iCheck/icheck.min.js"></script>
     <!-- PNotify -->
     <script src="./vendors/pnotify/dist/pnotify.js"></script>
-    <script src="./vendors/pnotify/dist/pnotify.buttons.js"></script>
-    <script src="./vendors/pnotify/dist/pnotify.nonblock.js"></script>
     <!-- Datatables -->
     <script src="./vendors/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="./vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>

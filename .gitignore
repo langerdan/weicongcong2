@@ -1,6 +1,5 @@
-*.pyc
-test*.*
-data/*
 .idea/*
-*_config.php
-*_config.py
+*.pyc
+test*
+data/*
+config*

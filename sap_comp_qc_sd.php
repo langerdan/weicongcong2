@@ -163,7 +163,7 @@
       var sdp_list = new Array();
       for (var i = 0; i < sdp_url.length; i ++) {
         var url = $("#sdp_url li:eq(" + i + ")").text();
-        var json = JSON.parse($.ajax({url: url,async: false}).responseText);
+        var json = JSON.parse($.ajax({url: url, async: false}).responseText);
         sdp_list.push(json);
       }
 

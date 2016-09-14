@@ -5,7 +5,7 @@
  * VERSION  : v0.0.1a
  */
 
-require 'mysql_config.php';
+require 'config.php';
 
 $con = mysql_connect("localhost", $mysql_config['usr'], $mysql_config['pwd']);
 if (!$con) {

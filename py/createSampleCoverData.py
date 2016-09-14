@@ -15,13 +15,13 @@ import json
 import subprocess
 from BASE import read_bed
 from BASE import clean_output
-from Mysql_Connector import MysqlConnector
-from mysql_config import config
+from sqlConnector import MysqlConnector
+from config import config
 
 # CONFIG AREA #
-path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/42gene-1606.bed'
-dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/20160906-T042'
-dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/20160906-T042'
+path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/56gene-1606-probes.bed'
+dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/onco160906'
+dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/onco160906'
 #path_bed = r'/mnt/hgfs/NGS/RUN/1_rawdata/bed/BRCA-1606-3.bed'
 #dir_depth_data = r'/mnt/hgfs/NGS/RUN/1_rawdata/BRCA160824'
 #dir_output = r'/var/www/html/Topgen-Dashboard/data/BRCA160824'
@@ -242,7 +242,13 @@ for each_file in os.listdir(dir_depth_data):
                 sample_cover[-1]["sdp"]["0x_frag"][key] = round(
                     (depth_digest_stat["frag"][key]["len"] - depth_level_stat["frag"][key]["0"])
                     / depth_digest_stat["frag"][key]["len"] * 100, 2)
-
+                if sample_cover[-1]["sdp"]["0x_frag"][key] == 100:
+                    # add 100% 0x frag to absent frag
+                    if sample_cover[-1]["sdp"]["pass"]["absent_frag"] == 1:
+                        sample_cover[-1]["sdp"]["pass"]["absent_frag"] = 0
+                        sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
+                    sample_cover[-1]["sdp"]["absent_frag"].append(key)
+                    print "add 100% 0x frag [%s] to absent frag" % key
             for each_depth_level in depth_level:
                 # add sample depth level
                 sample_cover[-1]["depth_level"].append([str(each_depth_level), round(

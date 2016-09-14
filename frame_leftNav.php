@@ -44,11 +44,21 @@ echo <<<LEFT_NAV
                   </li>
                   <li><a><i class="fa fa-database"></i> 数据库 <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
+                      <li><a href="db_annotation.php">TopAnno</a></li>
                       <li><a href="db_lab.php">NGS lab</a></li>
-                      <li><a href="db_clinvar.php">Clinvar</a></li>
                     </ul>
                   </li>
-                  <li><a><i class="fa fa-laptop"></i> Administration <span class="fa fa-chevron-down"></span></a>
+                  <li><a><i class="fa fa-file-word-o"></i> 文档 <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="doc_ref.php">Reference</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-calculator"></i> 工具 <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="tools_sam_flag_decode.php">SAM FLAG decode</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-laptop"></i> 管理 <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="admin_user.php">用户</a></li>
                     </ul>

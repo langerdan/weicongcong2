@@ -8,40 +8,17 @@
 import os
 import re
 import time
-from Mysql_Connector import MysqlConnector
-from mysql_config import config
+from BASE import parse_vcf
+from sqlConnector import MysqlConnector
+from config import mysql_config
 
 dir_vcf = r'/Users/codeunsolved/Downloads/NGS-Data/Report-fusion_gene/=TEMP=/BRCA160320/normVCF'
 dir_output = r'/Users/codeunsolved/Downloads/NGS-Data/Report-fusion_gene/=TEMP=/BRCA160320/clinvar-match'
 vcf_suffix = 'step2\.vcf'
 
 
-def parse_vcf(p_vcf):
-    vcf_body = []
-    with open(p_vcf, 'rb') as r_obj:
-        ver = None
-        for line_no, line in enumerate(r_obj):
-            if line_no == 0:
-                ver = re.match('##fileformat=VCFv(.+)[\r\n]', line).group(1)
-            if re.match('#', line):
-                continue
-            if ver == "4.1":
-                chr_n = re.match('chr([^\t]+)\t', line).group(1)
-                pos = int(re.match('[^\t]+\t([^\t]+)\t', line).group(1))
-                id_snp = re.match('(?:[^\t]+\t){2}([^\t]+)\t', line).group(1)
-                ref = re.match('(?:[^\t]+\t){3}([^\t]+)\t', line).group(1)
-                alt = re.match('(?:[^\t]+\t){4}([^\t]+)\t', line).group(1)
-                qual = re.match('(?:[^\t]+\t){5}([^\t]+)\t', line).group(1)
-                q_filter = re.match('(?:[^\t]+\t){6}([^\t]+)\t', line).group(1)
-                info = re.match('(?:[^\t]+\t){7}([^\t]+)\t', line).group(1)
-                format_key = re.match('(?:[^\t]+\t){8}([^\t]+)\t', line).group(1)
-                format_value = re.match('(?:[^\t]+\t){9}([^\t]+)[\r\n]', line).group(1)
-                vcf_body.append([chr_n, pos, id_snp, ref, alt, qual, q_filter, info, format_key, format_value])
-    return vcf_body
-
-
 def query_clinvar(data):
-    query_g = ("SELECT * FROM hg19_clinvar_20160302_origin "
+    query_g = ("SELECT Chr, Pos_S, Pos_E, Ref, Alt, CLINSIG FROM hg19_clinvar_20160302_origin "
                "WHERE Chr=%s AND Pos_S=%s AND Ref=%s AND Alt=%s")
     return m_con.query(query_g, data)
 
@@ -53,7 +30,7 @@ def output_clinvar_match(data):
 
 
 time_start = time.time()
-m_con = MysqlConnector(config, 'TopgenNGS')
+m_con = MysqlConnector(mysql_config, 'TopgenNGS')
 output = []
 vcf_files = os.listdir(dir_vcf)
 for vcf_file in vcf_files:
