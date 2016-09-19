@@ -60,7 +60,7 @@ function loadReport_QC_SD(sdp) {
                 data: get0xFrag(json, sdp),
                 drawCallback: function(settings) {
                     var td_obj = $("#datatable_0x_frag td");
-                    for (var i = 0; i < td_obj.length; i ++) {
+                    for (var i = 0; i < td_obj.length; i++) {
                         var cell = $("#datatable_0x_frag td:eq(" + i + ")");
                         var patt = /^[\d.]+%$/;
                         if (patt.test(cell.text())) {
@@ -104,7 +104,7 @@ function loadReport_QC_SD(sdp) {
 
             document.getElementById("datatable_frag_DL").innerHTML = loadFragCoverTable(json.depth_level);
             // draw datatable frag depth level
-            var export_filename_fc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-FRAG_COVER";
+            var export_filename_fc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-" + json.sample_name + "-FRAG_COVER";
             if ($.fn.dataTable.isDataTable('#datatable_frag_DL')) {
                 dt_fc.destroy();
             }
@@ -112,7 +112,7 @@ function loadReport_QC_SD(sdp) {
                 data: getFragDL(json.frag_cover_list, sdp),
                 drawCallback: function(settings) {
                     var td_obj = $("#datatable_frag_DL td");
-                    for (var i = 0; i < td_obj.length; i ++) {
+                    for (var i = 0; i < td_obj.length; i++) {
                         var cell = $("#datatable_frag_DL td:eq(" + i + ")");
                         var patt = /^[\d.]+%$/;
                         if (patt.test(cell.text())) {
@@ -283,7 +283,7 @@ function openFragBaseCoverGraph(frag_d_url) {
         window.open("frag_base_cover_graph.php?u0=" + frag_d_url);
     }else if ((typeof frag_d_url=='object')&&frag_d_url.constructor==Array) {
         var param = "";
-        for (var i = 0; i < frag_d_url.length; i ++) {
+        for (var i = 0; i < frag_d_url.length; i++) {
             if (i == 0)  {
                 param += "u" + i + "=" + frag_d_url[i];
             }else {
@@ -297,7 +297,7 @@ function openFragBaseCoverGraph(frag_d_url) {
 function compSap_QC_SD() {
     var input_sdp_obj = $("input[name='sdp']:checked");
     var param = "";
-    for (var i = 0; i < input_sdp_obj.length; i ++) {
+    for (var i = 0; i < input_sdp_obj.length; i++) {
         var sdp = $("input[name='sdp']:checked:eq(" + i + ")");
         if (sdp.val() != 0) {
             if (param == "") {

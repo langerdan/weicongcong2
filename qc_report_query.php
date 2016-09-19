@@ -70,7 +70,7 @@ switch ($query['func']) {
                     for ($j = 0; $j < mysql_num_fields($result); $j++) {
                         if ($j == 0) {
                             $response['data'][$i][0] = getSDP('checkbox', $query['r_type'], $query['proj'], $row['SAP_id'], $row['RUN_bn']);
-                            $response['data'][$i][1] = $i + 1;
+                            $response['data'][$i][1] = $i+1;
                             $response['data'][$i][$j+2] = $row[$j];
                         }else {
                             $response['data'][$i][$j+2] = $row[$j];

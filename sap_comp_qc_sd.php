@@ -161,7 +161,7 @@
     <script type="text/javascript">
       var sdp_url = $("#sdp_url li");
       var sdp_list = new Array();
-      for (var i = 0; i < sdp_url.length; i ++) {
+      for (var i = 0; i < sdp_url.length; i++) {
         var url = $("#sdp_url li:eq(" + i + ")").text();
         var json = JSON.parse($.ajax({url: url, async: false}).responseText);
         sdp_list.push(json);
@@ -213,7 +213,7 @@
           data: getSapDL(sdp_list),
           drawCallback: function(settings) {
               var td_obj = $("#datatable_sample_depth_level td");
-              for (var i = 0; i < td_obj.length; i ++) {
+              for (var i = 0; i < td_obj.length; i++) {
                   var cell = $("#datatable_sample_depth_level td:eq(" + i + ")");
                   var patt = /^[\d.]+%$/;
                   if (patt.test(cell.text())) {
@@ -341,7 +341,7 @@
 
       function getSapGeneral(sdp_list) {
         var data = new Array();
-        for (var i = 0; i < sdp_list.length; i ++) {
+        for (var i = 0; i < sdp_list.length; i++) {
           var per_mapped_reads = Math.floor((sdp_list[i].mapped_reads / sdp_list[i].total_reads) * 10000) / 100 + '%';
           var per_target_reads = Math.floor((sdp_list[i].target_reads / sdp_list[i].total_reads) * 10000) / 100 + '%';
 
@@ -358,12 +358,12 @@
 
       function getSapDL(sdp_list) {
         var data = new Array();
-        for (var i = 0; i < sdp_list.length; i ++) {
+        for (var i = 0; i < sdp_list.length; i++) {
           var row = new Array();
           row.push(i+1);
           row.push(sdp_list[i].sample_name);
           var dl = sdp_list[i].depth_level;
-          for (var j = 0; j < dl.length; j ++) {
+          for (var j = 0; j < dl.length; j++) {
             row.push(dl[j][1] + "%");
           }
           data.push(row);
@@ -375,7 +375,7 @@
         var data = new Array();
         var frag_num = new Array();
         var frag_sap = new Array();
-        for (var i = 0; i < sdp_list.length; i ++) {
+        for (var i = 0; i < sdp_list.length; i++) {
           var x_frag = sdp_list[i][attr];
           var sap_n = sdp_list[i].sample_name;
           for (var key in x_frag) {
@@ -384,7 +384,7 @@
                 if (!frag_num.hasOwnProperty(key)) {
                   frag_num[key] = 1;
                 }else {
-                  frag_num[key] ++;
+                  frag_num[key]++;
                 }
                 if (!frag_sap.hasOwnProperty(key)) {
                   frag_sap[key] = new Array();
@@ -399,7 +399,7 @@
                 if (!frag_num.hasOwnProperty(frag_name)) {
                   frag_num[frag_name] = 1;
                 }else {
-                  frag_num[frag_name] ++;
+                  frag_num[frag_name]++;
                 }
                 if (!frag_sap.hasOwnProperty(frag_name)) {
                   frag_sap[frag_name] = new Array();
@@ -414,11 +414,11 @@
         var i = 0;
         for (var key in frag_num) {
           var details = "";
-          for (var j = 0; j < frag_sap[key].length; j ++) {
+          for (var j = 0; j < frag_sap[key].length; j++) {
             details += frag_sap[key][j] + " / ";
           }
           data.push([i+1, key, frag_num[key], details]);
-          i ++;
+          i++;
         }
         return data;
       }

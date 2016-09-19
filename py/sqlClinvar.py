@@ -56,4 +56,4 @@ for vcf_file in vcf_files:
                     output.append([vcf_file, "match-", 0] + variant[:5] + list(each))
 m_con.done()
 output_clinvar_match(output)
-print "====== Done =======\nTotal VCF: %d\t Time: %s" % (len(vcf_files), time.time() - time_start)
+print "====== Done ======\nTotal VCF: %d\t Time: %s" % (len(vcf_files), time.time() - time_start)

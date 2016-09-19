@@ -140,7 +140,7 @@
                           <th><input type="checkbox" class="flat" name="sam_flag_bit" value=200></th>
                           <th>0x200</th>
                           <th>512</th>
-                          <th> </th>
+                          <th>未通过QC</th>
                           <th>not passing filters, such as platform/vendor quality controls</th>
                         </tr>
                         <tr>
@@ -159,6 +159,28 @@
                         </tr>
                       </tbody>
                     </table>
+                  </div>
+
+                  <div class="col-md-12 col-sm-12 col-xs-12 well">
+                    <h4><strong>参考：</strong></h4>
+                    <p>
+                      <cite>[1]. <a href="https://broadinstitute.github.io/picard/explain-flags.html" target="_blank">Explain SAM Flags</a></cite>
+                      <br />
+                      <span style="padding-left:2em">SAM FLAG Decode 工具思路来源</span>
+                    </p>
+
+                    <p>
+                      <cite>[2]. <a href="https://ppotato.wordpress.com/2010/08/25/samtool-bitwise-flag-paired-reads/" target="_blank">SAMtool bitwise flag meaning explained: how to understand samflags without pains | A Pillow Diary of an Expatriate Scientist</a></cite>
+                      <br />
+                      <span style="padding-left:2em">详细解释了map/unmap(0x4, 0x8)，forward/reverse(0x16, 0x32)，pair(0x1)等bit位</span>
+                    </p>
+
+                    <p>
+                      <cite>[3]. <a href="http://www.htslib.org/doc/samtools.html" target="_blank">samtools manual page - flagstat</a></cite>
+                      <br />
+                      <span style="padding-left:2em">解释了QC flag(0x200)</span>
+                    </p>
+
                   </div>
                 </div>
               </div>
@@ -213,7 +235,7 @@
         }else {
           var flag = parseInt(flag_val);
           var cb = $("input[name='sam_flag_bit']");
-          for (var i = 0; i < cb.length; i ++) {
+          for (var i = 0; i < cb.length; i++) {
             var cb_i = $("input[name='sam_flag_bit']:eq(" + i + ")");
             if (flag & flagfalse[i][0]) {
               cb_i.iCheck("check");
@@ -229,11 +251,11 @@
         var flag = 0;
         var exp = "";
         var cb = $("input[name='sam_flag_bit']");
-        for (var i = 0; i < cb.length; i ++) {
+        for (var i = 0; i < cb.length; i++) {
           var cb_i = $("input[name='sam_flag_bit']:eq(" + i + ")");
           var style = "";
           if (cb_i.is(":checked")) {
-            if ([2, 3, 4, 5].indexOf(i) >= 0) style = "style=\"color: red\"";
+            if ([2, 3, 4, 5, 9].indexOf(i) >= 0) style = "style=\"color: red\"";
             exp += "<p " + style + ">" + cb_i.parent().parent().siblings("th:eq(2)").text() + "</p>";
             flag += flagfalse[i][0];
           }else {

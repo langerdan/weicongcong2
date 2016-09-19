@@ -43,7 +43,7 @@
           <div class="row">
             <!-- data select-->
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <br>
+              <br />
               <div class="dropdown">
                 <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true" style="width: 69%;">选择批次<span class="caret"></span></button>
                 <ul id="data_select" class="dropdown-menu" style="width: 69%;">
@@ -88,21 +88,21 @@
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
                 <span class="count_top"><i class="fa fa-circle"></i> 数据批次</span>
 
-                <br>
+                <br />
 
                 <div id="data_name" class="count green">--</div>
               </div>
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
                 <span class="count_top"><i class="fa fa-circle"></i> 样本数量</span>
 
-                <br>
+                <br />
 
                 <div id="sample_num" class="count green">--</div>
               </div>
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
                 <span class="count_top"><i class="fa fa-circle"></i>扩增子数量</span>
 
-                <br>
+                <br />
 
                 <div id="amplicon_num" class="count green">--</div>
               </div>
@@ -110,7 +110,7 @@
           </div>
           <!-- /top tiles -->
           
-          <br>
+          <br />
           
           <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#tb_amplicon_pass">扩增子检测</a></li>
@@ -159,7 +159,7 @@
               </div>
               <!-- /amplicon pass general -->
               
-              <br>
+              <br />
               
               <!-- amplicon pass graph -->
               <div class="row">

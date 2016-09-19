@@ -16,12 +16,12 @@ import subprocess
 from BASE import read_bed
 from BASE import clean_output
 from sqlConnector import MysqlConnector
-from config import config
+from config import mysql_config
 
 # CONFIG AREA #
-path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/56gene-1606-probes.bed'
-dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/onco160906'
-dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/onco160906'
+path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/BRCA-1606-3.bed'
+dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/BRCA160913'
+dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/BRCA160913'
 #path_bed = r'/mnt/hgfs/NGS/RUN/1_rawdata/bed/BRCA-1606-3.bed'
 #dir_depth_data = r'/mnt/hgfs/NGS/RUN/1_rawdata/BRCA160824'
 #dir_output = r'/var/www/html/Topgen-Dashboard/data/BRCA160824'
@@ -106,8 +106,8 @@ def get_reads_stat(file_n):
     return total_reads_num, mapped_reads_num, target_reads_num
 
 
-def insert_mysql_qc_sd(data):
-    m_con = MysqlConnector(config, 'TopgenNGS')
+def input_mysql(data):
+    m_con = MysqlConnector(mysql_config, 'TopgenNGS')
     insert_g = ("INSERT INTO QC_SeqData "
                 "(Project, SAP_id, RUN_bn, SDP, PASS) "
                 "VALUES (%s, %s, %s, %s, %s)")
@@ -115,7 +115,7 @@ def insert_mysql_qc_sd(data):
         if m_con.query("SELECT id FROM QC_SeqData "
                        "WHERE Project=%s AND SAP_id=%s AND RUN_bn=%s",
                        each_data[:3]).rowcount == 1:
-            print "=>record existed!\n=>update %s" % each_data[4:]
+            print "=>record existed!\n=>update %s" % each_data[3:]
             m_con.query("UPDATE QC_SeqData "
                         "SET SDP=%s, PASS=%s "
                         "WHERE Project=%s AND SAP_id=%s AND RUN_bn=%s",
@@ -133,7 +133,7 @@ print "OK!"
 frag_details = read_bed(path_bed)
 frag_details_sorted = sorted(frag_details.iteritems(), key=lambda d: (d[1][0], d[1][1]))
 
-mysql_qc_sd = []
+mysql_data = []
 data_basename = os.path.basename(dir_depth_data)
 if re.search('BRCA', data_basename):
     project = 'BRCA'
@@ -248,7 +248,7 @@ for each_file in os.listdir(dir_depth_data):
                         sample_cover[-1]["sdp"]["pass"]["absent_frag"] = 0
                         sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
                     sample_cover[-1]["sdp"]["absent_frag"].append(key)
-                    print "add 100% 0x frag [%s] to absent frag" % key
+                    print "add 100% 0x frag [{}] to absent frag".format(key)
             for each_depth_level in depth_level:
                 # add sample depth level
                 sample_cover[-1]["depth_level"].append([str(each_depth_level), round(
@@ -285,13 +285,13 @@ for each_file in os.listdir(dir_depth_data):
                 sample_cover[-1]["sdp"]["target_reads"])
 
             # add item to QC_SeqData
-            mysql_qc_sd.append([project, file_name, run_bn, sample_cover[-1]["path"],
-                                sample_cover[-1]["sdp"]["pass"]["ALL"]])
+            mysql_data.append([project, file_name, run_bn, sample_cover[-1]["path"],
+                               sample_cover[-1]["sdp"]["pass"]["ALL"]])
 
 print "output data...",
 output_sample_cover_data(sample_cover, sample_num, len(frag_details))
 print "OK!"
 print "insert data..."
-insert_mysql_qc_sd(mysql_qc_sd)
+input_mysql(mysql_data)
 print "OK!"
 

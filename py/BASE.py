@@ -47,6 +47,9 @@ def parse_vcf(p_vcf):
 
 
 def clean_output(dir_o, subdir_name):
-    if os.path.isdir(os.path.join(dir_o, subdir_name)):
-        shutil.rmtree(os.path.join(dir_o, subdir_name))
-    os.mkdir(os.path.join(dir_o, subdir_name))
+    if os.path.isdir(dir_o):
+        if os.path.isdir(os.path.join(dir_o, subdir_name)):
+            shutil.rmtree(os.path.join(dir_o, subdir_name))
+        os.mkdir(os.path.join(dir_o, subdir_name))
+    else:
+        os.makedirs(os.path.join(dir_o, subdir_name))

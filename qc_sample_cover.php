@@ -44,7 +44,7 @@
           <div class="row">
             <!-- data select-->
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <br>
+              <br />
               <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true" style="width: 69%;">选择批次<span class="caret"></span></button>
                 <ul id="data_select" class="dropdown-menu" style="width: 69%;">
@@ -89,21 +89,21 @@
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
                 <span class="count_top"><i class="fa fa-circle"></i> 数据批次</span>
 
-                <br>
+                <br />
 
                 <div id="data_name" class="count blue">--</div>
               </div>
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
                 <span class="count_top"><i class="fa fa-circle"></i> 样本数量</span>
 
-                <br>
+                <br />
 
                 <div id="sample_num" class="count blue">--</div>
               </div>
               <div class="col-md-3 col-sm-3 col-xs-3 tile_stats_count">
                 <span class="count_top"><i class="fa fa-circle"></i> 片段数量</span>
 
-                <br>
+                <br />
 
                 <div id="frag_num" class="count blue">--</div>
               </div>
@@ -111,7 +111,7 @@
           </div>
           <!-- /top tiles -->
 
-          <br>
+          <br />
 
           <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#tb_sample_cover">样本覆盖度</a></li>
@@ -158,7 +158,7 @@
                       <p id="cutoff_sample_depth" style="text-align: left;"><strong>cutoff深度 :</strong> ???</p>
                       <p id="max_sample_depth" style="text-align: left;"><strong>最大深度 :</strong> ???</p>
                       <p id="min_sample_depth" style="text-align: left;"><strong>最小深度 :</strong> ???</p>
-                      <br>
+                      <br />
                       <div id="sample_absent_frag" class="panel panel-default">
                         <div id="sample_absent_frag_heading" class="panel-heading"><strong>缺失片段 :</strong> ???</div>
                         <div id="sample_absent_frag_body" class="panel-body pre-scrollable" style="width: 100%; max-height: 70px;"></div>
@@ -195,7 +195,7 @@
                     <p id="frag_gene" style="text-align: left;"><strong>基因 : </strong>???</p>
                     <p id="frag_pos" style="text-align: left;"><strong>位置 : </strong>??? - ???</p>
                     <p id="frag_len" style="text-align: left;"><strong>长度 : </strong>???</p>
-                    <br>
+                    <br />
                     <p id="aver_frag_depth" style="text-align: left;"><strong>平均深度 : </strong>???</p>
                     <p id="max_frag_depth" style="text-align: left;"><strong>最大深度 : </strong>???</p>
                     <p id="min_frag_depth" style="text-align: left;"><strong>最小深度 : </strong>???</p>

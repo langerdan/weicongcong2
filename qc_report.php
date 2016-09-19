@@ -56,7 +56,7 @@
                 <div class="x_content">
                   <div class="row form-group">
                     <div class="col-md-12 col-sm-12 col-xs-12 top_search">
-                      <div class="input-group" style="width:69%; margin-left: 20px">
+                      <div class="input-group" style="width:69%; margin-left: 10px">
                         <input type="text" name="search_term" class="form-control" placeholder="Search ...">
                         <span class="input-group-btn">
                           <button id="search_go" class="btn btn-primary" type="button" style="color: white"> Go! </button>
@@ -92,7 +92,7 @@
                     <div class="col-md-12 col-sm-12 col-xs-12">
                       <div class="x_panel">
                         <div class="x_title">
-                          <h2>搜索结果</h2>
+                          <h2>检索结果</h2>
                           <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
@@ -140,7 +140,7 @@
         <!-- /footer content -->
       </div>
     </div>
-  
+    
     <!-- jQuery -->
     <script src="./vendors/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
@@ -162,12 +162,11 @@
     <script src="./vendors/pdfmake/build/vfs_fonts.js"></script>
     <!-- Chart.js -->
     <script src="./vendors/Chart.js/dist/Chart.min.js"></script>
-  
+
     <!-- Custom Theme Scripts -->
     <script src="./build/js/custom.min-qc_report.js"></script>
     
     <!-- QC report js -->
     <script src="./js/qc_queryreport.js"></script>
-
   </body>
 </html>

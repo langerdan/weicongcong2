@@ -72,35 +72,35 @@
                       <div class="col-md-2 col-sm-2 col-xs-2 tile_stats_count" style="border-left: none !important;">
                         <span class="count_top"><i class="fa fa-circle"></i> 已收样</span>
 
-                        <br>
+                        <br />
 
                         <div id="SAP_num" class="count blue">--</div>
                       </div>
                       <div class="col-md-2 col-sm-2 col-xs-2 tile_stats_count">
                         <span class="count_top"><i class="fa fa-circle"></i> 抽提中</span>
 
-                        <br>
+                        <br />
 
                         <div id="EXTR_num" class="count blue">--</div>
                       </div>
                       <div class="col-md-2 col-sm-2 col-xs-2 tile_stats_count">
                         <span class="count_top"><i class="fa fa-circle"></i> 建库中</span>
 
-                        <br>
+                        <br />
 
                         <div id="LIB_num" class="count blue">--</div>
                       </div>
                       <div class="col-md-2 col-sm-2 col-xs-2 tile_stats_count">
                         <span class="count_top"><i class="fa fa-circle"></i> 上机中</span>
 
-                        <br>
+                        <br />
 
                         <div id="RUN_num" class="count blue">--</div>
                       </div>
                       <div class="col-md-2 col-sm-2 col-xs-2 tile_stats_count">
                         <span class="count_top"><i class="fa fa-circle"></i> 待校对</span>
 
-                        <br>
+                        <br />
 
                         <div id="INIT_num" class="count blue">--</div>
                       </div>
@@ -145,7 +145,7 @@
                 <div class="x_content">
                 <div class="row form-group">
                     <div class="col-md-12 col-sm-12 col-xs-12 top_search">
-                      <div class="input-group" style="width:69%; margin-left: 20px;">
+                      <div class="input-group" style="width:69%; margin-left: 10px;">
                         <input type="text" name="search_term" class="form-control" placeholder="Search ...">
                         <span class="input-group-btn">
                           <button id="search_go" class="btn btn-primary" type="button" style="color: white;"> Go! </button>
@@ -175,7 +175,7 @@
                     <div class="col-md-12 col-sm-12 col-xs-12">
                       <div class="x_panel">
                         <div class="x_title">
-                          <h2>搜索结果</h2>
+                          <h2>检索结果</h2>
                           <div class="clearfix"></div>
                         </div>
                         <div class="x_content pre-scrollable" style="width: 100%;">

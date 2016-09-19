@@ -64,7 +64,7 @@
                 <div class="x_content">
                   <div class="row form-group">
                     <div class="col-md-12 col-sm-12 col-xs-12 top_search">
-                      <div class="input-group" style="width:69%; margin-left: 20px">
+                      <div class="input-group" style="width:69%; margin-left: 10px">
                         <input type="text" name="search_term" class="form-control" placeholder="Search ...">
                         <span class="input-group-btn">
                           <button id="search_go" class="btn btn-primary" type="button" style="color: white"> Go! </button>
