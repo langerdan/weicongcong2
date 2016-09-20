@@ -170,15 +170,21 @@
                     </p>
 
                     <p>
-                      <cite>[2]. <a href="https://ppotato.wordpress.com/2010/08/25/samtool-bitwise-flag-paired-reads/" target="_blank">SAMtool bitwise flag meaning explained: how to understand samflags without pains | A Pillow Diary of an Expatriate Scientist</a></cite>
+                      <cite>[2]. <a href="https://samtools.github.io/hts-specs/SAMv1.pdf" target="_blank">Sequence Alignment/Map Format Specification</a></cite>
+                      <br />
+                      <span style="padding-left:2em">SAM/BAM格式官方文档</span>
+                    </p>
+
+                    <p>
+                      <cite>[3]. <a href="https://ppotato.wordpress.com/2010/08/25/samtool-bitwise-flag-paired-reads/" target="_blank">SAMtool bitwise flag meaning explained: how to understand samflags without pains | A Pillow Diary of an Expatriate Scientist</a></cite>
                       <br />
                       <span style="padding-left:2em">详细解释了map/unmap(0x4, 0x8)，forward/reverse(0x16, 0x32)，pair(0x1)等bit位</span>
                     </p>
 
                     <p>
-                      <cite>[3]. <a href="http://www.htslib.org/doc/samtools.html" target="_blank">samtools manual page - flagstat</a></cite>
+                      <cite>[4]. <a href="http://www.htslib.org/doc/samtools.html" target="_blank">samtools manual page - flagstat</a></cite>
                       <br />
-                      <span style="padding-left:2em">解释了QC flag(0x200)</span>
+                      <span style="padding-left:2em">解释了QC flag(0x200)bit位</span>
                     </p>
 
                   </div>
