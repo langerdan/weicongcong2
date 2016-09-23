@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# PROGRAM  : mysql_config
+# PROGRAM  : config
 # PURPOSE  :
 # AUTHOR   : codeunsolved@gmail.com
 # CREATED  : September 2 2016

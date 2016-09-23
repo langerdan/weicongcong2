@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# PROGRAM  : sqlClinvar_v0.01a
-# PURPOSE  :
-# AUTHOR   : codeunsolved@gmail.com
-# CREATED  : September 7 2016
+# PROGRAM : sqlClinvar
+# AUTHOR  : codeunsolved@gmail.com
+# CREATED : September 7 2016
+# VERSION : v0.0.1a
 
 import os
 import re

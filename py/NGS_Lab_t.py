@@ -2,14 +2,15 @@ import os
 import re
 
 dir_data = r'/Users/codeunsolved/Downloads/NGS-Data'
-project = "onco"
+project = "BRCA"
 
 already_had = {
 	"BRCA": ['BRCA160107', 'BRCA160313', 'BRCA160320', 'BRCA160406', 'BRCA160408', 'BRCA160427', 'BRCA160517',
 			 'BRCA160601', 'BRCA160708', 'BRCA160724', 'BRCA160724-2', 'BRCA160727', 'BRCA160811', 'BRCA160819',
-			 'BRCA160824', 'BRCA160830'],
+			 'BRCA160824', 'BRCA160830', 'BRCA160906', 'BRCA160913'],
 	"onco": ['onco160719+20', 'onco160729', 'onco160802', 'onco160804', 'onco160811', 'onco160813', 'onco160815',
-	         'onco160819', 'onco160824', 'onco160830', 'onco160830-42gene', 'onco160906', 'onco160913-42gene']
+	         'onco160819', 'onco160824', 'onco160830', 'onco160830-42gene', 'onco160906', 'onco160913-42gene',
+	         'onco160919', 'onco160919-42gene']
 }
 
 proj_table = {}

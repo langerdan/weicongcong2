@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# PROGRAM  : BASE_v0.01a
-# PURPOSE  :
-# AUTHOR   : codeunsolved@gmail.com
-# CREATED  : August 10 2016
+# PROGRAM : BASE
+# AUTHOR  : codeunsolved@gmail.com
+# CREATED : August 10 2016
+# VERSION : v0.0.1a
 
 import os
 import re
@@ -11,15 +11,15 @@ import shutil
 
 
 def read_bed(path_b):
-	a_details = {}
+	f_details = {}
 	with open(path_b, 'rb') as r_obj_b:
 		for line_b in r_obj_b:
 			chr_n = re.match('([^\t]+)\t', line_b).group(1)
 			pos_s = int(re.match('[^\t]+\t([^\t]+\t)', line_b).group(1))
 			pos_e = int(re.match('(?:[^\t]+\t){2}([^\t]+\t)', line_b).group(1))
 			gene_name = re.match('(?:[^\t]+\t){3}([^\t\n\r]+)', line_b).group(1)
-			a_details["%s-%s-%s" % (chr_n, gene_name, pos_s)] = [chr_n, pos_s, pos_e, gene_name]
-	return a_details
+			f_details["%s-%s-%s-%s" % (chr_n, gene_name, pos_s, pos_e)] = [chr_n, gene_name, pos_s, pos_e]
+	return f_details
 
 
 def parse_vcf(p_vcf):

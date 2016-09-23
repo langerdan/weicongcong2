@@ -1,10 +1,15 @@
 /**
- * PROGRAM  : QC_Report_SD
- * PURPOSE  :
- * AUTHOR   : codeunsolved@gmail.com
- * CREATED  : September 1 2016
- * VERSION  : v0.0.1a
+ * PROGRAM : QC_Report_SD
+ * PURPOSE :
+ * AUTHOR  : codeunsolved@gmail.com
+ * CREATED : September 1 2016
+ * VERSION : v0.0.1
+ * UPDATE  : [v0.0.1] September 23 2016
+ * (from Temp_QC_Report_Sequencing_Data)1. add <FASTQC>; 2. add and adjust <report header>; 3. adjust {<summary> => <coverage summary>}; 4. adjust [缺失片段] to <target base coverage>;
+ * 4. add function drawDataTable(); 5. change font color to white when HeatColor is too red; 6. add HeatColor to per_mapped_reads and per_target_reads;
  */
+
+var dt = {};
 
 function loadReport_QC_SD(sdp) {
 	var xhttp = new XMLHttpRequest();
@@ -12,53 +17,80 @@ function loadReport_QC_SD(sdp) {
 		if (xhttp.readyState == 4 && xhttp.status == 200) {
 			var json = JSON.parse(xhttp.responseText);
 
+			// data version
+			if (json.data_ver) {
+				document.getElementById("data_ver").innerHTML = json.data_ver;
+			}else {
+				document.getElementById("data_ver").innerHTML = "v0.0.1a?";
+			}
+
 			// pass details
 			var pass_details = "";
-			if (!json.pass['0x_percent']) {
-				pass_details += "<p>0x位点大于1% <strong style=\"color: red\">FAILED</strong></p>";
-			}
-			if (!json.pass.absent_frag) {
-				pass_details += "<p>存在缺失片段 <strong style=\"color: red\">FAILED</strong></p>";
+			if (!json.pass.ALL) {
+				pass_details += "<p>FAILED详情：</p><div class=\"well\">";
+				if (!json.pass['0x_percent']) {
+					pass_details += "<p>0x位点大于1% <strong style=\"color: red\">FAILED</strong></p>";
+				}
+				if (!json.pass.absent_frag) {
+					pass_details += "<p>存在缺失片段 <strong style=\"color: red\">FAILED</strong></p>";
+				}
+				pass_details += "</div>"
 			}
 			document.getElementById("pass_details").innerHTML = pass_details;
 
-			// summary
+			// FASTQC
+			if (json.fastqc.length > 0) {
+				var fastqc_html_list = new Array();
+				for (var i = json.fastqc.length - 1; i >= 0; i--) {
+					fastqc_html_list.push([$.ajax({url: json.fastqc[i], async: false}).responseText, json.fastqc[i]]);
+				}
+				var export_fn_fqc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-FASTQC_Summary";
+				drawDataTable('#datatable_fastqc_basic', export_fn_fqc, {
+					"data": getFastqcBasic(fastqc_html_list)
+				});
+				// extract FASTQC img
+				extractFastacImg('1', fastqc_html_list[0][0]);
+				extractFastacImg('2', fastqc_html_list[1][0]);
+			}
+
+			// coverage summary
 			document.getElementById("sample_name").innerHTML = json.sample_name;
+
 			document.getElementById("num_mapped_reads").innerHTML = json.mapped_reads;
-			document.getElementById("per_mapped_reads").innerHTML = Math.floor((json.mapped_reads / json.total_reads) * 10000) / 100 + '%';
+			var percent_mapped = Math.floor((json.mapped_reads / json.total_reads) * 10000) / 100;
+			document.getElementById("per_mapped_reads").innerHTML = percent_mapped + '%';
+			$("#per_mapped_reads").css("background-color", getHeatColor(percent_mapped));
+			if (percent_mapped <= 45) { $("#per_mapped_reads").css("color", "white"); }
+
 			document.getElementById("num_target_reads").innerHTML = json.target_reads;
-			document.getElementById("per_target_reads").innerHTML = Math.floor((json.target_reads / json.total_reads) * 10000) / 100 + '%';
+			var percent_target = Math.floor((json.target_reads / json.total_reads) * 10000) / 100;
+			document.getElementById("per_target_reads").innerHTML = percent_target + '%';
+			$("#per_target_reads").css("background-color", getHeatColor(percent_target));
+			if (percent_target <= 45) { $("#per_target_reads").css("color", "white"); }
+
 			document.getElementById("aver_sample_depth").innerHTML = json.aver_depth;
 			document.getElementById("max_sample_depth").innerHTML = json.max_depth;
 			document.getElementById("min_sample_depth").innerHTML = json.min_depth;
 
-			// absent frag
-			if (json.absent_frag.length == 0) {
-				document.getElementById("sample_absent_frag").setAttribute("class", "panel panel-success");
-				document.getElementById("sample_absent_frag_heading").innerHTML = "<strong>缺失片段 :</strong> 0";
-				document.getElementById("sample_absent_frag_body").innerHTML = "";
-			}else {
-				document.getElementById("sample_absent_frag").setAttribute("class", "panel panel-danger");
-				document.getElementById("sample_absent_frag_heading").innerHTML = "<strong>缺失片段 :</strong> " + json.absent_frag.length;
-
-				var absent_frag_details = "";
-				for (var i in json.absent_frag) {
-					absent_frag_details += "<p class=\"text-danger\">" + json.absent_frag[i] + "</p>";
-				}
-				document.getElementById("sample_absent_frag_body").innerHTML = absent_frag_details;
-			}
-
+			// target base coverage
 			document.getElementById("num_target_bp").innerHTML = json.len_bp;
 			document.getElementById("sample_depth_level").innerHTML = loadSampleDL(json.depth_level);
-
-			// draw datatable 0x frag
-			var export_filename_0xf = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-0xFRAG";
-			if ($.fn.dataTable.isDataTable('#datatable_0x_frag')) {
-				dt_0xf.destroy();
+			// draw datatable absent frag
+			var export_fn_abf = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-Absent_FRAG";
+			var data_absent_frag = new Array();
+			for (var i in json.absent_frag) {
+				var row = new Array();
+				row.push(json.absent_frag[i]);
+				data_absent_frag.push(row);
 			}
-			dt_0xf = $("#datatable_0x_frag").DataTable( {
-				data: get0xFrag(json, sdp),
-				drawCallback: function(settings) {
+			drawDataTable('#datatable_absent_frag', export_fn_abf, {
+				"data": data_absent_frag
+			});
+			// draw datatable 0x frag
+			var export_fn_0xf = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-0xFRAG";
+			drawDataTable('#datatable_0x_frag', export_fn_0xf, {
+				"data": get0xFrag(json, sdp),
+				"drawCallback": function(settings) {
 					var td_obj = $("#datatable_0x_frag td");
 					for (var i = 0; i < td_obj.length; i++) {
 						var cell = $("#datatable_0x_frag td:eq(" + i + ")");
@@ -71,44 +103,13 @@ function loadReport_QC_SD(sdp) {
 						}
 					}
 				},
-				order: [[1, 'des']],
-				dom: "lfrtipB",
-				buttons: [
-					{
-						extend: "copy",
-						className: "btn-sm"
-					},
-					{
-						extend: "csv",
-						className: "btn-sm",
-						title: export_filename_0xf
-					},
-					{
-						extend: "excel",
-						className: "btn-sm",
-						title: export_filename_0xf
-					},
-					{
-						extend: "pdfHtml5",
-						className: "btn-sm",
-						title: export_filename_0xf
-					},
-					{
-						extend: "print",
-						className: "btn-sm",
-						title: export_filename_0xf
-						},
-					],
-					responsive: true
+				"order": [[1, 'des']]
 			});
 
 			document.getElementById("datatable_frag_DL").innerHTML = loadFragCoverTable(json.depth_level);
 			// draw datatable frag depth level
-			var export_filename_fc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-" + json.sample_name + "-FRAG_COVER";
-			if ($.fn.dataTable.isDataTable('#datatable_frag_DL')) {
-				dt_fc.destroy();
-			}
-			dt_fc = $("#datatable_frag_DL").DataTable( {
+			var export_fn_fc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-" + json.sample_name + "-FRAG_COVER";
+			drawDataTable('#datatable_frag_DL', export_fn_fc, {
 				data: getFragDL(json.frag_cover_list, sdp),
 				drawCallback: function(settings) {
 					var td_obj = $("#datatable_frag_DL td");
@@ -118,37 +119,10 @@ function loadReport_QC_SD(sdp) {
 						if (patt.test(cell.text())) {
 							var percent = cell.text().replace(/%/, "");
 							cell.css("background-color", getHeatColor(percent));
+							if (percent <= 45) { cell.css("color", "white"); }
 						}
 					}
-				},
-				dom: "lfrtipB",
-				buttons: [
-					{
-						extend: "copy",
-						className: "btn-sm"
-					},
-					{
-						extend: "csv",
-						className: "btn-sm",
-						title: export_filename_fc
-					},
-					{
-						extend: "excel",
-						className: "btn-sm",
-						title: export_filename_fc
-					},
-					{
-						extend: "pdfHtml5",
-						className: "btn-sm",
-						title: export_filename_fc
-					},
-					{
-						extend: "print",
-						className: "btn-sm",
-						title: export_filename_fc
-						},
-					],
-					responsive: true
+				}
 			});
 		}
 	};
@@ -171,10 +145,80 @@ function loadSampleDL(data) {
 			table_body += "</tr></thead><tbody><tr>";
 		}
 		var percent = data[i][1]
-		table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + percent + "% </td>";
+		if (percent > 45 ) {
+			table_body += "<td style=\"background-color: " + getHeatColor(percent) + ";\"> " + percent + "% </td>";
+		}else {
+			table_body += "<td style=\"background-color: " + getHeatColor(percent) + "; color: white\"> " + percent + "% </td>";
+		}
+		
 	}
 	table_body += "</tr></tbody>";
 	return table_body;
+}
+
+function drawDataTable(id, export_fn, options_add) {
+	var options = {
+		"dom": "lfrtipB",
+		"buttons": [
+			{
+				extend: "copy",
+				className: "btn-sm"
+			},
+			{
+				extend: "csv",
+				className: "btn-sm",
+				title: export_fn
+			},
+			{
+				extend: "excel",
+				className: "btn-sm",
+				title: export_fn
+			},
+			{
+				extend: "pdfHtml5",
+				className: "btn-sm",
+				title: export_fn
+			},
+			{
+				extend: "print",
+				className: "btn-sm",
+				title: export_fn
+				},
+			],
+		"responsive": true
+	}
+	for (var key in options_add) { options[key] = options_add[key]; }
+
+	if ($.fn.dataTable.isDataTable(id)) {
+		dt[id].destroy();
+	}
+	dt[id] = $(id).DataTable(options);
+}
+
+function getFastqcBasic(fqc_html_l) {
+	var data_fastqc_basic = new Array();
+	for (var i = 0; i < fqc_html_l.length; i++) {
+		var row = new Array();
+
+		var fastqc_html = $('<div></div>');
+		fastqc_html.html(fqc_html_l[i][0]);
+		var tb_obj =  $("table:eq(0) td", fastqc_html);
+		for (var j = 0; j < tb_obj.length; j++) {
+			if (j%2 == 1) {
+				row.push($("table:eq(0) td:eq(" + j + ")", fastqc_html).text());
+			}
+		}
+		row.push("<a href=\"" + fqc_html_l[i][1] + "\" target=\"_blank\">查看报告</a>");
+		data_fastqc_basic.push(row);
+	}
+	return data_fastqc_basic;
+}
+
+function extractFastacImg(n, fqc_html) {
+	var fastqc_html = $('<div></div>');
+	fastqc_html.html(fqc_html);
+	$("#r" + n + "_q_dist").attr("src", $("#M1", fastqc_html).next().children("img").attr("src"));
+	$("#r" + n + "_len_dist").attr("src", $("#M7", fastqc_html).next().children("img").attr("src"));
 }
 
 function get0xFrag(json, sdp){
@@ -266,7 +310,7 @@ function getBasename(path) {
 }
 
 function loadFragCoverTable(data) {
-	table_head = "<thead><tr><th>片段名称</th>";
+	table_head = "<thead><tr><th>Fragment Name</th>";
 	for (var i in data) {
 		if (data[i][0] == 0) {
 			table_head += "<th> >" + data[i][0] + " </th>";
@@ -318,3 +362,4 @@ function compSap_QC_SD() {
 		window.open("sap_comp_qc_sd.php?"+ param);
 	}
 }
+

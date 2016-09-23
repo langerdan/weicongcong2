@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# PROGRAM  : Mysql_Connector_v0.01a
-# PURPOSE  :
-# AUTHOR   : codeunsolved@gmail.com
-# CREATED  : August 22 2016
+# PROGRAM : sqlConnector
+# AUTHOR  : codeunsolved@gmail.com
+# CREATED : August 22 2016
+# VERSION : v0.0.1a
 
 import mysql.connector
 from mysql.connector import errorcode

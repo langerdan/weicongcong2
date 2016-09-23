@@ -53,7 +53,7 @@
 
 				<div class="x_panel">
 					<div class="x_title">
-						<h2>概览</h2>
+						<h2>覆盖度统计汇总</h2>
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
@@ -104,10 +104,10 @@
 						<table id="datatable_0x_frag" class="table table-striped table-bordered jambo_table">
 							<thead>
 								<tr>
-									<th>序号</th>
-									<th>片段名称</th>
-									<th>频数</th>
-									<th>详细</th>
+									<th>No.</th>
+									<th>Fragment Name</th>
+									<th>Frequent</th>
+									<th>Details</th>
 								</tr>
 							</thead>
 						</table>
@@ -127,10 +127,10 @@
 						<table id="datatable_absent_frag" class="table table-striped table-bordered jambo_table">
 							<thead>
 								<tr>
-									<th>序号</th>
-									<th>片段名称</th>
-									<th>频数</th>
-									<th>详细</th>
+									<th>No.</th>
+									<th>Fragment Name</th>
+									<th>Frequent</th>
+									<th>Details</th>
 								</tr>
 							</thead>
 						</table>
@@ -167,9 +167,11 @@
 				sdp_list.push(json);
 			}
 
-			document.getElementById("datatable_sample_depth_level").innerHTML = loadDLthead(sdp_list[0].depth_level, "样本名称");
+			var dt= {};
 
-			var export_filename_g = "多样本比较-概览";
+			document.getElementById("datatable_sample_depth_level").innerHTML = loadDLthead(sdp_list[0].depth_level);
+
+			var export_filename_g = "多样本比较-覆盖度统计汇总";
 			if ($.fn.dataTable.isDataTable('#datatable_general')) {
 					dt_g.destroy();
 			}
@@ -326,8 +328,8 @@
 							responsive: true
 			});
 
-			function loadDLthead(data, col_1_name) {
-					table_head = "<thead><tr><th>序号</th><th>" + col_1_name + "</th>";
+			function loadDLthead(data) {
+					table_head = "<thead><tr><th>No.</th><th>Sample Name</th>";
 					for	(var i in data) {
 							if (data[i][0] == 0) {
 									table_head += "<th> >" + data[i][0] + " </th>";

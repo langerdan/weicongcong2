@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# PROGRAM  : annoVCF_v0.01a
-# PURPOSE  :
-# AUTHOR   : codeunsolved@gmail.com
-# CREATED  : September 18 2016
+# PROGRAM : annoVCF
+# AUTHOR  : codeunsolved@gmail.com
+# CREATED : September 18 2016
+# UPDATE  : v0.0.1a
 
 import os
 import re
