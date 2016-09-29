@@ -44,7 +44,6 @@ echo <<<LEFT_NAV
 									</li>
 									<li><a><i class="fa fa-exchange"></i> 注释 <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
-											<li><a href="#">汇总过滤</a></li>
 											<li><a href="db_topanno.php">TopAnno</a></li>
 										</ul>
 									</li>

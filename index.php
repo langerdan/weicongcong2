@@ -41,33 +41,46 @@
 					<h4>目前开放页面：</h4>
 					<ul>
 						<li>
-							<h3>质量控制－质控报告（<strong style="color: green;">推荐</strong>）</h3>
-							<p>通过相关数据库交叉检索报告，提示报告PASS/FAILED情况及相关原因</p>
-							<p>支持多样本自定义比较</p>
-							<p>数据表格均可csv、excel、pdf导出</p>
+							<h3>质量控制</h3>
+							<ul>
+								<li>
+									<h4>质控报告（<strong style="color: green;">推荐</strong>）</h4>
+									<p>通过相关数据库交叉检索报告，提示报告PASS/FAILED情况及相关原因</p>
+									<p>支持多样本自定义比较</p>
+									<p>数据表格均可csv、excel、pdf导出</p>
+								</li>
+								<br />
+								<li>
+									<h4>样本覆盖度</h4>
+									<p>推荐使用<strong>质量控制－质控报告</strong></p>
+									<p>数据与<strong>质量控制－质控报告</strong>兼容</p>
+								</li>
+								<br />
+								<li>
+									<h4>扩增子检测</h4>
+									<p>暂停更新</p>
+								</li>
+							</ul>
 						</li>
-
-						<br>
-
+						<br />
 						<li>
-							<h3>质量控制－样本覆盖度</h3>
-							<p>推荐使用<strong>质量控制－质控报告</strong></p>
-							<p>数据与<strong>质量控制－质控报告</strong>兼容</p>
+							<h3>数据库</h3>
+							<ul>
+								<li>
+									<h4>NGS Lab</h4>
+									<p>收样、抽提、建库、上机等相关数据的存储与检索</p>
+									<p>暂停开发</p>
+								</li>
+							</ul>
 						</li>
-						
-						<br>
-
+						<br />
 						<li>
-							<h3>质量控制－扩增子检测</h3>
-							<p>暂不更新</p>
-						</li>
-
-						<br>
-
-						<li>
-							<h3>数据库－NGS Lab管理检索系统（暂停开发）</h3>
-							<p>NGS Lab相关实验数据表格可查询检索（数据待补充）</p>
-							<p>样本添加与跟进暂未开发</p>
+							<h3>工具</h3>
+							<ul>
+								<li>
+									<h4>SAM FLAG Decode</h4>
+								</li>
+							</ul>
 						</li>
 					</ul>
 				</div>

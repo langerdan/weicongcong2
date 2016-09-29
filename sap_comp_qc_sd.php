@@ -108,7 +108,7 @@
 								<tr>
 									<th>No.</th>
 									<th>Fragment Name</th>
-									<th>Frequent</th>
+									<th>Count</th>
 									<th>Details</th>
 								</tr>
 							</thead>
@@ -131,7 +131,7 @@
 								<tr>
 									<th>No.</th>
 									<th>Fragment Name</th>
-									<th>Frequent</th>
+									<th>Count</th>
 									<th>Details</th>
 								</tr>
 							</thead>
