@@ -16,6 +16,7 @@
 from __future__ import division
 import os
 import re
+import sys
 import json
 import shutil
 from BASE import read_bed
@@ -24,12 +25,11 @@ from sqlConnector import MysqlConnector
 from config import mysql_config
 
 # CONFIG AREA #
-path_bed = r'/Users/codeunsolved/Downloads/NGS-Data/bed/BRCA-1606-3.bed'
-dir_depth_data = r'/Users/codeunsolved/Downloads/NGS-Data/BRCA160919'
-dir_output = r'/Users/codeunsolved/Sites/topgen-dashboard/data/BRCA160919'
-#path_bed = r'/mnt/hgfs/NGS/RUN/1_rawdata/bed/BRCA-1606-3.bed'
-#dir_depth_data = r'/mnt/hgfs/NGS/RUN/1_rawdata/BRCA160824'
-#dir_output = r'/var/www/html/Topgen-Dashboard/data/BRCA160824'
+dir_data = sys.argv[1]
+path_bed = sys.argv[2]
+options = "depth" if len(sys.argv) < 4 else sys.argv[3]
+
+dir_output = os.path.join(r'/Users/codeunsolved/Sites/topgen-dashboard/data', os.path.basename(dir_data))
 depth_level = [0, 20, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 1000]
 depth_suffix = "depth"
 
@@ -58,7 +58,7 @@ def output_sample_cover_data(data, sam_num, frag_n):
 		w_obj_d.write(json.dumps(dp))
 
 
-def init_sample_cover(sam_name):
+def init_sample_cover(sap_name):
 	def init_frag_cover():
 		frag_c = {}
 		for f_key in frag_details:
@@ -76,8 +76,8 @@ def init_sample_cover(sam_name):
 							 }
 		return frag_c
 
-	sample_c = {"sample_name": sam_name, "depth_level": [], "path": "",
-				"sdp": {"sample_name": sam_name, "pass": {"0x_percent": 1, "absent_frag": 1, "ALL": 1},
+	sample_c = {"sample_name": sap_name, "depth_level": [], "path": "",
+				"sdp": {"sample_name": sap_name, "pass": {"0x_percent": 1, "absent_frag": 1, "ALL": 1},
 						"depth_level": [], "len_bp": None,
 						"total_reads": None, "mapped_reads": None, "target_reads": None,
 						"aver_depth": None, "max_depth": None, "min_depth": None,
@@ -101,14 +101,14 @@ def get_reads_stat(file_n):
 	total_reads_num = 0
 	mapped_reads_num = 0
 	target_reads_num = 0
-	with open(os.path.join(dir_depth_data, "%s.stats" % file_n), 'rb') as r_obj_st:
+	with open(os.path.join(dir_data, "%s.stats" % file_n), 'rb') as r_obj_st:
 		for line_st in r_obj_st:
 			if re.match('SN\tsequences:\t(\d+)', line_st):
 				total_reads_num = int(re.match('SN\tsequences:\t(\d+)', line_st).group(1))
 			elif re.match('SN\treads mapped:\t(\d+)', line_st):
 				mapped_reads_num = int(re.match('SN\treads mapped:\t(\d+)', line_st).group(1))
 				break
-	with open(os.path.join(dir_depth_data, "%s.target.stats" % file_n), 'rb') as r_obj_st_target:
+	with open(os.path.join(dir_data, "%s.target.stats" % file_n), 'rb') as r_obj_st_target:
 		for line_st_t in r_obj_st_target:
 			if re.match('SN\tsequences:\t(\d+)', line_st_t):
 				target_reads_num = int(re.match('SN\tsequences:\t(\d+)', line_st_t).group(1))
@@ -116,7 +116,7 @@ def get_reads_stat(file_n):
 	return total_reads_num, mapped_reads_num, target_reads_num
 
 
-def input_mysql(data):
+def import_qc_seqdata(data):
 	m_con = MysqlConnector(mysql_config, 'TopgenNGS')
 	insert_g = ("INSERT INTO QC_SeqData "
 				"(Project, SAP_id, RUN_bn, SDP, PASS) "
@@ -125,7 +125,7 @@ def input_mysql(data):
 		if m_con.query("SELECT id FROM QC_SeqData "
 					   "WHERE Project=%s AND SAP_id=%s AND RUN_bn=%s",
 					   each_data[:3]).rowcount == 1:
-			print "=>record existed!\n=>update %s" % each_data[3:]
+			print "=>record existed! update %s" % each_data[3:]
 			m_con.query("UPDATE QC_SeqData "
 						"SET SDP=%s, PASS=%s "
 						"WHERE Project=%s AND SAP_id=%s AND RUN_bn=%s",
@@ -137,22 +137,28 @@ def input_mysql(data):
 	m_con.done()
 
 
-def cp_fastqc(file_n, sdp):
-	r1_fqc_html = os.path.join(dir_depth_data, "%s_R1_001_fastqc.html" % file_n)
-	r2_fqc_html = os.path.join(dir_depth_data, "%s_R2_001_fastqc.html" % file_n)
-	print "copy fastqc html: %s R1 and R1" % file_n,
-	if os.path.isfile(r1_fqc_html):
-		shutil.copy(r1_fqc_html, os.path.join(dir_output, "fastqc"))
-		sdp["fastqc"].append("data/%s/fastqc/%s" % (data_basename, "%s_R1_001_fastqc.html" % file_n))
-		print "OK! ",
-	else:
-		print "nonExistent! %s" % r1_fqc_html,
-	if os.path.isfile(r2_fqc_html):
-		shutil.copy(r2_fqc_html, os.path.join(dir_output, "fastqc"))
-		sdp["fastqc"].append("data/%s/fastqc/%s" % (data_basename, "%s_R2_001_fastqc.html" % file_n))
-		print "OK!"
-	else:
-		print "nonExistent! %s" % r2_fqc_html
+def cp_fastqc(sap_name, sdp):
+	print "copy fastqc html..."
+	copy_trigger = 0
+	for fqc_html_file in os.listdir(dir_data):
+		path_fqc_html_file = os.path.join(dir_data, fqc_html_file)
+		if re.search('^%s.+_fastqc\.html' % sap_name, fqc_html_file) and os.path.isfile(path_fqc_html_file):
+			if re.search('R1', fqc_html_file):
+				print "=>R1's fastqc html: %s..." % fqc_html_file,
+				shutil.copy(path_fqc_html_file, os.path.join(dir_output, "fastqc"))
+				sdp["fastqc"].append("data/%s/fastqc/%s" % (data_basename, fqc_html_file))
+				copy_trigger |= 1
+				print "OK! "
+			if re.search('R2', fqc_html_file):
+				print "=>R2's fastqc html: %s..." % fqc_html_file,
+				shutil.copy(path_fqc_html_file, os.path.join(dir_output, "fastqc"))
+				sdp["fastqc"].append("data/%s/fastqc/%s" % (data_basename, fqc_html_file))
+				copy_trigger |= 2
+				print "OK! "
+	if ~copy_trigger & 1:
+		print "=>R1's fastqc html: nonExistent!"
+	if ~copy_trigger & 2:
+		print "=>R2's fastqc html: nonExistent!"
 
 if __name__ == '__main__':
 	print "clean dir output...",
@@ -163,7 +169,7 @@ if __name__ == '__main__':
 	frag_details_sorted = sorted(frag_details.iteritems(), key=lambda d: (d[1][0], d[1][2]))
 
 	mysql_data = []
-	data_basename = os.path.basename(dir_depth_data)
+	data_basename = os.path.basename(dir_data)
 	if re.search('BRCA', data_basename):
 		project = 'BRCA'
 	elif re.search('onco', data_basename):
@@ -176,7 +182,7 @@ if __name__ == '__main__':
 
 	sample_num = 0
 	sample_cover = []
-	for each_file in os.listdir(dir_depth_data):
+	for each_file in os.listdir(dir_data):
 		if re.match('^.+\.%s$' % depth_suffix, each_file):
 			print "processing with %s..." % each_file
 			sample_num += 1
@@ -184,148 +190,150 @@ if __name__ == '__main__':
 			if re.search('_S\d+', file_name):
 				sample_name = re.match('(.+)_S\d+', file_name).group(1)
 			elif re.search('autoBox', file_name):
-				sample_name = re.match('(.+)_20[12]\d_\d\d_\d\d', file_name).group(1)
-			with open(os.path.join(dir_depth_data, each_file), 'rb') as r_obj:
+				sample_name = re.match('(.+)_20\d{2}_\d{2}_\d{2}', file_name).group(1)
+
+			with open(os.path.join(dir_data, each_file), 'rb') as r_obj:
 				sample_cover.append(init_sample_cover(sample_name))
 				depth_level_stat = {"sample": init_depth_level_stat(), "frag": {}}
 				depth_digest_stat = {"sample": {"sum": 0, "len": 0, "max": None, "min": None}, "frag": {}}
-				for line_depth in r_obj:
-					chr_n = re.match('([^\t]+)\t', line_depth).group(1)
-					pos = int(re.match('[^\t]+\t([^\t]+\t)', line_depth).group(1))
-					depth = int(re.match('(?:[^\t]+\t){2}([^\t\r\n]+)', line_depth).group(1))
-					for key, value in frag_details_sorted:
-						# init depth_level_stat["frag"]
-						if key not in depth_level_stat["frag"]:
-							depth_level_stat["frag"][key] = init_depth_level_stat()
-						# init depth_digest_stat["frag"]
-						if key not in depth_digest_stat["frag"]:
-							depth_digest_stat["frag"][key] = {"sum": 0, "len": 0, "max": None, "min": None}
+				if re.search('depth', options):
+					for line_depth in r_obj:
+						chr_n = re.match('([^\t]+)\t', line_depth).group(1)
+						pos = int(re.match('[^\t]+\t([^\t]+\t)', line_depth).group(1))
+						depth = int(re.match('(?:[^\t]+\t){2}([^\t\r\n]+)', line_depth).group(1))
+						for key, value in frag_details_sorted:
+							# init depth_level_stat["frag"]
+							if key not in depth_level_stat["frag"]:
+								depth_level_stat["frag"][key] = init_depth_level_stat()
+							# init depth_digest_stat["frag"]
+							if key not in depth_digest_stat["frag"]:
+								depth_digest_stat["frag"][key] = {"sum": 0, "len": 0, "max": None, "min": None}
 
-						if chr_n == value[0] and value[2] <= pos <= value[3]:
-							# count depth_level_stat["sample"] and ["frag"]
+							if chr_n == value[0] and value[2] <= pos <= value[3]:
+								# count depth_level_stat["sample"] and ["frag"]
+								for each_depth_level in depth_level:
+									if each_depth_level == 0 and depth > each_depth_level:
+										depth_level_stat["sample"][str(each_depth_level)] += 1
+										depth_level_stat["frag"][key][str(each_depth_level)] += 1
+									elif each_depth_level != 0 and depth >= each_depth_level:
+										depth_level_stat["sample"][str(each_depth_level)] += 1
+										depth_level_stat["frag"][key][str(each_depth_level)] += 1
+
+								# count depth_digest_stat sum
+								depth_digest_stat["sample"]["sum"] += depth
+								depth_digest_stat["frag"][key]["sum"] += depth
+								# count depth_digest_stat max
+								if depth > depth_digest_stat["sample"]["max"] or depth_digest_stat["sample"]["max"] is None:
+									depth_digest_stat["sample"]["max"] = depth
+								if depth > depth_digest_stat["frag"][key]["max"] or depth_digest_stat["frag"][key]["max"] is None:
+									depth_digest_stat["frag"][key]["max"] = depth
+								# count depth_digest_stat min
+								if depth < depth_digest_stat["sample"]["min"] or depth_digest_stat["sample"]["min"] is None:
+									depth_digest_stat["sample"]["min"] = depth
+								if depth < depth_digest_stat["frag"][key]["min"] or depth_digest_stat["frag"][key]["min"] is None:
+									depth_digest_stat["frag"][key]["min"] = depth
+
+								# add 0x frag key
+								if depth == 0 and key not in sample_cover[-1]["sdp"]["0x_frag"]:
+									sample_cover[-1]["sdp"]["0x_frag"][key] = None
+
+								# add x_labels and depths
+								frag_data = sample_cover[-1]["sdp"]["frag_cover"][key]["frag_data"]
+								if "sample_name" not in frag_data:
+									frag_data["sample_name"] = sample_name
+								frag_data["x_labels"].append(pos)
+								frag_data["depths"].append(depth)
+								break
+
+					frag_cover = sample_cover[-1]["sdp"]["frag_cover"]
+					for key in frag_cover:
+						if len(frag_cover[key]["frag_data"]["x_labels"]) != 0:
+							# get frag len and sample len
+							depth_digest_stat["sample"]["len"] += len(frag_cover[key]["frag_data"]["x_labels"])
+							depth_digest_stat["frag"][key]["len"] = len(frag_cover[key]["frag_data"]["x_labels"])
+							# add frag depth aver max min
+							frag_cover[key]["frag_data"]["aver_depth"] = round(
+								depth_digest_stat["frag"][key]["sum"] / depth_digest_stat["frag"][key]["len"], 2)
+							frag_cover[key]["frag_data"]["max_depth"] = depth_digest_stat["frag"][key]["max"]
+							frag_cover[key]["frag_data"]["min_depth"] = depth_digest_stat["frag"][key]["min"]
+							# add frag depth level
 							for each_depth_level in depth_level:
-								if each_depth_level == 0 and depth > each_depth_level:
-									depth_level_stat["sample"][str(each_depth_level)] += 1
-									depth_level_stat["frag"][key][str(each_depth_level)] += 1
-								elif each_depth_level != 0 and depth >= each_depth_level:
-									depth_level_stat["sample"][str(each_depth_level)] += 1
-									depth_level_stat["frag"][key][str(each_depth_level)] += 1
+								frag_cover[key]["depth_level"].append([str(each_depth_level), round(
+									depth_level_stat["frag"][key][str(each_depth_level)] /
+									depth_digest_stat["frag"][key]["len"] * 100, 2)])
+							# add frag cover path
+							frag_cover[key]["path"] = "data/%s/sample_cover/%s/%s.json" % \
+													  (os.path.basename(dir_output), sample_name, key)
+						else:
+							# add absent frag
+							if sample_cover[-1]["sdp"]["pass"]["absent_frag"] == 1:
+								sample_cover[-1]["sdp"]["pass"]["absent_frag"] = 0
+								sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
+							sample_cover[-1]["sdp"]["absent_frag"].append(key)
+							print "[WARNING] %s popped" % key
+					if len(sample_cover[-1]["sdp"]["absent_frag"]) != 0:
+						for p_key in sample_cover[-1]["sdp"]["absent_frag"]:
+							frag_cover.pop(p_key)
+						print "-------popped %d frags-------" % len(sample_cover[-1]["sdp"]["absent_frag"])
 
-							# count depth_digest_stat sum
-							depth_digest_stat["sample"]["sum"] += depth
-							depth_digest_stat["frag"][key]["sum"] += depth
-							# count depth_digest_stat max
-							if depth > depth_digest_stat["sample"]["max"] or depth_digest_stat["sample"]["max"] is None:
-								depth_digest_stat["sample"]["max"] = depth
-							if depth > depth_digest_stat["frag"][key]["max"] or depth_digest_stat["frag"][key]["max"] is None:
-								depth_digest_stat["frag"][key]["max"] = depth
-							# count depth_digest_stat min
-							if depth < depth_digest_stat["sample"]["min"] or depth_digest_stat["sample"]["min"] is None:
-								depth_digest_stat["sample"]["min"] = depth
-							if depth < depth_digest_stat["frag"][key]["min"] or depth_digest_stat["frag"][key]["min"] is None:
-								depth_digest_stat["frag"][key]["min"] = depth
-
-							# add 0x frag key
-							if depth == 0 and key not in sample_cover[-1]["sdp"]["0x_frag"]:
-								sample_cover[-1]["sdp"]["0x_frag"][key] = None
-
-							# add x_labels and depths
-							frag_data = sample_cover[-1]["sdp"]["frag_cover"][key]["frag_data"]
-							if "sample_name" not in frag_data:
-								frag_data["sample_name"] = sample_name
-							frag_data["x_labels"].append(pos)
-							frag_data["depths"].append(depth)
-							break
-
-				frag_cover = sample_cover[-1]["sdp"]["frag_cover"]
-				for key in frag_cover:
-					if len(frag_cover[key]["frag_data"]["x_labels"]) != 0:
-						# get frag len and sample len
-						depth_digest_stat["sample"]["len"] += len(frag_cover[key]["frag_data"]["x_labels"])
-						depth_digest_stat["frag"][key]["len"] = len(frag_cover[key]["frag_data"]["x_labels"])
-						# add frag depth aver max min
-						frag_cover[key]["frag_data"]["aver_depth"] = round(
-							depth_digest_stat["frag"][key]["sum"] / depth_digest_stat["frag"][key]["len"], 2)
-						frag_cover[key]["frag_data"]["max_depth"] = depth_digest_stat["frag"][key]["max"]
-						frag_cover[key]["frag_data"]["min_depth"] = depth_digest_stat["frag"][key]["min"]
-						# add frag depth level
-						for each_depth_level in depth_level:
-							frag_cover[key]["depth_level"].append([str(each_depth_level), round(
-								depth_level_stat["frag"][key][str(each_depth_level)] /
-								depth_digest_stat["frag"][key]["len"] * 100, 2)])
-						# add frag cover path
-						frag_cover[key]["path"] = "data/%s/sample_cover/%s/%s.json" % \
-												  (os.path.basename(dir_output), sample_name, key)
-					else:
-						# add absent frag
-						if sample_cover[-1]["sdp"]["pass"]["absent_frag"] == 1:
-							sample_cover[-1]["sdp"]["pass"]["absent_frag"] = 0
+					# add 0x frag 0-percent
+					for key in sample_cover[-1]["sdp"]["0x_frag"]:
+						sample_cover[-1]["sdp"]["0x_frag"][key] = round(
+							(depth_digest_stat["frag"][key]["len"] - depth_level_stat["frag"][key]["0"])
+							/ depth_digest_stat["frag"][key]["len"] * 100, 2)
+						if sample_cover[-1]["sdp"]["0x_frag"][key] == 100:
+							# add 100% 0x frag to absent frag
+							if sample_cover[-1]["sdp"]["pass"]["absent_frag"] == 1:
+								sample_cover[-1]["sdp"]["pass"]["absent_frag"] = 0
+								sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
+							sample_cover[-1]["sdp"]["absent_frag"].append(key)
+							print "add 100% 0x frag [{}] to absent frag".format(key)
+					for each_depth_level in depth_level:
+						# add sample depth level
+						sample_cover[-1]["depth_level"].append([str(each_depth_level), round(
+							depth_level_stat["sample"][str(each_depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2)])
+						if each_depth_level == 0 and round(depth_level_stat["sample"][str(each_depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2) < 99:
+							sample_cover[-1]["sdp"]["pass"]["0x_percent"] = 0
 							sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
-						sample_cover[-1]["sdp"]["absent_frag"].append(key)
-						print "[WARNING] %s popped" % key
-				if len(sample_cover[-1]["sdp"]["absent_frag"]) != 0:
-					for p_key in sample_cover[-1]["sdp"]["absent_frag"]:
-						frag_cover.pop(p_key)
-					print "-------popped %d frags-------" % len(sample_cover[-1]["sdp"]["absent_frag"])
+						print "=>depth level: %s, len: %s, sum: %s" % (sample_cover[-1]["depth_level"][-1],
+																	   depth_level_stat["sample"][str(each_depth_level)],
+																	   depth_digest_stat["sample"]["len"])
+						# add sample_cover path
+						sample_cover[-1]["path"] = "data/%s/sample_cover/%s/sample_data_pointer.json" % \
+												   (os.path.basename(dir_output), sample_name)
 
-				# add 0x frag 0-percent
-				for key in sample_cover[-1]["sdp"]["0x_frag"]:
-					sample_cover[-1]["sdp"]["0x_frag"][key] = round(
-						(depth_digest_stat["frag"][key]["len"] - depth_level_stat["frag"][key]["0"])
-						/ depth_digest_stat["frag"][key]["len"] * 100, 2)
-					if sample_cover[-1]["sdp"]["0x_frag"][key] == 100:
-						# add 100% 0x frag to absent frag
-						if sample_cover[-1]["sdp"]["pass"]["absent_frag"] == 1:
-							sample_cover[-1]["sdp"]["pass"]["absent_frag"] = 0
-							sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
-						sample_cover[-1]["sdp"]["absent_frag"].append(key)
-						print "add 100% 0x frag [{}] to absent frag".format(key)
-				for each_depth_level in depth_level:
-					# add sample depth level
-					sample_cover[-1]["depth_level"].append([str(each_depth_level), round(
-						depth_level_stat["sample"][str(each_depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2)])
-					if each_depth_level == 0 and round(depth_level_stat["sample"][str(each_depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2) < 99:
-						sample_cover[-1]["sdp"]["pass"]["0x_percent"] = 0
-						sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
-					print "=>depth level: %s, len: %s, sum: %s" % (sample_cover[-1]["depth_level"][-1],
-																   depth_level_stat["sample"][str(each_depth_level)],
-																   depth_digest_stat["sample"]["len"])
-					# add sample_cover path
-					sample_cover[-1]["path"] = "data/%s/sample_cover/%s/sample_data_pointer.json" % \
-											   (os.path.basename(dir_output), sample_name)
+						# add total length of bp
+						sample_cover[-1]["sdp"]["len_bp"] = depth_digest_stat["sample"]["len"]
+					# add sample depth aver max min
+					sample_cover[-1]["sdp"]["aver_depth"] = round(
+						depth_digest_stat["sample"]["sum"] / depth_digest_stat["sample"]["len"], 2)
+					sample_cover[-1]["sdp"]["max_depth"] = depth_digest_stat["sample"]["max"]
+					sample_cover[-1]["sdp"]["min_depth"] = depth_digest_stat["sample"]["min"]
 
-					# add total length of bp
-					sample_cover[-1]["sdp"]["len_bp"] = depth_digest_stat["sample"]["len"]
-				# add sample depth aver max min
-				sample_cover[-1]["sdp"]["aver_depth"] = round(
-					depth_digest_stat["sample"]["sum"] / depth_digest_stat["sample"]["len"], 2)
-				sample_cover[-1]["sdp"]["max_depth"] = depth_digest_stat["sample"]["max"]
-				sample_cover[-1]["sdp"]["min_depth"] = depth_digest_stat["sample"]["min"]
+					# add sdp sample depth level
+					sample_cover[-1]["sdp"]["depth_level"] = sample_cover[-1]["depth_level"]
 
-				# add sdp sample depth level
-				sample_cover[-1]["sdp"]["depth_level"] = sample_cover[-1]["depth_level"]
+					# add reads statistics
+					print "get reads statistics from mismatch..."
+					(sample_cover[-1]["sdp"]["total_reads"],
+					 sample_cover[-1]["sdp"]["mapped_reads"],
+					 sample_cover[-1]["sdp"]["target_reads"]) = get_reads_stat(file_name)
+					print "=>total_reads: %d, mapped_reads: %d, target_reads: %d" % (
+						sample_cover[-1]["sdp"]["total_reads"],
+						sample_cover[-1]["sdp"]["mapped_reads"],
+						sample_cover[-1]["sdp"]["target_reads"])
 
-				# add reads statistics
-				print "get reads statistics from mismatch..."
-				(sample_cover[-1]["sdp"]["total_reads"],
-				 sample_cover[-1]["sdp"]["mapped_reads"],
-				 sample_cover[-1]["sdp"]["target_reads"]) = get_reads_stat(file_name)
-				print "=>total_reads: %d, mapped_reads: %d, target_reads: %d" % (
-					sample_cover[-1]["sdp"]["total_reads"],
-					sample_cover[-1]["sdp"]["mapped_reads"],
-					sample_cover[-1]["sdp"]["target_reads"])
-
-				# add item to QC_SeqData
-				mysql_data.append([project, sample_name, run_bn, sample_cover[-1]["path"],
-								   sample_cover[-1]["sdp"]["pass"]["ALL"]])
+					# add item to QC_SeqData
+					mysql_data.append([project, sample_name, run_bn, sample_cover[-1]["path"],
+									   sample_cover[-1]["sdp"]["pass"]["ALL"]])
 
 				# copy fastqc html
-				cp_fastqc(file_name, sample_cover[-1]["sdp"])
+				cp_fastqc(sample_name, sample_cover[-1]["sdp"])
 
 	print "output data...",
 	output_sample_cover_data(sample_cover, sample_num, len(frag_details))
 	print "OK!"
 	print "insert data..."
-	input_mysql(mysql_data)
-	#print mysql_data
+	import_qc_seqdata(mysql_data)
+	# print mysql_data
 	print "OK!"

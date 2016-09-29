@@ -41,7 +41,7 @@ function loadReport_QC_SD(sdp) {
 			// FASTQC
 			if (json.fastqc.length > 0) {
 				var fastqc_html_list = new Array();
-				for (var i = json.fastqc.length - 1; i >= 0; i--) {
+				for (var i = 0; i < json.fastqc.length; i++) {
 					fastqc_html_list.push([$.ajax({url: json.fastqc[i], async: false}).responseText, json.fastqc[i]]);
 				}
 				var export_fn_fqc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-FASTQC_Summary";

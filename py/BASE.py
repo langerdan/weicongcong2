@@ -32,7 +32,7 @@ def parse_vcf(p_vcf):
 			if re.match('#', line):
 				continue
 			if ver == "4.1":
-				chr_n = re.match('chr([^\t]+)\t', line).group(1)
+				chr_n = re.match('([^\t]+)\t', line).group(1)
 				pos = int(re.match('[^\t]+\t([^\t]+)\t', line).group(1))
 				id_snp = re.match('(?:[^\t]+\t){2}([^\t]+)\t', line).group(1)
 				ref = re.match('(?:[^\t]+\t){3}([^\t]+)\t', line).group(1)
@@ -41,7 +41,7 @@ def parse_vcf(p_vcf):
 				q_filter = re.match('(?:[^\t]+\t){6}([^\t]+)\t', line).group(1)
 				info = re.match('(?:[^\t]+\t){7}([^\t]+)\t', line).group(1)
 				format_key = re.match('(?:[^\t]+\t){8}([^\t]+)\t', line).group(1)
-				format_value = re.match('(?:[^\t]+\t){9}([^\t]+)[\r\n]', line).group(1)
+				format_value = re.match('(?:[^\t]+\t){9}([^\t\n\r]+)', line).group(1)
 				vcf_body.append([chr_n, pos, id_snp, ref, alt, qual, q_filter, info, format_key, format_value])
 	return vcf_body
 

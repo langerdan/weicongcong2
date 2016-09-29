@@ -53,16 +53,16 @@
 							</table>
 						</div>
 						<div class="divider-dashed"></div>
-						<div class="col-md-6 col-sm-6 col-xs-6 image view">
+						<div class="col-md-6 col-sm-6 col-xs-6 image">
 							<img id="r1_q_dist" style="height: 90%; width: 90%; display: block;">
 						</div>
-						<div class="col-md-6 col-sm-6 col-xs-6 image view">
+						<div class="col-md-6 col-sm-6 col-xs-6 image">
 							<img id="r1_len_dist" style="height: 90%; width: 90%; display: block;">
 						</div>
-						<div class="col-md-6 col-sm-6 col-xs-6 image view">
+						<div class="col-md-6 col-sm-6 col-xs-6 image">
 							<img id="r2_q_dist" style="height: 90%; width: 90%; display: block;">
 						</div>
-						<div class="col-md-6 col-sm-6 col-xs-6 image view">
+						<div class="col-md-6 col-sm-6 col-xs-6 image">
 							<img id="r2_len_dist" style="height: 90%; width: 90%; display: block;">
 						</div>
 					</div>

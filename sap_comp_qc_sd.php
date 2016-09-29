@@ -3,7 +3,9 @@
  * PAGE    : sap_comp_qc_sd
  * AUTHOR  : codeunsolved@gmail.com
  * CREATED : September 4 2016
- * VERSION : v0.0.1a
+ * VERSION : v0.0.1
+ * UPDATE  : [v0.0.1] September 27 2016
+ * (from QC_Report_SD)1. add function drawDataTable(); 2. change font color to white when HeatColor is too red; 3. add HeatColor to per_mapped_reads and per_target_reads;
 -->
 <html lang="en">
 	<head>
@@ -57,7 +59,7 @@
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<table id="datatable_general" class="table table-striped table-bordered jambo_table">
+						<table id="datatable_summary" class="table table-striped table-bordered jambo_table">
 							<thead>
 								<tr>
 									<th>序号</th>
@@ -171,161 +173,53 @@
 
 			document.getElementById("datatable_sample_depth_level").innerHTML = loadDLthead(sdp_list[0].depth_level);
 
-			var export_filename_g = "多样本比较-覆盖度统计汇总";
-			if ($.fn.dataTable.isDataTable('#datatable_general')) {
-					dt_g.destroy();
-			}
-			dt_g = $("#datatable_general").DataTable( {
-					data: getSapGeneral(sdp_list),
-					dom: "lfrtipB",
-					buttons: [
-							{
-									extend: "copy",
-									className: "btn-sm"
-							},
-							{
-									extend: "csv",
-									className: "btn-sm",
-									title: export_filename_g
-							},
-							{
-									extend: "excel",
-									className: "btn-sm",
-									title: export_filename_g
-							},
-							{
-									extend: "pdfHtml5",
-									className: "btn-sm",
-									title: export_filename_g
-							},
-							{
-									extend: "print",
-									className: "btn-sm",
-									title: export_filename_g
-									},
-							],
-							responsive: true
+			var export_fn_sum = "多样本比较-覆盖度统计汇总";
+			drawDataTable('#datatable_summary', export_fn_sum, {
+				data: getSapGeneral(sdp_list),
+				dom: "lfrtipB",
+				drawCallback: function(settings) {
+					var td_obj = $("#datatable_summary td");
+					for (var i = 0; i < td_obj.length; i++) {
+						var cell = $("#datatable_summary td:eq(" + i + ")");
+						var patt = /^[\d.]+%$/;
+						if (patt.test(cell.text())) {
+							var percent = cell.text().replace(/%/, "");
+							cell.css("background-color", getHeatColor(percent));
+							if (percent <= 45) { cell.css("color", "white"); }
+						}
+					}
+				}
 			});
 
-			var export_filename_sdl = "多样本比较-目标碱基覆盖度";
-			if ($.fn.dataTable.isDataTable('#datatable_sample_depth_level')) {
-					dt_sdl.destroy();
-			}
-			dt_sdl = $("#datatable_sample_depth_level").DataTable( {
-					data: getSapDL(sdp_list),
-					drawCallback: function(settings) {
-							var td_obj = $("#datatable_sample_depth_level td");
-							for (var i = 0; i < td_obj.length; i++) {
-									var cell = $("#datatable_sample_depth_level td:eq(" + i + ")");
-									var patt = /^[\d.]+%$/;
-									if (patt.test(cell.text())) {
-											var percent = cell.text().replace(/%/, "");
-											cell.css("background-color", getHeatColor(percent));
-									}
-							}
-					},
-					dom: "lfrtipB",
-					buttons: [
-							{
-									extend: "copy",
-									className: "btn-sm"
-							},
-							{
-									extend: "csv",
-									className: "btn-sm",
-									title: export_filename_sdl
-							},
-							{
-									extend: "excel",
-									className: "btn-sm",
-									title: export_filename_sdl
-							},
-							{
-									extend: "pdfHtml5",
-									className: "btn-sm",
-									title: export_filename_sdl
-							},
-							{
-									extend: "print",
-									className: "btn-sm",
-									title: export_filename_sdl
-									},
-							],
-							responsive: true
+			var export_fn_sdl = "多样本比较-目标区域覆盖度";
+			drawDataTable('#datatable_sample_depth_level', export_fn_sdl, {
+				data: getSapDL(sdp_list),
+				drawCallback: function(settings) {
+					var td_obj = $("#datatable_sample_depth_level td");
+					for (var i = 0; i < td_obj.length; i++) {
+						var cell = $("#datatable_sample_depth_level td:eq(" + i + ")");
+						var patt = /^[\d.]+%$/;
+						if (patt.test(cell.text())) {
+							var percent = cell.text().replace(/%/, "");
+							cell.css("background-color", getHeatColor(percent));
+							if (percent <= 45) { cell.css("color", "white"); }
+						}
+					}
+				}
 			});
 
-			var export_filename_abfrag = "多样本比较-缺失片段统计";
-			if ($.fn.dataTable.isDataTable('#datatable_absent_frag')) {
-					dt_abfrag.destroy();
-			}
-			dt_abfrag = $("#datatable_absent_frag").DataTable( {
-					data: getFragStat(sdp_list, "absent_frag"),
-					dom: "lfrtipB",
-					order: [[2, 'des']],
-					buttons: [
-							{
-									extend: "copy",
-									className: "btn-sm"
-							},
-							{
-									extend: "csv",
-									className: "btn-sm",
-									title: export_filename_abfrag
-							},
-							{
-									extend: "excel",
-									className: "btn-sm",
-									title: export_filename_abfrag
-							},
-							{
-									extend: "pdfHtml5",
-									className: "btn-sm",
-									title: export_filename_abfrag
-							},
-							{
-									extend: "print",
-									className: "btn-sm",
-									title: export_filename_abfrag
-									},
-							],
-							responsive: true
+			var export_fn_abfrag = "多样本比较-缺失片段统计";
+			drawDataTable('#datatable_absent_frag', export_fn_abfrag, {
+				data: getFragStat(sdp_list, "absent_frag"),
+				dom: "lfrtipB",
+				order: [[2, 'des']]
 			});
 
-			var export_filename_0xfrag = "多样本比较-0x片段统计";
-			if ($.fn.dataTable.isDataTable('#datatable_0x_frag')) {
-					dt_0xfrag.destroy();
-			}
-			dt_0xfrag = $("#datatable_0x_frag").DataTable( {
-					data: getFragStat(sdp_list, "0x_frag"),
-					dom: "lfrtipB",
-					order: [[2, 'des']],
-					buttons: [
-							{
-									extend: "copy",
-									className: "btn-sm"
-							},
-							{
-									extend: "csv",
-									className: "btn-sm",
-									title: export_filename_0xfrag
-							},
-							{
-									extend: "excel",
-									className: "btn-sm",
-									title: export_filename_0xfrag
-							},
-							{
-									extend: "pdfHtml5",
-									className: "btn-sm",
-									title: export_filename_0xfrag
-							},
-							{
-									extend: "print",
-									className: "btn-sm",
-									title: export_filename_0xfrag
-									},
-							],
-							responsive: true
+			var export_fn_0xfrag = "多样本比较-0x片段统计";
+			drawDataTable('#datatable_0x_frag', export_fn_0xfrag, {
+				data: getFragStat(sdp_list, "0x_frag"),
+				dom: "lfrtipB",
+				order: [[2, 'des']]
 			});
 
 			function loadDLthead(data) {
@@ -339,6 +233,45 @@
 					}
 					table_head += "</tr></thead>";
 					return table_head;
+			}
+
+			function drawDataTable(id, export_fn, options_add) {
+				var options = {
+					"dom": "lfrtipB",
+					"buttons": [
+						{
+							extend: "copy",
+							className: "btn-sm"
+						},
+						{
+							extend: "csv",
+							className: "btn-sm",
+							title: export_fn
+						},
+						{
+							extend: "excel",
+							className: "btn-sm",
+							title: export_fn
+						},
+						{
+							extend: "pdfHtml5",
+							className: "btn-sm",
+							title: export_fn
+						},
+						{
+							extend: "print",
+							className: "btn-sm",
+							title: export_fn
+							},
+						],
+					"responsive": true
+				}
+				for (var key in options_add) { options[key] = options_add[key]; }
+
+				if ($.fn.dataTable.isDataTable(id)) {
+					dt[id].destroy();
+				}
+				dt[id] = $(id).DataTable(options);
 			}
 
 			function getSapGeneral(sdp_list) {

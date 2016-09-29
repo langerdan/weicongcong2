@@ -83,7 +83,6 @@ class MysqlConnector(object):
 		cnx.commit()
 		"""
 
-		print "=>Insert item ... ",
 		try:
 			self.cursor.execute(i_grammar, data)
 		except mysql.connector.errors.IntegrityError, e:
@@ -92,7 +91,7 @@ class MysqlConnector(object):
 			else:
 				raise
 		else:
-			print "Done!"
+			pass
 		self.cnx.commit()
 
 	def query(self, q_grammar, data):
@@ -100,5 +99,6 @@ class MysqlConnector(object):
 		return self.cursor
 
 	def done(self):
+		# type: () -> object
 		self.cursor.close()
 		self.cnx.close()
