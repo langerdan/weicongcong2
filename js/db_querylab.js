@@ -1,7 +1,6 @@
 /**
  * PROGRAM	: DB_queryLab
- * PURPOSE	:
- * AUTHOR	 : codeunsolved@gmail.com
+ * AUTHOR   : codeunsolved@gmail.com
  * CREATED	: August 23 2016
  * VERSION	: v0.0.1a
  */
@@ -68,8 +67,8 @@ $('#search_go').click(function () {
 			{
 				extend: "print",
 				className: "btn-sm"
-				},
+				}
 			],
 		responsive: true
 	});
-})
+});

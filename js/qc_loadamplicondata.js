@@ -1,7 +1,6 @@
 /**
  * PROGRAM	: QC_loadAmpliconData
- * PURPOSE	:
- * AUTHOR	 : codeunsolved@gmail.com
+ * AUTHOR	: codeunsolved@gmail.com
  * CREATED	: August 6 2016
  * VERSION	: v0.0.1a
  */

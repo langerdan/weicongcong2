@@ -1,9 +1,8 @@
 /**
- * PROGRAM  : DB_queryTopAnno
- * PURPOSE  :
- * AUTHOR   : codeunsolved@gmail.com
- * CREATED  : September 18 2016
- * VERSION  : v0.0.1a
+ * PROGRAM : DB_queryTopAnno
+ * AUTHOR  : codeunsolved@gmail.com
+ * CREATED : September 18 2016
+ * VERSION : v0.0.1a
  */
 
 $('#search_go').click(function () {
@@ -44,11 +43,11 @@ $('#search_go').click(function () {
 				extend: "print",
 				className: "btn-sm",
 				title: export_filename_sr
-				},
+				}
 			],
 			responsive: true
 	});
-})
+});
 
 function loadAnnoData(path) {
 	var json = JSON.parse($.ajax({url: path, async: false}).responseText);
@@ -98,7 +97,7 @@ function loadAnnoData(path) {
 				extend: "print",
 				className: "btn-sm",
 				title: export_filename_ta
-				},
+				}
 			],
 			responsive: true
 	});

@@ -1,9 +1,8 @@
 /**
- * PROGRAM  : QC_queryReport
- * PURPOSE  :
- * AUTHOR   : codeunsolved@gmail.com
- * CREATED  : August 25 2016
- * VERSION  : v0.0.1a
+ * PROGRAM : QC_queryReport
+ * AUTHOR  : codeunsolved@gmail.com
+ * CREATED : August 25 2016
+ * VERSION : v0.0.1a
  */
 
 function showSearchOptions () {
@@ -83,7 +82,7 @@ $('#search_go').click(function () {
                     extend: "print",
                     className: "btn-sm",
                     title: export_filename_sr
-                    },
+                    }
                 ],
                 responsive: true
         });
@@ -109,7 +108,7 @@ $('#search_go').click(function () {
         xhttp.open("GET", template, true);
         xhttp.send();
     }
-})
+});
 
 function loadScript(url, callback) {
     // Adding the script tag to the head as suggested before

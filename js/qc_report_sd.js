@@ -1,6 +1,5 @@
 /**
  * PROGRAM : QC_Report_SD
- * PURPOSE :
  * AUTHOR  : codeunsolved@gmail.com
  * CREATED : September 1 2016
  * VERSION : v0.0.1
@@ -150,7 +149,7 @@ function loadSampleDL(data) {
 		}else {
 			table_body += "<td style=\"background-color: " + getHeatColor(percent) + "; color: white\"> " + percent + "% </td>";
 		}
-		
+
 	}
 	table_body += "</tr></tbody>";
 	return table_body;
@@ -183,10 +182,10 @@ function drawDataTable(id, export_fn, options_add) {
 				extend: "print",
 				className: "btn-sm",
 				title: export_fn
-				},
+				}
 			],
 		"responsive": true
-	}
+	};
 	for (var key in options_add) { options[key] = options_add[key]; }
 
 	if ($.fn.dataTable.isDataTable(id)) {
@@ -279,7 +278,7 @@ function HSLtoRGB(h, s, l){
 			if(t < 1/2) return q;
 			if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
 			return p;
-		}
+		};
 		var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
 		var p = 2 * l - q;
 		r = hue2rgb(p, q, h + 1/3);
