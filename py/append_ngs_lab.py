@@ -7,20 +7,23 @@
 
 import os
 import re
+import sys
 
 from database_connector import MysqlConnector
 from config import mysql_config
 
 dir_data = r'/Users/codeunsolved/Downloads/NGS-Data'
-project = "onco"
+project = sys.argv[1]
 
 already_had = {
     "BRCA": ['BRCA160107', 'BRCA160313', 'BRCA160320', 'BRCA160406', 'BRCA160408', 'BRCA160427', 'BRCA160517',
              'BRCA160601', 'BRCA160708', 'BRCA160724', 'BRCA160724-2', 'BRCA160727', 'BRCA160811', 'BRCA160819',
-             'BRCA160824', 'BRCA160830', 'BRCA160906', 'BRCA160913', 'BRCA160919', 'BRCA160925'],
+             'BRCA160824', 'BRCA160830', 'BRCA160906', 'BRCA160913', 'BRCA160919', 'BRCA160925', 'BRCA160929', 
+             'BRCA160930'],
     "onco": ['onco160719+20', 'onco160729', 'onco160802', 'onco160804', 'onco160811', 'onco160813', 'onco160815',
              'onco160819', 'onco160824', 'onco160830', 'onco160830-42gene', 'onco160906', 'onco160913-42gene',
-             'onco160919', 'onco160919-42gene', 'onco160920', 'onco160920-42gene', 'onco160925', 'onco160925-42gene']
+             'onco160919', 'onco160919-42gene', 'onco160920', 'onco160920-42gene', 'onco160925', 'onco160925-42gene', 
+             'onco160928', 'onco160928-42gene', 'onco160929', 'onco160929-42gene', 'onco160930', 'onco160930-42gene']
 }
 
 

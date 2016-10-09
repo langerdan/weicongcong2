@@ -171,7 +171,7 @@
 
 			var dt= {};
 
-			document.getElementById("datatable_sample_depth_level").innerHTML = loadDLthead(sdp_list[0].depth_level);
+			document.getElementById("datatable_sample_depth_level").innerHTML = loadDLthead(sdp_list[0].depth_levels);
 
 			var export_fn_sum = "多样本比较-覆盖度统计汇总";
 			drawDataTable('#datatable_summary', export_fn_sum, {
@@ -297,7 +297,7 @@
 					var row = new Array();
 					row.push(i+1);
 					row.push(sdp_list[i].sample_name);
-					var dl = sdp_list[i].depth_level;
+					var dl = sdp_list[i].depth_levels;
 					for (var j = 0; j < dl.length; j++) {
 						row.push(dl[j][1] + "%");
 					}

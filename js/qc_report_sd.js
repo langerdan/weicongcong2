@@ -73,7 +73,7 @@ function loadReport_QC_SD(sdp) {
 
 			// target base coverage
 			document.getElementById("num_target_bp").innerHTML = json.len_bp;
-			document.getElementById("sample_depth_level").innerHTML = loadSampleDL(json.depth_level);
+			document.getElementById("sample_depth_level").innerHTML = loadSampleDL(json.depth_levels);
 			// draw datatable absent frag
 			var export_fn_abf = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-Absent_FRAG";
 			var data_absent_frag = new Array();
@@ -105,7 +105,7 @@ function loadReport_QC_SD(sdp) {
 				"order": [[1, 'des']]
 			});
 
-			document.getElementById("datatable_frag_DL").innerHTML = loadFragCoverTable(json.depth_level);
+			document.getElementById("datatable_frag_DL").innerHTML = loadFragCoverTable(json.depth_levels);
 			// draw datatable frag depth level
 			var export_fn_fc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-" + json.sample_name + "-FRAG_COVER";
 			drawDataTable('#datatable_frag_DL', export_fn_fc, {
@@ -242,11 +242,11 @@ function getFragDL(frag_cl, sdp) {
 	var data = new Array();
 	for (var i in frag_cl) {
 		var row = new Array();
-		for (var j in frag_cl[i].depth_level) {
+		for (var j in frag_cl[i].depth_levels) {
 			if (j == 0) {
 				row.push("<a href=\"#\" onclick=\"openFragBaseCoverGraph('" + getFragJsonUrl(sdp, frag_cl[i].frag_name) + "');return false;\">" + frag_cl[i].frag_name + "</a>");
 			}
-			row.push(frag_cl[i].depth_level[j][1] + "%");
+			row.push(frag_cl[i].depth_levels[j][1] + "%");
 		}
 		data.push(row);
 	}

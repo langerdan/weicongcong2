@@ -12,6 +12,7 @@ import sys
 import xlwt
 
 from base import parse_vcf
+from base import print_colors
 from database_connector import MysqlConnector
 from config import mysql_config
 
@@ -100,7 +101,7 @@ def import_vcf(data):
         if m_con.query("SELECT id FROM 56gene_VCF "
                        "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos=%s",
                        d[:5]).rowcount == 1:
-            #print "=>record existed!\n=>update %s" % d[5:]
+            # print "=>record existed!\n=>update %s" % d[5:]
             m_con.query("UPDATE 56gene_VCF "
                         "SET RS_id=%s, Ref=%s, Alt=%s, Qual=%s, Filter=%s, Info=%s, Format=%s, "
                         "Format_val=%s, AC=%s, AF=%s, AN=%s, DB=%s, DP=%s, FS=%s, MLEAC=%s, MLEAF=%s, MQ=%s, MQ0=%s, "
@@ -109,7 +110,7 @@ def import_vcf(data):
                         (d[5:] + d[:5]))
             m_con.cnx.commit()
         else:
-            #print "=>insert %s" % d
+            # print "=>insert %s" % d
             m_con.insert(insert_g, d)
 
 
@@ -134,7 +135,7 @@ def import_anno(data):
         if m_con.query("SELECT id FROM 56gene_anno "
                        "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos_s=%s",
                        d[:5]).rowcount == 1:
-            #print "=>record existed!\n=>update %s" % d[5:]
+            # print "=>record existed!\n=>update %s" % d[5:]
             m_con.query("UPDATE 56gene_anno "
                         "SET Pos_e=%s, Ref=%s, Alt=%s, "
                         "Func_refGene=%s, Gene_refGene=%s, ExonicFunc_refGene=%s, AAChange_refGene=%s, "
@@ -145,7 +146,7 @@ def import_anno(data):
                         (d[:5] + d[5:]))
             m_con.cnx.commit()
         else:
-            #print "=>insert %s" % d
+            # print "=>insert %s" % d
             m_con.insert(insert_g, d)
 
 
@@ -284,13 +285,13 @@ if __name__ == '__main__':
     m_con = MysqlConnector(mysql_config, 'TopgenNGS')
     for run in os.listdir(dir_outbox):
         if re.match(dir_prefix, run):
-            print "<%s>" % run
+            print print_colors("<%s>" % run, 'red')
             sum_cross_anvc = []
             dir_run = os.path.join(dir_outbox, run)
             for sap in os.listdir(dir_run):
                 dir_sap = os.path.join(dir_run, sap)
                 if os.path.isdir(dir_sap):
-                    print "-{%s}" % sap
+                    print print_colors("-{%s}" % sap),
                     cross_anvc_data = []
                     sap_id = re.match('(.+?)[._]', sap).group(1)
                     output_trigger = 0 if re.search('import', options) else 3

@@ -22,6 +22,7 @@ import shutil
 
 from base import read_bed
 from base import clean_output
+from base import print_colors
 from database_connector import MysqlConnector
 from config import mysql_config
 
@@ -139,54 +140,58 @@ def import_qc_seqdata(data):
 
 
 def cp_fastqc(sap_name, sdp):
-    print "copy fastqc html..."
+    print print_colors("copy fastqc html ...")
     copy_trigger = 0
     for fqc_html_file in os.listdir(dir_data):
         path_fqc_html_file = os.path.join(dir_data, fqc_html_file)
         if re.search('^%s.+_fastqc\.html' % sap_name, fqc_html_file) and os.path.isfile(path_fqc_html_file):
             if re.search('R1', fqc_html_file):
-                print "=>R1's fastqc html: %s..." % fqc_html_file,
+                print print_colors("=>R1's fastqc html: %s ..." % fqc_html_file),
                 shutil.copy(path_fqc_html_file, os.path.join(dir_output, "fastqc"))
                 sdp["fastqc"].append("data/%s/fastqc/%s" % (data_basename, fqc_html_file))
                 copy_trigger |= 1
-                print "OK! "
+                print print_colors("OK!", 'green')
             if re.search('R2', fqc_html_file):
-                print "=>R2's fastqc html: %s..." % fqc_html_file,
+                print print_colors("=>R2's fastqc html: %s ..." % fqc_html_file),
                 shutil.copy(path_fqc_html_file, os.path.join(dir_output, "fastqc"))
                 sdp["fastqc"].append("data/%s/fastqc/%s" % (data_basename, fqc_html_file))
                 copy_trigger |= 2
-                print "OK! "
+                print print_colors("OK!", 'green')
     if ~copy_trigger & 1:
-        print "=>R1's fastqc html: nonExistent!"
+        print print_colors("=>R1's fastqc html: nonExistent!", 'red')
     if ~copy_trigger & 2:
-        print "=>R2's fastqc html: nonExistent!"
+        print print_colors("=>R2's fastqc html: nonExistent!", 'red')
 
 if __name__ == '__main__':
-    print "clean dir output...",
+    print print_colors("clean dir output ..."),
     clean_output(dir_output, "sample_cover")
     clean_output(dir_output, "fastqc")
-    print "OK!"
+    print print_colors("OK!", 'green')
     frag_details = read_bed(path_bed)
     frag_details_sorted = sorted(frag_details.iteritems(), key=lambda d: (d[1][0], d[1][2]))
 
-    mysql_data = []
     data_basename = os.path.basename(dir_data)
+    # handle project
     if re.search('BRCA', data_basename):
         project = 'BRCA'
     elif re.search('onco', data_basename):
         project = '56gene'
     else:
         project = 'unknown'
+    # handle run batch number
     run_bn = data_basename
     if re.match('BRCA|onco', run_bn):
         run_bn = re.match('(?:BRCA|onco)(.+)', run_bn).group(1)
 
     sample_num = 0
     sample_cover = []
+    mysql_data = []
     for file in os.listdir(dir_data):
         if re.match('^.+\.%s$' % depth_suffix, file):
-            print "processing with %s..." % file
+            print print_colors("process with %s" % print_colors(file, 'yellow'))
             sample_num += 1
+
+            # handle sample name
             file_name = re.match('(.+)\.%s' % depth_suffix, file).group(1)
             if re.search('_S\d+', file_name):
                 sample_name = re.match('(.+)_S\d+', file_name).group(1)
@@ -271,11 +276,11 @@ if __name__ == '__main__':
                                 sample_cover[-1]["sdp"]["pass"]["absent_frag"] = 0
                                 sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
                             sample_cover[-1]["sdp"]["absent_frag"].append(key)
-                            print "[WARNING] %s popped" % key
+                            print print_colors("[WARNING] %s popped" % key, 'yellow')
                     if len(sample_cover[-1]["sdp"]["absent_frag"]) != 0:
                         for p_key in sample_cover[-1]["sdp"]["absent_frag"]:
                             frag_cover.pop(p_key)
-                        print "-------popped %d frags-------" % len(sample_cover[-1]["sdp"]["absent_frag"])
+                        print print_colors("------- popped %d frags -------" % len(sample_cover[-1]["sdp"]["absent_frag"]), 'red')
 
                     # add 0x frag 0-percent
                     for key in sample_cover[-1]["sdp"]["0x_frag"]:
@@ -288,7 +293,7 @@ if __name__ == '__main__':
                                 sample_cover[-1]["sdp"]["pass"]["absent_frag"] = 0
                                 sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
                             sample_cover[-1]["sdp"]["absent_frag"].append(key)
-                            print "add 100% 0x frag [{}] to absent frag".format(key)
+                            print print_colors("add 100% 0x frag [{}] to absent frag".format(key), 'yellow')
                     for depth_level in depth_levels:
                         # add sample depth level
                         sample_cover[-1]["depth_levels"].append([str(depth_level), round(
@@ -296,9 +301,10 @@ if __name__ == '__main__':
                         if depth_level == 0 and round(depth_level_stat["sample"][str(depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2) < 99:
                             sample_cover[-1]["sdp"]["pass"]["0x_percent"] = 0
                             sample_cover[-1]["sdp"]["pass"]["ALL"] = 0
-                        print "=>depth level: %s, len: %s, sum: %s" % (sample_cover[-1]["depth_levels"][-1],
-                                                                       depth_level_stat["sample"][str(depth_level)],
-                                                                       depth_digest_stat["sample"]["len"])
+                        print print_colors("=>depth level: %s, len: %s, sum: %s" % (
+                                           sample_cover[-1]["depth_levels"][-1], 
+                                           depth_level_stat["sample"][str(depth_level)],
+                                           depth_digest_stat["sample"]["len"]), 'green')
                         # add sample_cover path
                         sample_cover[-1]["path"] = "data/%s/sample_cover/%s/sample_data_pointer.json" % \
                                                    (os.path.basename(dir_output), sample_name)
@@ -315,14 +321,14 @@ if __name__ == '__main__':
                     sample_cover[-1]["sdp"]["depth_levels"] = sample_cover[-1]["depth_levels"]
 
                     # add reads statistics
-                    print "get reads statistics from mismatch..."
+                    print print_colors("get reads statistics from stat ...")
                     (sample_cover[-1]["sdp"]["total_reads"],
                      sample_cover[-1]["sdp"]["mapped_reads"],
                      sample_cover[-1]["sdp"]["target_reads"]) = get_reads_stat(file_name)
-                    print "=>total_reads: %d, mapped_reads: %d, target_reads: %d" % (
-                        sample_cover[-1]["sdp"]["total_reads"],
-                        sample_cover[-1]["sdp"]["mapped_reads"],
-                        sample_cover[-1]["sdp"]["target_reads"])
+                    print print_colors("=>total_reads: %d, mapped_reads: %d, target_reads: %d" % (
+                                       sample_cover[-1]["sdp"]["total_reads"],
+                                       sample_cover[-1]["sdp"]["mapped_reads"],
+                                       sample_cover[-1]["sdp"]["target_reads"]))
 
                     # add item to QC_SeqData
                     mysql_data.append([project, sample_name, run_bn, sample_cover[-1]["path"],
@@ -331,10 +337,10 @@ if __name__ == '__main__':
                 # copy fastqc html
                 cp_fastqc(sample_name, sample_cover[-1]["sdp"])
 
-    print "output data...",
+    print print_colors("output data ..."),
     output_sample_cover_data(sample_cover, sample_num, len(frag_details))
-    print "OK!"
-    print "insert data..."
+    print print_colors("OK!", 'green')
+    print print_colors("insert data ..."),
     import_qc_seqdata(mysql_data)
     # print mysql_data
-    print "OK!"
+    print print_colors("OK!", 'green')

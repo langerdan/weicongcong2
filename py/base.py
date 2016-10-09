@@ -53,3 +53,16 @@ def clean_output(dir_o, subdir_name):
         os.mkdir(os.path.join(dir_o, subdir_name))
     else:
         os.makedirs(os.path.join(dir_o, subdir_name))
+
+
+def print_colors(string, color='blue'):
+    colors = {
+        'red': '\033[1;31m',
+        'green': '\033[1;32m',
+        'yellow': '\033[1;33m',
+        'blue': '\033[1;36m',
+        'grey': '\033[1;30m',
+        'bold': '\033[1m',
+        'end': '\033[0m'
+    }
+    return colors[color] + string + colors['end']
