@@ -66,3 +66,23 @@ def print_colors(string, color='blue'):
         'end': '\033[0m'
     }
     return colors[color] + string + colors['end']
+
+
+def get_file_path(dir_main, suffix='faa', output_type='list', r_num=2):
+    def recurse_dir(dir_r, path_list, suffix_r, r_num_r):
+        r_num_r -= 1
+        content_list = os.listdir(dir_r)
+        for content in content_list:
+            path_content = os.path.join(dir_r, content)
+            if os.path.isdir(path_content) and r_num_r:
+                recurse_dir(path_content, path_list, suffix, r_num_r)
+            elif re.search('\.' + suffix_r + '$', content):
+                print path_content
+                path_list.append(path_content)
+        return path_list
+
+    path_file = recurse_dir(dir_main, [], suffix, r_num)
+    if output_type == 'list':
+        return path_file
+    elif output_type == 'txt':
+        return '\n'.join(path_file)

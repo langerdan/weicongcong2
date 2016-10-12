@@ -148,13 +148,13 @@ def cp_fastqc(sap_name, sdp):
             if re.search('R1', fqc_html_file):
                 print print_colors("=>R1's fastqc html: %s ..." % fqc_html_file),
                 shutil.copy(path_fqc_html_file, os.path.join(dir_output, "fastqc"))
-                sdp["fastqc"].append("data/%s/fastqc/%s" % (data_basename, fqc_html_file))
+                sdp["fastqc"].append("data/%s/fastqc/%s" % (dirname, fqc_html_file))
                 copy_trigger |= 1
                 print print_colors("OK!", 'green')
             if re.search('R2', fqc_html_file):
                 print print_colors("=>R2's fastqc html: %s ..." % fqc_html_file),
                 shutil.copy(path_fqc_html_file, os.path.join(dir_output, "fastqc"))
-                sdp["fastqc"].append("data/%s/fastqc/%s" % (data_basename, fqc_html_file))
+                sdp["fastqc"].append("data/%s/fastqc/%s" % (dirname, fqc_html_file))
                 copy_trigger |= 2
                 print print_colors("OK!", 'green')
     if ~copy_trigger & 1:
@@ -170,18 +170,19 @@ if __name__ == '__main__':
     frag_details = read_bed(path_bed)
     frag_details_sorted = sorted(frag_details.iteritems(), key=lambda d: (d[1][0], d[1][2]))
 
-    data_basename = os.path.basename(dir_data)
+    dirname = os.path.basename(dir_data)
     # handle project
-    if re.search('BRCA', data_basename):
+    if re.search('BRCA', dirname):
         project = 'BRCA'
-    elif re.search('onco', data_basename):
+    elif re.search('onco', dirname):
         project = '56gene'
     else:
         project = 'unknown'
     # handle run batch number
-    run_bn = data_basename
-    if re.match('BRCA|onco', run_bn):
-        run_bn = re.match('(?:BRCA|onco)(.+)', run_bn).group(1)
+    if re.match('BRCA|onco', dirname):
+        run_bn = re.match('(?:BRCA|onco)(.+)', dirname).group(1)
+    else:
+        run_bn = dirname
 
     sample_num = 0
     sample_cover = []

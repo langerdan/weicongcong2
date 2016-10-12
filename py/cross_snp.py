@@ -3,13 +3,17 @@
 # PROGRAM : cross_SNP
 # AUTHOR  : codeunsolved@gmail.com
 # CREATED : September 20 2016
-# VERSION : v0.0.1a
+# VERSION : v0.0.1
+# UPDATE  : [v0.0.1] Octorber 12 2016
+# 1. add argparse to parse args;
 
 from __future__ import division
 import os
 import re
 import sys
 import xlwt
+import argparse
+from argparse import RawTextHelpFormatter
 
 from base import parse_vcf
 from base import print_colors
@@ -17,12 +21,6 @@ from database_connector import MysqlConnector
 from config import mysql_config
 
 # CONFIG AREA #
-run_bn = int(sys.argv[1])
-offset = int(sys.argv[2])
-options = "importcross" if len(sys.argv) < 4 else sys.argv[3]
-
-dir_prefix = "56gene20" + str(run_bn + offset)
-dir_outbox = r'/Users/codeunsolved/TopgenData1/outbox'
 vcf_col = ["Pipeline", "SAP_id", "RUN_bn", "Chr", "Pos", "RS_id", "Ref", "Alt", "Qual", "Filter", "Info", "Format",
            "Format_val", "AC", "AF", "AN", "DB", "DP", "FS", "MLEAC", "MLEAF", "MQ", "MQ0", "QD", "SOR",
            "BaseQRankSum", "MQRankSum", "ReadPosRankSum", "GT", "AD", "GQ", "PL"]
@@ -90,28 +88,37 @@ def parse_format(format_keys, format_vals):
     return format_split
 
 
-def import_vcf(data):
+def import_vcf(data, passive=True):
     insert_g = ("INSERT INTO 56gene_VCF "
                 "(Pipeline, SAP_id, RUN_bn, Chr, Pos, RS_id, Ref, Alt, Qual, Filter, Info, Format, Format_val, "
                 "AC, AF, AN, DB, DP, FS, MLEAC, MLEAF, MQ, MQ0, QD, SOR, BaseQRankSum, MQRankSum, ReadPosRankSum, "
                 "GT, AD, GQ, PL) "
                 "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
                 "%s, %s, %s, %s, %s, %s, %s, %s)")
+    update = 0
+    insert = 0
+    ignore = 0
     for d in data:
         if m_con.query("SELECT id FROM 56gene_VCF "
                        "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos=%s",
                        d[:5]).rowcount == 1:
-            # print "=>record existed!\n=>update %s" % d[5:]
-            m_con.query("UPDATE 56gene_VCF "
-                        "SET RS_id=%s, Ref=%s, Alt=%s, Qual=%s, Filter=%s, Info=%s, Format=%s, "
-                        "Format_val=%s, AC=%s, AF=%s, AN=%s, DB=%s, DP=%s, FS=%s, MLEAC=%s, MLEAF=%s, MQ=%s, MQ0=%s, "
-                        "QD=%s, SOR=%s, BaseQRankSum=%s, MQRankSum=%s, ReadPosRankSum=%s, GT=%s, AD=%s, GQ=%s, PL=%s "
-                        "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos=%s",
-                        (d[5:] + d[:5]))
-            m_con.cnx.commit()
+            if passive:
+                update += 1
+                m_con.query("UPDATE 56gene_VCF "
+                            "SET RS_id=%s, Ref=%s, Alt=%s, Qual=%s, Filter=%s, Info=%s, Format=%s, "
+                            "Format_val=%s, AC=%s, AF=%s, AN=%s, DB=%s, DP=%s, FS=%s, MLEAC=%s, MLEAF=%s, MQ=%s, MQ0=%s, "
+                            "QD=%s, SOR=%s, BaseQRankSum=%s, MQRankSum=%s, ReadPosRankSum=%s, GT=%s, AD=%s, GQ=%s, PL=%s "
+                            "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos=%s",
+                            (d[5:] + d[:5]))
+                m_con.cnx.commit()
+            else:
+                ignore += 1
         else:
-            # print "=>insert %s" % d
+            insert += 1
             m_con.insert(insert_g, d)
+    print print_colors("insert %s" % insert if insert else "" + "update %s" % update if update else "" +
+                       "ignore %s" % ignore if ignore else "",
+                       'grey'),
 
 
 def parse_anno(path_anno):
@@ -124,30 +131,38 @@ def parse_anno(path_anno):
     return anno_data
 
 
-def import_anno(data):
+def import_anno(data, passive=True):
     insert_g = ("INSERT INTO 56gene_anno "
                 "(Pipeline, SAP_id, RUN_bn, Chr, Pos_s, Pos_e, Ref, Alt, Func_refGene, Gene_refGene, ExonicFunc_refGene,"
                 " AAChange_refGene, phastConsElements46way, genomicSuperDups, esp6500si_all, 1000g2014sep_all, snp138, "
                 "ljb26_all, cg69, cosmic70, clinvar_20140929, Otherinfo1, Otherinfo2, Otherinfo3) "
                 "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
                 "%s)")
+    update = 0
+    insert = 0
+    ignore = 0
     for d in data:
         if m_con.query("SELECT id FROM 56gene_anno "
                        "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos_s=%s",
                        d[:5]).rowcount == 1:
-            # print "=>record existed!\n=>update %s" % d[5:]
-            m_con.query("UPDATE 56gene_anno "
-                        "SET Pos_e=%s, Ref=%s, Alt=%s, "
-                        "Func_refGene=%s, Gene_refGene=%s, ExonicFunc_refGene=%s, AAChange_refGene=%s, "
-                        "phastConsElements46way=%s, genomicSuperDups=%s, esp6500si_all=%s, 1000g2014sep_all=%s, "
-                        "snp138=%s, ljb26_all=%s, cg69=%s, cosmic70=%s, clinvar_20140929=%s, Otherinfo1=%s, "
-                        "Otherinfo2=%s, Otherinfo3=%s "
-                        "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos_s=%s",
-                        (d[:5] + d[5:]))
-            m_con.cnx.commit()
+            if passive:
+                update += 1
+                m_con.query("UPDATE 56gene_anno "
+                            "SET Pos_e=%s, Ref=%s, Alt=%s, "
+                            "Func_refGene=%s, Gene_refGene=%s, ExonicFunc_refGene=%s, AAChange_refGene=%s, "
+                            "phastConsElements46way=%s, genomicSuperDups=%s, esp6500si_all=%s, 1000g2014sep_all=%s, "
+                            "snp138=%s, ljb26_all=%s, cg69=%s, cosmic70=%s, clinvar_20140929=%s, Otherinfo1=%s, "
+                            "Otherinfo2=%s, Otherinfo3=%s "
+                            "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos_s=%s",
+                            (d[:5] + d[5:]))
+                m_con.cnx.commit()
+            else:
+                ignore += 1
         else:
-            # print "=>insert %s" % d
+            insert += 1
             m_con.insert(insert_g, d)
+    print print_colors("insert %s" % insert if insert else "" + "update %s" % update if update else "" +
+                       "ignore %s" % ignore if ignore else "", 'grey'),
 
 
 def query_vcf(term):
@@ -201,8 +216,8 @@ def set_style(height=210, bold=False, background_color='aqua', font_color='black
         return style
 
 
-def output_cross(cross_snp_d, cross_anvc_d):
-    path_cross_anvc = os.path.join(dir_sap, "%s_SNPv0.1a.xls" % sap_id)
+def output_cross(cross_snp_d, cross_anvc_d, dir_output, sap_id):
+    path_cross_anvc = os.path.join(dir_output, "%s_SNPxls" % sap_id)
 
     workbook = xlwt.Workbook(style_compression=2)
     sheet1 = workbook.add_sheet(u'SNP', cell_overwrite_ok=True)
@@ -245,7 +260,8 @@ def output_cross(cross_snp_d, cross_anvc_d):
         for cross_anvc_i, cross_anvc in enumerate(line):
             if len(line) == 33:
                 if cross_anvc_i < 11:
-                    sheet2.write(line_i + 1, cross_anvc_i, cross_anvc, set_style(200, False, 'aqua', mismatch_offset[line[-1]]))
+                    sheet2.write(line_i + 1, cross_anvc_i, cross_anvc, set_style(200, background_color='aqua',
+                                                                                 font_color=mismatch_offset[line[-1]]))
                 elif 10 < cross_anvc_i < 33:
                     sheet2.write(line_i + 1, cross_anvc_i, cross_anvc)
             else:
@@ -253,8 +269,8 @@ def output_cross(cross_snp_d, cross_anvc_d):
     workbook.save(path_cross_anvc)
 
 
-def output_sum_ca(data):
-    path_sum_ca = os.path.join(dir_run, "SNP-Annotation_VCF.xls")
+def output_sum_ca(data, dir_output, run_bn):
+    path_sum_ca = os.path.join(dir_output, "SNP-Annotation_VCF.xls")
     workbook = xlwt.Workbook(style_compression=2)
     sheet1 = workbook.add_sheet(str(run_bn), cell_overwrite_ok=True)
     # sheet1 table header
@@ -272,17 +288,91 @@ def output_sum_ca(data):
                 if cross_anvc_i < 2:
                     sheet1.write(line_i + 1, cross_anvc_i, cross_anvc)
                 elif 1 < cross_anvc_i < 13:
-                    sheet1.write(line_i + 1, cross_anvc_i, cross_anvc, set_style(200, False, 'aqua', mismatch_offset[line[-1]]))
+                    sheet1.write(line_i + 1, cross_anvc_i, cross_anvc, set_style(200, background_color='aqua',
+                                                                                 font_color=mismatch_offset[line[-1]]))
                 elif 12 < cross_anvc_i < 35:
                     sheet1.write(line_i + 1, cross_anvc_i, cross_anvc)
             else:
                 sheet1.write(line_i + 1, cross_anvc_i, cross_anvc)
     workbook.save(path_sum_ca)
 
-if __name__ == '__main__':
+
+def cross_var(path_file, anno_data, cross_anvc_data, pipeline, sap_id, run_bn, vcf_mismatch):
+    anno_body = parse_anno(path_file)
+    for anno_line in anno_body:
+        anno_data.append([pipeline, sap_id, run_bn] + anno_line)
+        if args.cross:
+            # filter Func.refGene == "intronic"
+            if anno_line[5] == "intronic":
+                continue
+            # filter ExonicFunc.refGene == "synonymous SNV"
+            if anno_line[7] == "synonymous SNV":
+                continue
+            # filter 1000g2014sep_all > 0.01
+            if anno_line[12] != '' and float(anno_line[12]) > 0.01:
+                continue
+            cursor = query_vcf([pipeline, sap_id] + anno_line[:2] + anno_line[3:5])
+            if cursor.rowcount != 1:
+                mismatch_state = handle_mismatch([pipeline, sap_id] + anno_line[:2])
+                if mismatch_state[0]:
+                    print "=CROSS= miss match [%s][%s] " % (anno_line[0], anno_line[1])
+                    print "=%s" % anno_line
+                    cross_anvc_data.append(['', '', '', '', '', '', '', '', '', '', ''] + anno_line)
+                else:
+                    print "=CROSS= %s match [%s][%s]" % (mismatch_state[1], anno_line[0], anno_line[1])
+                    vcf_mismatch["%s-%s-%s-%s" % (anno_line[0], anno_line[1], anno_line[3], anno_line[4])] = mismatch_state[1]
+                    row_v = mismatch_state[2].fetchone()
+                    cross_anvc_data.append(list(row_v[:-1]) + [get_allele_fre(row_v[-1])] + anno_line + [mismatch_state[1]])
+            else:
+                row_v = cursor.fetchone()
+                cross_anvc_data.append(list(row_v[:-1]) + [get_allele_fre(row_v[-1])] + anno_line)
+
+
+def cross_snp(pipeline, sap_id, vcf_mismatch):
+    cross_snp_data = []
+    for snp in onco_snp:
+        cross_snp_data.append([])
+        anno_mismatch = 0
+
+        cursor_a = query_anno([pipeline, sap_id] + snp[:5])
+        if cursor_a.rowcount != 1:
+            cross_snp_data[-1] += ["", "", "", "", ""]
+            anno_mismatch = 1
+        else:
+            row_a = cursor_a.fetchone()
+            cross_snp_data[-1] += list(row_a[9:13]) + [row_a[-3]]
+
+        vcf_key = "%s-%s-%s-%s" % (snp[0], snp[1], snp[3], snp[4])
+        if vcf_key in vcf_mismatch:
+            cursor_v = query_vcf_offset([pipeline, sap_id] + [snp[0], snp[1] + vcf_mismatch[vcf_key]])
+        else:
+            cursor_v = query_vcf([pipeline, sap_id] + snp[:2] + snp[3:5])
+        if cursor_v.rowcount != 1:
+            mismatch_state = handle_mismatch([pipeline, sap_id] + snp[:2])
+            if mismatch_state[0]:
+                if anno_mismatch == 1:
+                    print "\t=SNP-ALL= miss match - %s" % snp[:5]
+                else:
+                    print "\t=SNP-VCF= miss match - %s" % snp[:5]
+                cross_snp_data[-1] += ["", ""]
+            else:
+                row_v = mismatch_state[2].fetchone()
+                cross_snp_data[-1] += [row_v[-2], row_v[-3], mismatch_state[1]]
+        else:
+            row_v = cursor_v.fetchone()
+            cross_snp_data[-1] += [row_v[-2], row_v[-3]]
+    return cross_snp_data
+
+
+def handle_autobox():
     vcf_data = []
     anno_data = []
-    m_con = MysqlConnector(mysql_config, 'TopgenNGS')
+
+    run_bn = args.run_bn
+    offset = args.offset
+
+    dir_prefix = "56gene20" + str(run_bn + offset)
+    dir_outbox = r'/Users/codeunsolved/TopgenData1/outbox'
     for run in os.listdir(dir_outbox):
         if re.match(dir_prefix, run):
             print print_colors("<%s>" % run, 'red')
@@ -291,100 +381,111 @@ if __name__ == '__main__':
             for sap in os.listdir(dir_run):
                 dir_sap = os.path.join(dir_run, sap)
                 if os.path.isdir(dir_sap):
-                    print print_colors("-{%s}" % sap),
+                    print print_colors("-{%s}" % sap)
                     cross_anvc_data = []
                     sap_id = re.match('(.+?)[._]', sap).group(1)
-                    output_trigger = 0 if re.search('import', options) else 3
+                    output_trigger = 0 if args.import_var else 3
                     vcf_mismatch = {}
-                    for file in os.listdir(dir_sap):
+                    for f in os.listdir(dir_sap):
                         pipeline = re.search('%s(_.+_)$' % str(run_bn + offset), run).group(1)
-                        if re.search('import', options) and re.search('raw_variants\.vcf$', file):
-                            vcf_body = parse_vcf(os.path.join(dir_sap, file))
+                        if args.import_var and re.search('raw_variants\.vcf$', f):
+                            vcf_body = parse_vcf(os.path.join(dir_sap, f))
                             for vcf_line in vcf_body:
                                 vcf_data.append([pipeline, sap_id, run_bn] + vcf_line + parse_info(vcf_line[-3]) + \
-                                      parse_format(vcf_line[-2], vcf_line[-1]))
-                            print "import vcf...",
-                            import_vcf(vcf_data)
+                                                parse_format(vcf_line[-2], vcf_line[-1]))
+                            print "• import vcf ...",
+                            import_vcf(vcf_data, passive=args.update)
                             output_trigger |= 1
-                            print "OK!"
+                            print print_colors("OK!", 'green')
 
-                        if re.search('hg19_multianno\.txt$', file):
-                            anno_body = parse_anno(os.path.join(dir_sap, file))
-                            for anno_line in anno_body:
-                                anno_data.append([pipeline, sap_id, run_bn] + anno_line)
-                                if re.search('cross', options):
-                                    # filter Func.refGene == "intronic"
-                                    if anno_line[5] == "intronic":
-                                        continue
-                                    # filter ExonicFunc.refGene == "synonymous SNV"
-                                    if anno_line[7] == "synonymous SNV":
-                                        continue
-                                    # filter 1000g2014sep_all > 0.01
-                                    if anno_line[12] != '' and float(anno_line[12]) > 0.01:
-                                        continue
-                                    cursor = query_vcf([pipeline, sap_id] + anno_line[:2] + anno_line[3:5])
-                                    if cursor.rowcount != 1:
-                                        mismatch_state = handle_mismatch([pipeline, sap_id] + anno_line[:2])
-                                        if mismatch_state[0]:
-                                            print "=CROSS= miss match [%s][%s] " % (anno_line[0], anno_line[1])
-                                            print "=%s" % anno_line
-                                            cross_anvc_data.append(['', '', '', '', '', '', '', '', '', '', ''] + anno_line)
-                                        else:
-                                            print "=CROSS= %s match [%s][%s]" % (mismatch_state[1], anno_line[0], anno_line[1])
-                                            vcf_mismatch["%s-%s-%s-%s" % (anno_line[0], anno_line[1], anno_line[3], anno_line[4])] = mismatch_state[1]
-                                            row_v = mismatch_state[2].fetchone()
-                                            cross_anvc_data.append(list(row_v[:-1]) +
-                                                [get_allele_fre(row_v[-1])] + anno_line + [mismatch_state[1]])
-                                    else:
-                                        row_v = cursor.fetchone()
-                                        cross_anvc_data.append(list(row_v[:-1]) +
-                                            [get_allele_fre(row_v[-1])] + anno_line)
+                        if re.search('hg19_multianno\.txt$', f):
+                            cross_var(os.path.join(dir_sap, f), anno_data, cross_anvc_data, pipeline, sap_id, run_bn, vcf_mismatch)
                             output_trigger |= 4
-                            if re.search('import', options):
-                                print "import Annotation...",
-                                import_anno(anno_data)
+                            if args.import_var:
+                                print "• import Annotation ...",
+                                import_anno(anno_data, passive=args.update)
                                 output_trigger |= 2
-                                print "OK!"
+                                print print_colors("OK!", 'green')
 
-                        if re.search('cross', options) and output_trigger == 7:
-                            output_trigger = 0 if re.search('import', options) else 3
-                            cross_snp_data = []
-                            for each_snp in onco_snp:
-                                cross_snp_data.append([])
-                                anno_mismatch = 0
-
-                                cursor_a = query_anno([pipeline, sap_id] + each_snp[:5])
-                                if cursor_a.rowcount != 1:
-                                    cross_snp_data[-1] += ["", "", "", "", ""]
-                                    anno_mismatch = 1
-                                else:
-                                    row_a = cursor_a.fetchone()
-                                    cross_snp_data[-1] += list(row_a[9:13]) + [row_a[-3]]
-
-                                vcf_key = "%s-%s-%s-%s" % (each_snp[0], each_snp[1], each_snp[3], each_snp[4])
-                                if vcf_key in vcf_mismatch:
-                                    cursor_v = query_vcf_offset([pipeline, sap_id] + [each_snp[0], each_snp[1] + vcf_mismatch[vcf_key]])
-                                else:
-                                    cursor_v = query_vcf([pipeline, sap_id] + each_snp[:2] + each_snp[3:5])
-                                if cursor_v.rowcount != 1:
-                                    mismatch_state = handle_mismatch([pipeline, sap_id] + each_snp[:2])
-                                    if mismatch_state[0]:
-                                        if anno_mismatch == 1:
-                                            print "\t=SNP-ALL= miss match - %s" % each_snp[:5]
-                                        else:
-                                            print "\t=SNP-VCF= miss match - %s" % each_snp[:5]
-                                        cross_snp_data[-1] += ["", ""]
-                                    else:
-                                        row_v = mismatch_state[2].fetchone()
-                                        cross_snp_data[-1] += [row_v[-2], row_v[-3], mismatch_state[1]]
-                                else:
-                                    row_v = cursor_v.fetchone()
-                                    cross_snp_data[-1] += [row_v[-2], row_v[-3]]
-                            print "output cross SNP xls...",
-                            output_cross(cross_snp_data, cross_anvc_data)
-                            print "OK!"
+                        if args.cross and output_trigger == 7:
+                            output_trigger = 0 if args.cross else 3
+                            cross_snp_data = cross_snp(pipeline, sap_id, vcf_mismatch)
+                            print "• output cross SNP xls ...",
+                            output_cross(cross_snp_data, cross_anvc_data, dir_sap, sap_id)
+                            print print_colors("OK!", 'green')
 
                             for each_ca_d in cross_anvc_data:
                                 sum_cross_anvc.append([sap_id, run_bn] + each_ca_d)
-            output_sum_ca(sum_cross_anvc)
+            output_sum_ca(sum_cross_anvc, dir_run, run_bn)
+
+
+def handle_brca():
+    vcf_data = []
+    anno_data = []
+
+    pipeline = args.pipeline
+    dir_data = args.dir_data
+
+    dirname = os.path.basename(dir_data)
+    # handle run batch number
+    if re.match('BRCA|onco', dirname):
+        run_bn = re.match('(?:BRCA|onco)(.+)', dirname).group(1)
+    else:
+        run_bn = dirname
+    print print_colors("<%s>" % run_bn, 'red')
+
+    sap_ids = {}
+    for f in os.listdir(dir_data):
+        if pipeline == 'Miseq':
+            sap_id = re.match('(.+?)_', f).group(1)
+        elif pipeline == 'cedar':
+            sap_id = re.match('(.+?)\.', f).group(1)
+        else:
+            sap_id = re.match('(.+?)_', f).group(1)
+            print print_colors('suppose sample id: %s' % sap_id, 'red')
+
+        if sap_id not in sap_ids:
+            print print_colors("-{%s}" % sap_id)
+            sap_ids[sap_id] = 0
+
+        if args.import_var and re.search('\.vcf$', f):
+            vcf_body = parse_vcf(os.path.join(dir_data, f))
+            for vcf_line in vcf_body:
+                vcf_data.append([pipeline, sap_id, run_bn] + vcf_line + parse_info(vcf_line[-3]) + \
+                                parse_format(vcf_line[-2], vcf_line[-1]))
+            print "• import vcf ...",
+            import_vcf(vcf_data, passive=args.update)
+            sap_ids[sap_id] |= 1
+            print print_colors("OK!", 'green')
+
+
+if __name__ == '__main__':
+    # parse args
+    parser = argparse.ArgumentParser(prog='cross_snp', formatter_class=RawTextHelpFormatter,
+                                     description="import vcf, annotation(raw_variants.vcf).\n"
+                                                 "cross vcf with annotation and output report.")
+    subparsers = parser.add_subparsers(help='cross snp with different source')
+
+    parser_a = subparsers.add_parser('autobox', help='from autobox')
+    parser_a.add_argument('run_bn', type=int, help='run batch No.')
+    parser_a.add_argument('offset', type=int, help='day offset')
+    parser_a.add_argument('-i', '--import_var', action='store_true', help='import vcf and annotation(raw_variants.vcf).')
+    parser_a.add_argument('-c', '--cross', action='store_true', help='cross vcf with annotation after import.')
+    parser_a.add_argument('-u', '--update', action='store_true', help='update import data.')
+    parser_a.set_defaults(func=handle_autobox)
+
+    parser_b = subparsers.add_parser('brca', help='from [project]BRCA')
+    parser_b.add_argument('pipeline', help='specify pipeline')
+    parser_b.add_argument('dir_data', help='dir of data')
+    parser_b.add_argument('-i', '--import_var', action='store_true', help='import vcf and annotation(raw_variants.vcf).')
+    parser_b.add_argument('-c', '--cross', action='store_true', help='cross vcf with annotation after import.')
+    parser_b.add_argument('-u', '--update', action='store_true', help='update import data.')
+    parser_b.set_defaults(func=handle_brca)
+
+    args = parser.parse_args()
+    if not (args.import_var or args.cross):
+        parser.error('No action requested, add --import_var or --cross')
+
+    m_con = MysqlConnector(mysql_config, 'TopgenNGS')
+    args.func()
     m_con.done()
