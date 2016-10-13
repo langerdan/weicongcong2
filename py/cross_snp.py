@@ -88,27 +88,37 @@ def parse_format(format_keys, format_vals):
     return format_split
 
 
-def import_vcf(data, passive=True):
-    insert_g = ("INSERT INTO 56gene_VCF "
+def parse_anno(path_anno):
+    anno_data = []
+    with open(path_anno, 'rb') as r_obj:
+        for line_no, line in enumerate(r_obj):
+            if line_no == 0:
+                continue
+            anno_data.append(line.strip().split('\t'))
+    return anno_data
+
+
+def import_vcf(data, is_update=True):
+    insert_g = ("INSERT INTO {} "
                 "(Pipeline, SAP_id, RUN_bn, Chr, Pos, RS_id, Ref, Alt, Qual, Filter, Info, Format, Format_val, "
                 "AC, AF, AN, DB, DP, FS, MLEAC, MLEAF, MQ, MQ0, QD, SOR, BaseQRankSum, MQRankSum, ReadPosRankSum, "
                 "GT, AD, GQ, PL) "
                 "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
-                "%s, %s, %s, %s, %s, %s, %s, %s)")
+                "%s, %s, %s, %s, %s, %s, %s, %s)".format(table_vcf))
     update = 0
     insert = 0
     ignore = 0
     for d in data:
-        if m_con.query("SELECT id FROM 56gene_VCF "
-                       "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos=%s",
+        if m_con.query("SELECT id FROM {} "
+                       "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos=%s".format(table_vcf),
                        d[:5]).rowcount == 1:
-            if passive:
+            if is_update:
                 update += 1
-                m_con.query("UPDATE 56gene_VCF "
+                m_con.query("UPDATE {} "
                             "SET RS_id=%s, Ref=%s, Alt=%s, Qual=%s, Filter=%s, Info=%s, Format=%s, "
                             "Format_val=%s, AC=%s, AF=%s, AN=%s, DB=%s, DP=%s, FS=%s, MLEAC=%s, MLEAF=%s, MQ=%s, MQ0=%s, "
                             "QD=%s, SOR=%s, BaseQRankSum=%s, MQRankSum=%s, ReadPosRankSum=%s, GT=%s, AD=%s, GQ=%s, PL=%s "
-                            "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos=%s",
+                            "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos=%s".format(table_vcf),
                             (d[5:] + d[:5]))
                 m_con.cnx.commit()
             else:
@@ -121,39 +131,29 @@ def import_vcf(data, passive=True):
                        'grey'),
 
 
-def parse_anno(path_anno):
-    anno_data = []
-    with open(path_anno, 'rb') as r_obj:
-        for line_no, line in enumerate(r_obj):
-            if line_no == 0:
-                continue
-            anno_data.append(line.strip().split('\t'))
-    return anno_data
-
-
-def import_anno(data, passive=True):
-    insert_g = ("INSERT INTO 56gene_anno "
+def import_anno(data, is_update=True):
+    insert_g = ("INSERT INTO {} "
                 "(Pipeline, SAP_id, RUN_bn, Chr, Pos_s, Pos_e, Ref, Alt, Func_refGene, Gene_refGene, ExonicFunc_refGene,"
                 " AAChange_refGene, phastConsElements46way, genomicSuperDups, esp6500si_all, 1000g2014sep_all, snp138, "
                 "ljb26_all, cg69, cosmic70, clinvar_20140929, Otherinfo1, Otherinfo2, Otherinfo3) "
                 "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
-                "%s)")
+                "%s)".format(table_anno))
     update = 0
     insert = 0
     ignore = 0
     for d in data:
-        if m_con.query("SELECT id FROM 56gene_anno "
-                       "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos_s=%s",
+        if m_con.query("SELECT id FROM {} "
+                       "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos_s=%s".format(table_anno),
                        d[:5]).rowcount == 1:
-            if passive:
+            if is_update:
                 update += 1
-                m_con.query("UPDATE 56gene_anno "
+                m_con.query("UPDATE {} "
                             "SET Pos_e=%s, Ref=%s, Alt=%s, "
                             "Func_refGene=%s, Gene_refGene=%s, ExonicFunc_refGene=%s, AAChange_refGene=%s, "
                             "phastConsElements46way=%s, genomicSuperDups=%s, esp6500si_all=%s, 1000g2014sep_all=%s, "
                             "snp138=%s, ljb26_all=%s, cg69=%s, cosmic70=%s, clinvar_20140929=%s, Otherinfo1=%s, "
                             "Otherinfo2=%s, Otherinfo3=%s "
-                            "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos_s=%s",
+                            "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos_s=%s".format(table_anno),
                             (d[:5] + d[5:]))
                 m_con.cnx.commit()
             else:
@@ -166,20 +166,20 @@ def import_anno(data, passive=True):
 
 
 def query_vcf(term):
-    query_g = ("SELECT Chr, Pos, RS_id, Ref, Alt, Qual, Filter, Info, Format, Format_val, AD FROM 56gene_VCF "
-               "WHERE Pipeline=%s AND SAP_id=%s AND Chr=%s AND Pos=%s AND Ref=%s AND Alt=%s")
+    query_g = ("SELECT Chr, Pos, RS_id, Ref, Alt, Qual, Filter, Info, Format, Format_val, AD FROM {} "
+               "WHERE Pipeline=%s AND SAP_id=%s AND Chr=%s AND Pos=%s AND Ref=%s AND Alt=%s".format(table_vcf))
     return m_con.query(query_g, term)
 
 
 def query_anno(term):
-    query_g = ("SELECT * FROM 56gene_anno "
-               "WHERE Pipeline=%s AND SAP_id=%s AND Chr=%s AND Pos_s=%s AND Pos_e=%s AND Ref=%s AND Alt=%s")
+    query_g = ("SELECT * FROM {} "
+               "WHERE Pipeline=%s AND SAP_id=%s AND Chr=%s AND Pos_s=%s AND Pos_e=%s AND Ref=%s AND Alt=%s".format(table_anno))
     return m_con.query(query_g, term)
 
 
 def query_vcf_offset(term):
-    query_g = ("SELECT Chr, Pos, RS_id, Ref, Alt, Qual, Filter, Info, Format, Format_val, AD FROM 56gene_VCF "
-               "WHERE Pipeline=%s AND SAP_id=%s AND Chr=%s AND Pos=%s")
+    query_g = ("SELECT Chr, Pos, RS_id, Ref, Alt, Qual, Filter, Info, Format, Format_val, AD FROM {} "
+               "WHERE Pipeline=%s AND SAP_id=%s AND Chr=%s AND Pos=%s".format(table_vcf))
     return m_con.query(query_g, term)
 
 
@@ -311,7 +311,7 @@ def cross_var(path_file, anno_data, cross_anvc_data, pipeline, sap_id, run_bn, v
             # filter 1000g2014sep_all > 0.01
             if anno_line[12] != '' and float(anno_line[12]) > 0.01:
                 continue
-            cursor = query_vcf([pipeline, sap_id] + anno_line[:2] + anno_line[3:5])
+            cursor = query_vcf([pipeline, sap_id] + anno_line[:2] + anno_line[3:5], )
             if cursor.rowcount != 1:
                 mismatch_state = handle_mismatch([pipeline, sap_id] + anno_line[:2])
                 if mismatch_state[0]:
@@ -365,6 +365,10 @@ def cross_snp(pipeline, sap_id, vcf_mismatch):
 
 
 def handle_autobox():
+    global table_vcf, table_anno
+    table_vcf = "56gene_VCF"
+    table_anno = "56gene_anno"
+
     vcf_data = []
     anno_data = []
 
@@ -373,6 +377,7 @@ def handle_autobox():
 
     dir_prefix = "56gene20" + str(run_bn + offset)
     dir_outbox = r'/Users/codeunsolved/TopgenData1/outbox'
+
     for run in os.listdir(dir_outbox):
         if re.match(dir_prefix, run):
             print print_colors("<%s>" % run, 'red')
@@ -394,7 +399,7 @@ def handle_autobox():
                                 vcf_data.append([pipeline, sap_id, run_bn] + vcf_line + parse_info(vcf_line[-3]) + \
                                                 parse_format(vcf_line[-2], vcf_line[-1]))
                             print "• import vcf ...",
-                            import_vcf(vcf_data, passive=args.update)
+                            import_vcf(vcf_data, is_update=args.update)
                             output_trigger |= 1
                             print print_colors("OK!", 'green')
 
@@ -403,7 +408,7 @@ def handle_autobox():
                             output_trigger |= 4
                             if args.import_var:
                                 print "• import Annotation ...",
-                                import_anno(anno_data, passive=args.update)
+                                import_anno(anno_data, is_update=args.update)
                                 output_trigger |= 2
                                 print print_colors("OK!", 'green')
 
@@ -420,41 +425,42 @@ def handle_autobox():
 
 
 def handle_brca():
+    global table_vcf, table_anno
+    table_vcf = "BRCA_VCF"
+    table_anno = "BRCA_anno"
+
     vcf_data = []
     anno_data = []
 
     pipeline = args.pipeline
     dir_data = args.dir_data
+    dir_name = os.path.basename(dir_data)
 
-    dirname = os.path.basename(dir_data)
     # handle run batch number
-    if re.match('BRCA|onco', dirname):
-        run_bn = re.match('(?:BRCA|onco)(.+)', dirname).group(1)
+    if re.match('BRCA|onco', dir_name):
+        run_bn = re.match('(?:BRCA|onco)(.+)', dir_name).group(1)
     else:
-        run_bn = dirname
-    print print_colors("<%s>" % run_bn, 'red')
+        run_bn = dir_name
+    print print_colors("<%s>" % dir_data, 'red')
 
     sap_ids = {}
     for f in os.listdir(dir_data):
-        if pipeline == 'Miseq':
-            sap_id = re.match('(.+?)_', f).group(1)
-        elif pipeline == 'cedar':
-            sap_id = re.match('(.+?)\.', f).group(1)
-        else:
-            sap_id = re.match('(.+?)_', f).group(1)
-            print print_colors('suppose sample id: %s' % sap_id, 'red')
-
-        if sap_id not in sap_ids:
-            print print_colors("-{%s}" % sap_id)
-            sap_ids[sap_id] = 0
-
         if args.import_var and re.search('\.vcf$', f):
+            if pipeline == 'Miseq':
+                sap_id = re.match('(.+?)_', f).group(1)
+            elif pipeline == 'cedar':
+                sap_id = re.match('(.+?)\.', f).group(1)
+
+            if sap_id not in sap_ids:
+                print print_colors("-{%s}" % sap_id)
+                sap_ids[sap_id] = 0
+
             vcf_body = parse_vcf(os.path.join(dir_data, f))
             for vcf_line in vcf_body:
                 vcf_data.append([pipeline, sap_id, run_bn] + vcf_line + parse_info(vcf_line[-3]) + \
                                 parse_format(vcf_line[-2], vcf_line[-1]))
             print "• import vcf ...",
-            import_vcf(vcf_data, passive=args.update)
+            import_vcf(vcf_data, is_update=args.update)
             sap_ids[sap_id] |= 1
             print print_colors("OK!", 'green')
 
@@ -475,7 +481,7 @@ if __name__ == '__main__':
     parser_a.set_defaults(func=handle_autobox)
 
     parser_b = subparsers.add_parser('brca', help='from [project]BRCA')
-    parser_b.add_argument('pipeline', help='specify pipeline')
+    parser_b.add_argument('pipeline', choices=['Miseq', 'cedar'], help='specify pipeline')
     parser_b.add_argument('dir_data', help='dir of data')
     parser_b.add_argument('-i', '--import_var', action='store_true', help='import vcf and annotation(raw_variants.vcf).')
     parser_b.add_argument('-c', '--cross', action='store_true', help='cross vcf with annotation after import.')

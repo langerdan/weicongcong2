@@ -31,7 +31,7 @@ def parse_vcf(p_vcf):
                 ver = re.match('##fileformat=VCFv(.+)[\r\n]', line).group(1)
             if re.match('#', line):
                 continue
-            if ver == "4.1":
+            if ver == "4.1" or "4.2":
                 chr_n = re.match('([^\t]+)\t', line).group(1)
                 pos = int(re.match('[^\t]+\t([^\t]+)\t', line).group(1))
                 id_snp = re.match('(?:[^\t]+\t){2}([^\t]+)\t', line).group(1)
