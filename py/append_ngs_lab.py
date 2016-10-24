@@ -23,7 +23,8 @@ already_had = {
     "onco": ['onco160719+20', 'onco160729', 'onco160802', 'onco160804', 'onco160811', 'onco160813', 'onco160815',
              'onco160819', 'onco160824', 'onco160830', 'onco160830-42gene', 'onco160906', 'onco160913-42gene',
              'onco160919', 'onco160919-42gene', 'onco160920', 'onco160920-42gene', 'onco160925', 'onco160925-42gene', 
-             'onco160928', 'onco160928-42gene', 'onco160929', 'onco160929-42gene', 'onco160930', 'onco160930-42gene']
+             'onco160928', 'onco160928-42gene', 'onco160929', 'onco160929-42gene', 'onco160930', 'onco160930-42gene',
+             'onco161012', 'onco161012-42gene', 'onco161018', 'onco161018-42gene', 'onco161019', 'onco161019-42gene']
 }
 
 

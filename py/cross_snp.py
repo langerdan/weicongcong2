@@ -4,7 +4,7 @@
 # AUTHOR  : codeunsolved@gmail.com
 # CREATED : September 20 2016
 # VERSION : v0.0.1
-# UPDATE  : [v0.0.1] Octorber 12 2016
+# UPDATE  : [v0.0.1] October 12 2016
 # 1. add argparse to parse args;
 
 from __future__ import division
@@ -217,7 +217,7 @@ def set_style(height=210, bold=False, background_color='aqua', font_color='black
 
 
 def output_cross(cross_snp_d, cross_anvc_d, dir_output, sap_id):
-    path_cross_anvc = os.path.join(dir_output, "%s_SNPxls" % sap_id)
+    path_cross_anvc = os.path.join(dir_output, "%s_SNP.xls" % sap_id)
 
     workbook = xlwt.Workbook(style_compression=2)
     sheet1 = workbook.add_sheet(u'SNP', cell_overwrite_ok=True)
@@ -392,7 +392,7 @@ def handle_autobox():
                     output_trigger = 0 if args.import_var else 3
                     vcf_mismatch = {}
                     for f in os.listdir(dir_sap):
-                        pipeline = re.search('%s(_.+_)$' % str(run_bn + offset), run).group(1)
+                        pipeline = re.search('%s(_.+_?)$' % str(run_bn + offset), run).group(1)
                         if args.import_var and re.search('raw_variants\.vcf$', f):
                             vcf_body = parse_vcf(os.path.join(dir_sap, f))
                             for vcf_line in vcf_body:
