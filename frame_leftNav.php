@@ -44,7 +44,7 @@ echo <<<LEFT_NAV
 									</li>
 									<li><a><i class="fa fa-exchange"></i> 注释 <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
-											<li><a href="db_topanno.php">TopAnno</a></li>
+											<li><a href="anno_withannovar.php">withAnnovar</a></li>
 										</ul>
 									</li>
 									<li><a><i class="fa fa-database"></i> 数据库 <span class="fa fa-chevron-down"></span></a>
@@ -54,7 +54,12 @@ echo <<<LEFT_NAV
 									</li>
 									<li><a><i class="fa fa-book"></i> 文档 <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
-											<li><a href="doc_ref.php">参考</a></li>
+											<li><a href="doc_ref.php">Ref</a></li>
+										</ul>
+									</li>
+									<li><a><i class="fa fa-area-chart"></i> 分析 <span class="fa fa-chevron-down"></span></a>
+										<ul class="nav child_menu">
+											<li><a href="anly_largedel_brca.php">BRCA 大片段缺失</a></li>
 										</ul>
 									</li>
 									<li><a><i class="fa fa-calculator"></i> 工具 <span class="fa fa-chevron-down"></span></a>

@@ -68,7 +68,7 @@ def print_colors(string, color='blue'):
     return colors[color] + string + colors['end']
 
 
-def get_file_path(dir_main, suffix='faa', output_type='list', r_num=2):
+def get_file_path(dir_main, suffix='faa', output_type='list', r_num=2, debug=True):
     def recurse_dir(dir_r, path_list, suffix_r, r_num_r):
         r_num_r -= 1
         content_list = os.listdir(dir_r)
@@ -76,8 +76,9 @@ def get_file_path(dir_main, suffix='faa', output_type='list', r_num=2):
             path_content = os.path.join(dir_r, content)
             if os.path.isdir(path_content) and r_num_r:
                 recurse_dir(path_content, path_list, suffix, r_num_r)
-            elif re.search('\.' + suffix_r + '$', content):
-                print path_content
+            elif re.search('\.%s$' % suffix_r, content):
+                if debug:
+                    print path_content
                 path_list.append(path_content)
         return path_list
 

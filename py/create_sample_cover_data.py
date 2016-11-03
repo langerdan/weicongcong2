@@ -19,6 +19,7 @@ import re
 import sys
 import json
 import shutil
+import argparse
 
 from base import read_bed
 from base import clean_output
@@ -27,11 +28,6 @@ from database_connector import MysqlConnector
 from config import mysql_config
 
 # CONFIG AREA #
-dir_data = sys.argv[1]
-path_bed = sys.argv[2]
-options = "depth" if len(sys.argv) < 4 else sys.argv[3]
-
-dir_output = os.path.join(r'/Users/codeunsolved/Sites/topgen-dashboard/data', os.path.basename(dir_data))
 depth_levels = [0, 20, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 1000]
 depth_suffix = "depth"
 
@@ -127,7 +123,7 @@ def import_qc_seqdata(data):
         if m_con.query("SELECT id FROM QC_SeqData "
                        "WHERE Project=%s AND SAP_id=%s AND RUN_bn=%s",
                        d[:3]).rowcount == 1:
-            print "=>record existed! update %s" % d[3:]
+            print "=>update %s" % d[3:]
             m_con.query("UPDATE QC_SeqData "
                         "SET SDP=%s, PASS=%s "
                         "WHERE Project=%s AND SAP_id=%s AND RUN_bn=%s",
@@ -148,13 +144,13 @@ def cp_fastqc(sap_name, sdp):
             if re.search('R1', fqc_html_file):
                 print print_colors("=>R1's fastqc html: %s ..." % fqc_html_file),
                 shutil.copy(path_fqc_html_file, os.path.join(dir_output, "fastqc"))
-                sdp["fastqc"].append("data/%s/fastqc/%s" % (dirname, fqc_html_file))
+                sdp["fastqc"].append("data/%s/fastqc/%s" % (dir_name, fqc_html_file))
                 copy_trigger |= 1
                 print print_colors("OK!", 'green')
             if re.search('R2', fqc_html_file):
                 print print_colors("=>R2's fastqc html: %s ..." % fqc_html_file),
                 shutil.copy(path_fqc_html_file, os.path.join(dir_output, "fastqc"))
-                sdp["fastqc"].append("data/%s/fastqc/%s" % (dirname, fqc_html_file))
+                sdp["fastqc"].append("data/%s/fastqc/%s" % (dir_name, fqc_html_file))
                 copy_trigger |= 2
                 print print_colors("OK!", 'green')
     if ~copy_trigger & 1:
@@ -163,6 +159,18 @@ def cp_fastqc(sap_name, sdp):
         print print_colors("=>R2's fastqc html: nonExistent!", 'red')
 
 if __name__ == '__main__':
+    # parse args
+    parser = argparse.ArgumentParser(prog='create sample cover data')
+    parser.add_argument('dir_data', type=str, help="path of data's directory")
+    parser.add_argument('path_bed', type=str, help="path of bed file")
+    parser.add_argument('-d', '--depth', action='store_false', help="skip depth statistics")
+
+    args = parser.parse_args()
+    
+    dir_data = args.dir_data
+    path_bed = args.path_bed
+    dir_output = os.path.join(r'/Users/codeunsolved/Sites/topgen-dashboard/data', os.path.basename(dir_data))
+
     print print_colors("clean dir output ..."),
     clean_output(dir_output, "sample_cover")
     clean_output(dir_output, "fastqc")
@@ -170,40 +178,40 @@ if __name__ == '__main__':
     frag_details = read_bed(path_bed)
     frag_details_sorted = sorted(frag_details.iteritems(), key=lambda d: (d[1][0], d[1][2]))
 
-    dirname = os.path.basename(dir_data)
+    dir_name = os.path.basename(dir_data)
     # handle project
-    if re.search('BRCA', dirname):
+    if re.search('BRCA', dir_name):
         project = 'BRCA'
-    elif re.search('onco', dirname):
+    elif re.search('onco', dir_name):
         project = '56gene'
     else:
         project = 'unknown'
     # handle run batch number
-    if re.match('BRCA|onco', dirname):
-        run_bn = re.match('(?:BRCA|onco)(.+)', dirname).group(1)
+    if re.match('BRCA|onco', dir_name):
+        run_bn = re.match('(?:BRCA|onco)(.+)', dir_name).group(1)
     else:
-        run_bn = dirname
+        run_bn = dir_name
 
     sample_num = 0
     sample_cover = []
     mysql_data = []
-    for file in os.listdir(dir_data):
-        if re.match('^.+\.%s$' % depth_suffix, file):
-            print print_colors("process with %s" % print_colors(file, 'yellow'))
+    for f in os.listdir(dir_data):
+        if re.match('^.+\.%s$' % depth_suffix, f):
+            print print_colors("<%s>" % f)
             sample_num += 1
 
             # handle sample name
-            file_name = re.match('(.+)\.%s' % depth_suffix, file).group(1)
+            file_name = re.match('(.+)\.%s' % depth_suffix, f).group(1)
             if re.search('_S\d+', file_name):
                 sample_name = re.match('(.+)_S\d+', file_name).group(1)
             elif re.search('autoBox', file_name):
                 sample_name = re.match('(.+)_20\d{2}_\d{2}_\d{2}', file_name).group(1)
 
-            with open(os.path.join(dir_data, file), 'rb') as depth_file:
+            with open(os.path.join(dir_data, f), 'rb') as depth_file:
                 sample_cover.append(init_sample_cover(sample_name))
                 depth_level_stat = {"sample": init_depth_level_stat(), "frag": {}}
                 depth_digest_stat = {"sample": {"sum": 0, "len": 0, "max": None, "min": None}, "frag": {}}
-                if re.search('depth', options):
+                if args.depth:
                     for line_depth in depth_file:
                         chr_n = re.match('([^\t]+)\t', line_depth).group(1)
                         pos = int(re.match('[^\t]+\t([^\t]+\t)', line_depth).group(1))
@@ -265,9 +273,12 @@ if __name__ == '__main__':
                             frag_cover[key]["frag_data"]["min_depth"] = depth_digest_stat["frag"][key]["min"]
                             # add frag depth level
                             for depth_level in depth_levels:
-                                frag_cover[key]["depth_levels"].append([str(depth_level), round(
-                                    depth_level_stat["frag"][key][str(depth_level)] /
-                                    depth_digest_stat["frag"][key]["len"] * 100, 2)])
+                                frag_cover[key]["depth_levels"].append(
+                                    [str(depth_level), round(
+                                        depth_level_stat["frag"][key][str(depth_level)] /
+                                        depth_digest_stat["frag"][key]["len"] * 100, 2
+                                    )]
+                                )
                             # add frag cover path
                             frag_cover[key]["path"] = "data/%s/sample_cover/%s/%s.json" % \
                                                       (os.path.basename(dir_output), sample_name, key)
@@ -338,10 +349,9 @@ if __name__ == '__main__':
                 # copy fastqc html
                 cp_fastqc(sample_name, sample_cover[-1]["sdp"])
 
-    print print_colors("output data ..."),
+    print print_colors("• output data ..."),
     output_sample_cover_data(sample_cover, sample_num, len(frag_details))
     print print_colors("OK!", 'green')
-    print print_colors("insert data ..."),
+    print print_colors("• import data ...")
     import_qc_seqdata(mysql_data)
-    # print mysql_data
     print print_colors("OK!", 'green')
