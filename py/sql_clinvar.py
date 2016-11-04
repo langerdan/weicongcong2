@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# PROGRAM : sql_CLINVAR
+# PROGRAM : sql_Clinvar
 # AUTHOR  : codeunsolved@gmail.com
 # CREATED : September 7 2016
 # VERSION : v0.0.1a

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
- * PAGE    : db_clinvar
+ * PAGE    : db_Clinvar
  * AUTHOR  : codeunsolved@gmail.com
  * CREATED : September 6 2016
  * VERSION : v0.0.1a

@@ -1,5 +1,5 @@
 /**
- * PROGRAM : QC_Report_SD
+ * PROGRAM : QC_report_SD
  * AUTHOR  : codeunsolved@gmail.com
  * CREATED : September 1 2016
  * VERSION : v0.0.1
