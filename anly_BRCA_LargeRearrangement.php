@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <!--
- * PAGE    : anno_withAnnovar
+ * PAGE    : anly_BRCA_LargeRearrangement
  * AUTHOR  : codeunsolved@gmail.com
- * CREATED : October 31 2016
+ * CREATED : November 3 2016
  * VERSION : v0.0.1a
 -->
 <html lang="en">
@@ -13,7 +13,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<title>注释 － withAnnovar</title>
+		<title>分析 - BRCA大片段缺失</title>
 
 		<!-- Bootstrap -->
 		<link href="./vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -34,7 +34,7 @@
 	<body class="nav-md">
 		<div class="container body">
 			<div class="main_container">
-
+				
 				<!-- left navigation -->
 				<?php include 'frame_leftNav.php';?>
 				<!-- /left navigation -->
@@ -45,12 +45,12 @@
 
 				<!-- page content -->
 				<div class="right_col" role="main">
-					<!-- search TopAnno database -->
+					<!-- search QC report database -->
 					<div class="row" >
 						<div class="col-md-12 col-sm-12 col-xs-12">
 							<div class="x_panel">
 								<div class="x_title">
-									<h2>检索VCF/注释</h2>
+									<h2>检索大片段分析结果</h2>
 									<div class="clearfix"></div>
 								</div>
 								<div class="x_content">
@@ -64,18 +64,9 @@
 											</div>
 										</div>
 
-										<div class="col-md-2 col-sm-2 col-xs-2">
-											<select name="project" class="form-control">
-												<option value="56gene" selected> 56gene </option>
-												<option value="brca"> BRCA </option>
-											</select>
-										</div>
-										<div id="search_options" class="col-md-10 col-sm-10 col-xs-10">
+										<div id="search_options" class="col-md-7 col-sm-7 col-xs-7">
 											<input type="radio" class="flat" name="search_options" value="all" checked> All&nbsp;&nbsp;
 											<input type="radio" class="flat" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
-											<input type="radio" class="flat" name="search_options" value="sample_type"> 样本类型&nbsp;&nbsp;
-											<input type="radio" class="flat" name="search_options" value="lib_reagent"> 建库试剂&nbsp;&nbsp;
-											<input type="radio" class="flat" name="search_options" value="lib_bn"> 建库批次&nbsp;&nbsp;
 											<input type="radio" class="flat" name="search_options" value="run_bn"> 上机批次&nbsp;&nbsp;
 										</div>
 									</div>
@@ -90,20 +81,26 @@
 													<div class="clearfix"></div>
 												</div>
 												<div class="x_content">
-													<table id="datatable_searchresults" class="table table-striped table-bordered jambo_table">
+													<table id="datatable_searchresults" class="table table-striped table-bordered jambo_table bulk_action">
 														<thead>
-															<tr>
+															<tr class="headings">
+																<th>
+																	<input type="checkbox" id="check-all" class="flat">
+																</th>
 																<th class="column-title">序号</th>
 																<th class="column-title">样本编号</th>
-																<th class="column-title">样本类型</th>
-																<th class="column-title">建库试剂</th>
-																<th class="column-title">建库批次</th>
 																<th class="column-title">上机批次</th>
-																<th class="column-title">注释</th>
+																<th class="column-title">大片段缺失</th>
+																<th class="column-title">忽略扩增子</th>
+																<th class="column-title">备注</th>
+																<th class="bulk-actions" colspan="6">
+																	<a class="antoo" style="color:#fff; font-weight:500;">样本比较 ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
+																</th>
 															</tr>
 														</thead>
 													</table>
 												</div>
+												<div id="sample_comparision" style="display: none;"><button class="btn btn-success"><i class="fa fa-bar-chart"></i> 多样本比较 </button></div>
 											</div>
 										</div>
 									</div>
@@ -111,24 +108,41 @@
 							</div>
 						</div>
 					</div>
-					<!-- /search TopAnno database -->
+					<!-- /search QC report database -->
 
-					<!-- TopAnno outputs -->
+					<!-- QC report -->
 					<div class="row">
-						<div class="col-md-12 col-sm-12 col-xs-12">
-							<div class="x_panel">
-								<div class="x_title">
-									<h2>注释</h2>
-									<div class="clearfix"></div>
-								</div>
-								<div class="x_content">
-									<table id="datatable_topanno" class="table table-striped table-bordered jambo_table">
-									</table>
+						<div class="x_title">
+							<h2>BRCA大片段分析结果 v0.0.1</h2>
+							<div class="clearfix"></div>
+						</div>
+						<div class="x_content">
+							<!-- report header -->
+							<div class="row">
+								<div class="col-md-12 col-sm-12 col-xs-12">
+									<div class="x_panel">
+										<h4 class="name_title">样本名称：<strong id="sample_name">???</strong></h4>
+										<div class="byline">
+											<span>数据版本：<strong id="data_ver" style="color: green"></strong></span>
+										</div>
+										<div class="divider-dashed"></div>
+										<div id="pass_details" class="x_content"></div>
+									</div>
 								</div>
 							</div>
-						</div>
+							<!-- /report header -->
+
+							<!-- FastQC -->
+							<div class="row">
+								<div class="col-md-12 col-sm-12 col-xs-12">
+									<div class="x_panel">
+										<div class="x_title">
+											<h4 class="name_title">FASTQC</h4>
+											<div class="clearfix"></div>
+										</div>
+										<div class="x_content">
 					</div>
-					<!-- /TopAnno outputs -->
+					<!-- /QC report -->
 				</div>
 				<!-- /page content -->
 
@@ -157,11 +171,13 @@
 		<script src="./vendors/jszip/dist/jszip.min.js"></script>
 		<script src="./vendors/pdfmake/build/pdfmake.min.js"></script>
 		<script src="./vendors/pdfmake/build/vfs_fonts.js"></script>
+		<!-- Chart.js -->
+		<script src="./vendors/Chart.js/dist/Chart.min.js"></script>
 
 		<!-- Custom Theme Scripts -->
-		<script src="./build/js/custom.min.js"></script>
+		<script src="./build/js/custom.min-qc_report.js"></script>
 
-		<!-- DB TopAnno js -->
-		<script src="./js/db_querytopanno.js"></script>
+		<!-- anly BRCA largeDel js -->
+		<script src="./js/anly_brca_largerearrangement.js"></script>
 	</body>
 </html>

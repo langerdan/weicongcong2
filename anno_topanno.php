@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
- * PAGE    : anno_topanno
+ * PAGE    : anno_TopAnno
  * AUTHOR  : codeunsolved@gmail.com
  * CREATED : September 14 2016
  * VERSION : v0.0.1a
@@ -162,6 +162,6 @@
 		<script src="./build/js/custom.min.js"></script>
 
 		<!-- DB TopAnno js -->
-		<script src="./js/db_querytopanno.js"></script>
+		<script src="./js/db_topanno.js"></script>
 	</body>
 </html>

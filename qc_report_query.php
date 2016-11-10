@@ -1,5 +1,5 @@
 <?php
-/* PAGE    : DB_report_query
+/* PAGE    : qc_report_query
  * AUTHOR  : codeunsolved@gmail.com
  * CREATED : August 31 2016
  * VERSION : v0.0.1a
@@ -40,27 +40,27 @@ switch ($query['func']) {
 				}
 				switch ($query['opt']) {
 					case 'all':
-						$result = mysql_query("SELECT SAP_id, SAP_type, LIB_reagent, LIB_bn, RUN_bn  FROM $table WHERE SAP_id LIKE '%".$query['term']."%' OR SAP_type LIKE '%".$query['term']."%' OR EXTR_man LIKE '%".$query['term']."%' OR EXTR_date LIKE '%".$query['term']."%' OR EXTR_QC_result LIKE '%".$query['term']."%' OR EXTR_QC_url LIKE '%".$query['term']."%' OR EXTR_note LIKE '%".$query['term']."%' OR LIB_man LIKE '%".$query['term']."%' OR LIB_date LIKE '%".$query['term']."%' OR LIB_bn LIKE '%".$query['term']."%' OR LIB_reagent LIKE '%".$query['term']."%' OR LIB_barcode LIKE '%".$query['term']."%' OR LIB_TempAmo_start LIKE '%".$query['term']."%' OR LIB_Cycles_BefHybrid LIKE '%".$query['term']."%' OR LIB_Conce_BefHybrid LIKE '%".$query['term']."%' OR LIB_Conce_Cap LIKE '%".$query['term']."%' OR LIB_Vol_Cap LIKE '%".$query['term']."%' OR LIB_QC_result LIKE '%".$query['term']."%' OR LIB_QC_url LIKE '%".$query['term']."%' OR LIB_note LIKE '%".$query['term']."%' OR RUN_man LIKE '%".$query['term']."%' OR RUN_date LIKE '%".$query['term']."%' OR RUN_bn LIKE '%".$query['term']."%' OR RUN_QC_result LIKE '%".$query['term']."%' OR RUN_deDup LIKE '%".$query['term']."%' OR RUN_QC_url LIKE '%".$query['term']."%' OR RUN_note LIKE '%".$query['term']."%' OR NOTE LIKE '%".$query['term']."%' OR STATE LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
+						$result = mysql_query("SELECT SAP_id, SAP_type, RUN_bn  FROM $table WHERE SAP_id LIKE '%".$query['term']."%' OR SAP_type LIKE '%".$query['term']."%' OR EXTR_man LIKE '%".$query['term']."%' OR EXTR_date LIKE '%".$query['term']."%' OR EXTR_QC_result LIKE '%".$query['term']."%' OR EXTR_QC_url LIKE '%".$query['term']."%' OR EXTR_note LIKE '%".$query['term']."%' OR LIB_man LIKE '%".$query['term']."%' OR LIB_date LIKE '%".$query['term']."%' OR LIB_bn LIKE '%".$query['term']."%' OR LIB_reagent LIKE '%".$query['term']."%' OR LIB_barcode LIKE '%".$query['term']."%' OR LIB_TempAmo_start LIKE '%".$query['term']."%' OR LIB_Cycles_BefHybrid LIKE '%".$query['term']."%' OR LIB_Conce_BefHybrid LIKE '%".$query['term']."%' OR LIB_Conce_Cap LIKE '%".$query['term']."%' OR LIB_Vol_Cap LIKE '%".$query['term']."%' OR LIB_QC_result LIKE '%".$query['term']."%' OR LIB_QC_url LIKE '%".$query['term']."%' OR LIB_note LIKE '%".$query['term']."%' OR RUN_man LIKE '%".$query['term']."%' OR RUN_date LIKE '%".$query['term']."%' OR RUN_bn LIKE '%".$query['term']."%' OR RUN_QC_result LIKE '%".$query['term']."%' OR RUN_deDup LIKE '%".$query['term']."%' OR RUN_QC_url LIKE '%".$query['term']."%' OR RUN_note LIKE '%".$query['term']."%' OR NOTE LIKE '%".$query['term']."%' OR STATE LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
 						break;
 
 					case 'sample_id':
-						$result = mysql_query("SELECT SAP_id, SAP_type, LIB_reagent, LIB_bn, RUN_bn FROM $table WHERE SAP_id LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
+						$result = mysql_query("SELECT SAP_id, SAP_type, RUN_bn FROM $table WHERE SAP_id LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
 						break;
 
 					case 'sample_type':
-						$result = mysql_query("SELECT SAP_id, SAP_type, LIB_reagent, LIB_bn, RUN_bn FROM $table WHERE SAP_type LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
+						$result = mysql_query("SELECT SAP_id, SAP_type, RUN_bn FROM $table WHERE SAP_type LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
 						break;
 
 					case 'lib_reagent':
-						$result = mysql_query("SELECT SAP_id, SAP_type, LIB_reagent, LIB_bn, RUN_bn FROM $table WHERE LIB_reagent LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
+						$result = mysql_query("SELECT SAP_id, SAP_type, RUN_bn FROM $table WHERE LIB_reagent LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
 						break;
 
 					case 'lib_bn':
-						$result = mysql_query("SELECT SAP_id, SAP_type, LIB_reagent, LIB_bn, RUN_bn FROM $table WHERE LIB_bn LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
+						$result = mysql_query("SELECT SAP_id, SAP_type, RUN_bn FROM $table WHERE LIB_bn LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
 						break;
 
 					case 'run_bn':
-						$result = mysql_query("SELECT SAP_id, SAP_type, LIB_reagent, LIB_bn, RUN_bn FROM $table WHERE RUN_bn LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
+						$result = mysql_query("SELECT SAP_id, SAP_type, RUN_bn FROM $table WHERE RUN_bn LIKE '%".$query['term']."%'") or die('Query Error: '.mysql_error());
 						break;
 				}
 				$response = array('data' => array());
@@ -100,10 +100,10 @@ function getSDP($col, $report_type, $proj, $sap_id, $run_bn) {
 		switch ($col) {
 			case 'checkbox':
 				if ($row_num == 0) {
-					return "<input type=\"checkbox\" class=\"flat\" name=\"sdp\" value=0>";
+					return "<input type=\"checkbox\" class=\"flat\" name=\"sap_select\" value=0>";
 				}else {
 					$sdp = mysql_fetch_array($result)[0];
-					return "<input type=\"checkbox\" class=\"flat\" name=\"sdp\" value=\"$sdp\">";
+					return "<input type=\"checkbox\" class=\"flat\" name=\"sap_select\" value=\"$sdp\">";
 				}
 				break;
 			case 'anchor':
@@ -113,9 +113,9 @@ function getSDP($col, $report_type, $proj, $sap_id, $run_bn) {
 					$row = mysql_fetch_array($result);
 					$sdp = $row[0];
 					if ($row[1]) {
-						return "<span style=\"color: green;\"><strong> PASS </strong></span><a href=\"#\" onclick=\"loadReport_QC_SD('$sdp');return false;\">查看</a>";
+						return "<span style=\"color: green;\"><strong> PASS </strong></span><a href=\"#\" onclick=\"loadReport_QC_SeqData('$sdp');return false;\">查看</a>";
 					}else {
-						return "<span style=\"color: red;\"><strong> FAILED </strong></span><a href=\"#\" onclick=\"loadReport_QC_SD('$sdp');return false;\">查看</a>";
+						return "<span style=\"color: red;\"><strong> FAILED </strong></span><a href=\"#\" onclick=\"loadReport_QC_SeqData('$sdp');return false;\">查看</a>";
 					}
 				}
 				break;

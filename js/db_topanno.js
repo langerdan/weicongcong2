@@ -1,5 +1,5 @@
 /**
- * PROGRAM : DB_queryTopAnno
+ * PROGRAM : DB_TopAnno
  * AUTHOR  : codeunsolved@gmail.com
  * CREATED : September 18 2016
  * VERSION : v0.0.1a
@@ -104,9 +104,9 @@ function loadAnnoData(path) {
 }
 
 function getDirname(path) {
-	 return path.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+	return path.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
 }
 
 function getBasename(path) {
-	 return path.replace(/\\/g,'/').replace( /.*\//, '' );
+	return path.replace(/\\/g,'/').replace( /.*\//, '' );
 }

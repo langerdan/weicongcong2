@@ -37,7 +37,7 @@
 					</div>
 					<div class="x_content">
 						<div class="col-md-12 col-sm-12 col-xs-12">
-							<table id="datatable_fastqc_basic" class="table table-striped table-bordered jambo_table">
+							<table id="dt_fastqc_basic" class="table table-striped table-bordered jambo_table">
 								<thead>
 									<tr>
 										<th>Filename</th>
@@ -150,7 +150,7 @@
 						<div class="divider-dashed"></div>
 
 						<p><strong>0x 片段 :</strong></p>
-						<table id="datatable_0x_frag" class="table table-striped table-bordered jambo_table">
+						<table id="dt_0x_frag" class="table table-striped table-bordered jambo_table">
 							<thead>
 								<tr>
 									<th>Fragment Name</th>
@@ -162,7 +162,7 @@
 						<div class="divider-dashed"></div>
 
 						<p><strong>缺失 片段 :</strong></p>
-						<table id="datatable_absent_frag" class="table table-striped table-bordered jambo_table">
+						<table id="dt_absent_frag" class="table table-striped table-bordered jambo_table">
 							<thead>
 								<tr>
 									<th>Fragment Name</th>
@@ -184,7 +184,7 @@
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<table id="datatable_frag_DL" class="table table-striped table-bordered jambo_table">
+						<table id="dt_frag_depth_level" class="table table-striped table-bordered jambo_table">
 						</table>
 					</div>
 				</div>

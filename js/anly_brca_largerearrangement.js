@@ -1,7 +1,7 @@
 /**
- * PROGRAM : anly_BRCA_largeDel
+ * PROGRAM : anly_BRCA_LargeRearrangement
  * AUTHOR  : codeunsolved@gmail.com
  * CREATED : November 4 2016
  * VERSION : v0.0.1a
- /
+ */
 

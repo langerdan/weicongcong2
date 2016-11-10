@@ -1,8 +1,8 @@
 /**
- * PROGRAM	: DB_queryLab
- * AUTHOR   : codeunsolved@gmail.com
- * CREATED	: August 23 2016
- * VERSION	: v0.0.1a
+ * PROGRAM : DB_Lab
+ * AUTHOR  : codeunsolved@gmail.com
+ * CREATED : August 23 2016
+ * VERSION : v0.0.1a
  */
 
 $(document).ready(function() {

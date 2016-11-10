@@ -1,6 +1,6 @@
 function countChecked() {
-	"all" === checkState && $(".bulk_action input[name='sdp']").iCheck("check"), "none" === checkState && $(".bulk_action input[name='sdp']").iCheck("uncheck");
-	var e = $(".bulk_action input[name='sdp']:checked").length;
+	"all" === checkState && $(".bulk_action input[name='sap_select']").iCheck("check"), "none" === checkState && $(".bulk_action input[name='sap_select']").iCheck("uncheck");
+	var e = $(".bulk_action input[name='sap_select']:checked").length;
 	e ? ($(".column-title").hide(), $(".bulk-actions").show(), $(".action-cnt").html(e + " Records Selected")) : ($(".column-title").show(), $(".bulk-actions").hide())
 }
 var CURRENT_URL = window.location.href.split("?")[0],

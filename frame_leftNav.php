@@ -42,24 +42,20 @@ echo <<<LEFT_NAV
 											<li><a href="qc_amplicon.php">扩增子检测</a></li>
 										</ul>
 									</li>
-									<li><a><i class="fa fa-exchange"></i> 注释 <span class="fa fa-chevron-down"></span></a>
-										<ul class="nav child_menu">
-											<li><a href="anno_withannovar.php">withAnnovar</a></li>
-										</ul>
-									</li>
 									<li><a><i class="fa fa-database"></i> 数据库 <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
 											<li><a href="db_lab.php">NGS lab</a></li>
 										</ul>
 									</li>
-									<li><a><i class="fa fa-book"></i> 文档 <span class="fa fa-chevron-down"></span></a>
-										<ul class="nav child_menu">
-											<li><a href="doc_ref.php">Ref</a></li>
-										</ul>
-									</li>
 									<li><a><i class="fa fa-area-chart"></i> 分析 <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
-											<li><a href="anly_largedel_brca.php">BRCA 大片段缺失</a></li>
+											<li><a href="anly_withAnnovar.php">withAnnovar</a></li>
+											<li><a href="anly_BRCA_LargeRearrangement.php">BRCA LargeRearrangement</a></li>
+										</ul>
+									</li>
+									<li><a><i class="fa fa-book"></i> 文档 <span class="fa fa-chevron-down"></span></a>
+										<ul class="nav child_menu">
+											<li><a href="doc_ref.php">参考手册</a></li>
 										</ul>
 									</li>
 									<li><a><i class="fa fa-calculator"></i> 工具 <span class="fa fa-chevron-down"></span></a>

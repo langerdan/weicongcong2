@@ -1,9 +1,8 @@
 /**
- * PROGRAM  : QC_loadAmpliconData
- * PURPOSE  :
- * AUTHOR   : codeunsolved@gmail.com
- * CREATED  : August 6 2016
- * VERSION  : v0.0.1a
+ * PROGRAM : QC_loadAmpliconData
+ * AUTHOR  : codeunsolved@gmail.com
+ * CREATED : August 6 2016
+ * VERSION : v0.0.1a
  */
 
 var color_sheet = new Array();

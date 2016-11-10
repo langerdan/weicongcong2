@@ -59,7 +59,7 @@
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<table id="datatable_summary" class="table table-striped table-bordered jambo_table">
+						<table id="dt_summary" class="table table-striped table-bordered jambo_table">
 							<thead>
 								<tr>
 									<th>序号</th>
@@ -88,7 +88,7 @@
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<table id="datatable_sample_depth_level" class="table table-striped table-bordered jambo_table">
+						<table id="dt_sample_depth_level" class="table table-striped table-bordered jambo_table">
 						</table>
 					</div>
 				</div>
@@ -103,7 +103,7 @@
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<table id="datatable_0x_frag" class="table table-striped table-bordered jambo_table">
+						<table id="dt_0x_frag" class="table table-striped table-bordered jambo_table">
 							<thead>
 								<tr>
 									<th>No.</th>
@@ -126,7 +126,7 @@
 						<div class="clearfix"></div>
 					</div>
 					<div class="x_content">
-						<table id="datatable_absent_frag" class="table table-striped table-bordered jambo_table">
+						<table id="dt_absent_frag" class="table table-striped table-bordered jambo_table">
 							<thead>
 								<tr>
 									<th>No.</th>
@@ -171,16 +171,16 @@
 
 			var dt= {};
 
-			document.getElementById("datatable_sample_depth_level").innerHTML = loadDLthead(sdp_list[0].depth_levels);
+			document.getElementById("dt_sample_depth_level").innerHTML = loadDepthLevelthead(sdp_list[0].depth_levels);
 
-			var export_fn_sum = "多样本比较-覆盖度统计汇总";
-			drawDataTable('#datatable_summary', export_fn_sum, {
+			var exp_fn_sum = "多样本比较-覆盖度统计汇总";
+			drawDataTable('#dt_summary', exp_fn_sum, {
 				data: getSapGeneral(sdp_list),
 				dom: "lfrtipB",
 				drawCallback: function(settings) {
-					var td_obj = $("#datatable_summary td");
+					var td_obj = $("#dt_summary td");
 					for (var i = 0; i < td_obj.length; i++) {
-						var cell = $("#datatable_summary td:eq(" + i + ")");
+						var cell = $("#dt_summary td:eq(" + i + ")");
 						var patt = /^[\d.]+%$/;
 						if (patt.test(cell.text())) {
 							var percent = cell.text().replace(/%/, "");
@@ -191,13 +191,13 @@
 				}
 			});
 
-			var export_fn_sdl = "多样本比较-目标区域覆盖度";
-			drawDataTable('#datatable_sample_depth_level', export_fn_sdl, {
-				data: getSapDL(sdp_list),
+			var exp_fn_sdl = "多样本比较-目标区域覆盖度";
+			drawDataTable('#dt_sample_depth_level', exp_fn_sdl, {
+				data: getSapDepthlevel(sdp_list),
 				drawCallback: function(settings) {
-					var td_obj = $("#datatable_sample_depth_level td");
+					var td_obj = $("#dt_sample_depth_level td");
 					for (var i = 0; i < td_obj.length; i++) {
-						var cell = $("#datatable_sample_depth_level td:eq(" + i + ")");
+						var cell = $("#dt_sample_depth_level td:eq(" + i + ")");
 						var patt = /^[\d.]+%$/;
 						if (patt.test(cell.text())) {
 							var percent = cell.text().replace(/%/, "");
@@ -208,21 +208,21 @@
 				}
 			});
 
-			var export_fn_abfrag = "多样本比较-缺失片段统计";
-			drawDataTable('#datatable_absent_frag', export_fn_abfrag, {
+			var exp_fn_abfrag = "多样本比较-缺失片段统计";
+			drawDataTable('#dt_absent_frag', exp_fn_abfrag, {
 				data: getFragStat(sdp_list, "absent_frag"),
 				dom: "lfrtipB",
 				order: [[2, 'des']]
 			});
 
-			var export_fn_0xfrag = "多样本比较-0x片段统计";
-			drawDataTable('#datatable_0x_frag', export_fn_0xfrag, {
+			var exp_fn_0xfrag = "多样本比较-0x片段统计";
+			drawDataTable('#dt_0x_frag', exp_fn_0xfrag, {
 				data: getFragStat(sdp_list, "0x_frag"),
 				dom: "lfrtipB",
 				order: [[2, 'des']]
 			});
 
-			function loadDLthead(data) {
+			function loadDepthLevelthead(data) {
 					table_head = "<thead><tr><th>No.</th><th>Sample Name</th>";
 					for	(var i in data) {
 							if (data[i][0] == 0) {
@@ -291,7 +291,7 @@
 				return data;
 			}
 
-			function getSapDL(sdp_list) {
+			function getSapDepthlevel(sdp_list) {
 				var data = new Array();
 				for (var i = 0; i < sdp_list.length; i++) {
 					var row = new Array();
@@ -359,46 +359,46 @@
 			}
 
 			function getHeatColor(percent) {
-					var h= percent / 100 * 90 / 360;
-					var s = 0.9;
-					var l = 0.5;
-					var rgb = HSLtoRGB(h, s, l);
-					return RGBToHex(rgb.r, rgb.g, rgb.b);
+				var h= percent / 100 * 90 / 360;
+				var s = 0.9;
+				var l = 0.5;
+				var rgb = HSLtoRGB(h, s, l);
+				return RGBToHex(rgb.r, rgb.g, rgb.b);
 			}
 
 			function HSLtoRGB(h, s, l){
-					var r, g, b;
+				var r, g, b;
 
-					if(s == 0){
-							r = g = b = l; // achromatic
-					}else{
-							var hue2rgb = function hue2rgb(p, q, t){
-									if(t < 0) t += 1;
-									if(t > 1) t -= 1;
-									if(t < 1/6) return p + (q - p) * 6 * t;
-									if(t < 1/2) return q;
-									if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-									return p;
-							}
-							var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-							var p = 2 * l - q;
-							r = hue2rgb(p, q, h + 1/3);
-							g = hue2rgb(p, q, h);
-							b = hue2rgb(p, q, h - 1/3);
+				if(s == 0){
+					r = g = b = l; // achromatic
+				}else{
+					var hue2rgb = function hue2rgb(p, q, t){
+						if(t < 0) t += 1;
+						if(t > 1) t -= 1;
+						if(t < 1/6) return p + (q - p) * 6 * t;
+						if(t < 1/2) return q;
+						if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+						return p;
 					}
-					return {
-							r: Math.round(r * 255),
-							g: Math.round(g * 255),
-							b: Math.round(b * 255)
-					};
+					var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+					var p = 2 * l - q;
+					r = hue2rgb(p, q, h + 1/3);
+					g = hue2rgb(p, q, h);
+					b = hue2rgb(p, q, h - 1/3);
+				}
+				return {
+					r: Math.round(r * 255),
+					g: Math.round(g * 255),
+					b: Math.round(b * 255)
+				};
 			}
 
 			function RGBToHex(r, g, b) {
-					function componentToHex(c) {
-							var hex = c.toString(16);
-							return hex.length == 1 ? "0" + hex : hex;
-					}
-					return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+				function componentToHex(c) {
+					var hex = c.toString(16);
+					return hex.length == 1 ? "0" + hex : hex;
+				}
+				return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 			}
 		</script>
 	</body>

@@ -1,5 +1,5 @@
 /**
- * PROGRAM : QC_report_SD
+ * PROGRAM : QC_report_SeqData
  * AUTHOR  : codeunsolved@gmail.com
  * CREATED : September 1 2016
  * VERSION : v0.0.1
@@ -8,9 +8,7 @@
  * 4. add function drawDataTable(); 5. change font color to white when HeatColor is too red; 6. add HeatColor to per_mapped_reads and per_target_reads;
  */
 
-var dt = {};
-
-function loadReport_QC_SD(sdp) {
+function loadReport_QC_SeqData(sdp) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (xhttp.readyState == 4 && xhttp.status == 200) {
@@ -44,8 +42,8 @@ function loadReport_QC_SD(sdp) {
 					fastqc_html_list.push([$.ajax({url: json.fastqc[i], async: false}).responseText, json.fastqc[i]]);
 				}
 				var export_fn_fqc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-FASTQC_Summary";
-				drawDataTable('#datatable_fastqc_basic', export_fn_fqc, {
-					"data": getFastqcBasic(fastqc_html_list)
+				drawDataTable('#dt_fastqc_basic', export_fn_fqc, {
+					data: getFastqcBasic(fastqc_html_list)
 				});
 				// extract FASTQC img
 				extractFastacImg('1', fastqc_html_list[0][0]);
@@ -73,26 +71,26 @@ function loadReport_QC_SD(sdp) {
 
 			// target base coverage
 			document.getElementById("num_target_bp").innerHTML = json.len_bp;
-			document.getElementById("sample_depth_level").innerHTML = loadSampleDL(json.depth_levels);
+			document.getElementById("sample_depth_level").innerHTML = loadSampleDepthLevel(json.depth_levels);
 			// draw datatable absent frag
-			var export_fn_abf = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-Absent_FRAG";
+			var exp_fn_abf = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-Absent_FRAG";
 			var data_absent_frag = new Array();
 			for (var i in json.absent_frag) {
 				var row = new Array();
 				row.push(json.absent_frag[i]);
 				data_absent_frag.push(row);
 			}
-			drawDataTable('#datatable_absent_frag', export_fn_abf, {
-				"data": data_absent_frag
+			drawDataTable('#dt_absent_frag', exp_fn_abf, {
+				data: data_absent_frag
 			});
 			// draw datatable 0x frag
-			var export_fn_0xf = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-0xFRAG";
-			drawDataTable('#datatable_0x_frag', export_fn_0xf, {
-				"data": get0xFrag(json, sdp),
-				"drawCallback": function(settings) {
-					var td_obj = $("#datatable_0x_frag td");
+			var exp_fn_0xf = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-0xFRAG";
+			drawDataTable('#dt_0x_frag', exp_fn_0xf, {
+				data: get0xFrag(json, sdp),
+				drawCallback: function(settings) {
+					var td_obj = $("#dt_0x_frag td");
 					for (var i = 0; i < td_obj.length; i++) {
-						var cell = $("#datatable_0x_frag td:eq(" + i + ")");
+						var cell = $("#dt_0x_frag td:eq(" + i + ")");
 						var patt = /^[\d.]+%$/;
 						if (patt.test(cell.text())) {
 							var percent = cell.text().replace(/%/, "");
@@ -102,18 +100,18 @@ function loadReport_QC_SD(sdp) {
 						}
 					}
 				},
-				"order": [[1, 'des']]
+				order: [[1, 'des']]
 			});
 
-			document.getElementById("datatable_frag_DL").innerHTML = loadFragCoverTable(json.depth_levels);
+			document.getElementById("dt_frag_depth_level").innerHTML = loadFragCoverTable(json.depth_levels);
 			// draw datatable frag depth level
 			var export_fn_fc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-" + json.sample_name + "-FRAG_COVER";
-			drawDataTable('#datatable_frag_DL', export_fn_fc, {
-				data: getFragDL(json.frag_cover_list, sdp),
+			drawDataTable('#dt_frag_depth_level', export_fn_fc, {
+				data: getFragDepthLevel(json.frag_cover_list, sdp),
 				drawCallback: function(settings) {
-					var td_obj = $("#datatable_frag_DL td");
+					var td_obj = $("#dt_frag_depth_level td");
 					for (var i = 0; i < td_obj.length; i++) {
-						var cell = $("#datatable_frag_DL td:eq(" + i + ")");
+						var cell = $("#dt_frag_depth_level td:eq(" + i + ")");
 						var patt = /^[\d.]+%$/;
 						if (patt.test(cell.text())) {
 							var percent = cell.text().replace(/%/, "");
@@ -129,7 +127,7 @@ function loadReport_QC_SD(sdp) {
 	xhttp.send();
 }
 
-function loadSampleDL(data) {
+function loadSampleDepthLevel(data) {
 	var table_body = "";
 	for (var i in data) {
 		if (i == 0) {
@@ -153,45 +151,6 @@ function loadSampleDL(data) {
 	}
 	table_body += "</tr></tbody>";
 	return table_body;
-}
-
-function drawDataTable(id, export_fn, options_add) {
-	var options = {
-		"dom": "lfrtipB",
-		"buttons": [
-			{
-				extend: "copy",
-				className: "btn-sm"
-			},
-			{
-				extend: "csv",
-				className: "btn-sm",
-				title: export_fn
-			},
-			{
-				extend: "excel",
-				className: "btn-sm",
-				title: export_fn
-			},
-			{
-				extend: "pdfHtml5",
-				className: "btn-sm",
-				title: export_fn
-			},
-			{
-				extend: "print",
-				className: "btn-sm",
-				title: export_fn
-				}
-			],
-		"responsive": true
-	};
-	for (var key in options_add) { options[key] = options_add[key]; }
-
-	if ($.fn.dataTable.isDataTable(id)) {
-		dt[id].destroy();
-	}
-	dt[id] = $(id).DataTable(options);
 }
 
 function getFastqcBasic(fqc_html_l) {
@@ -231,20 +190,20 @@ function get0xFrag(json, sdp){
 	});
 	for (var i in frag_0x_sorted) {
 		var row = new Array();
-		row.push("<a href=\"#\" onclick=\"openFragBaseCoverGraph('" + getFragJsonUrl(sdp, frag_0x_sorted[i][0]) + "');return false;\">" + frag_0x_sorted[i][0] + "</a>");
+		row.push("<a href=\"#\" onclick=\"openFragBaseCoverGraph('" + getFragJsonURL(sdp, frag_0x_sorted[i][0]) + "');return false;\">" + frag_0x_sorted[i][0] + "</a>");
 		row.push(frag_0x_sorted[i][1] + "%");
 		data.push(row);
 	}
 	return data;
 }
 
-function getFragDL(frag_cl, sdp) {
+function getFragDepthLevel(frag_cl, sdp) {
 	var data = new Array();
 	for (var i in frag_cl) {
 		var row = new Array();
 		for (var j in frag_cl[i].depth_levels) {
 			if (j == 0) {
-				row.push("<a href=\"#\" onclick=\"openFragBaseCoverGraph('" + getFragJsonUrl(sdp, frag_cl[i].frag_name) + "');return false;\">" + frag_cl[i].frag_name + "</a>");
+				row.push("<a href=\"#\" onclick=\"openFragBaseCoverGraph('" + getFragJsonURL(sdp, frag_cl[i].frag_name) + "');return false;\">" + frag_cl[i].frag_name + "</a>");
 			}
 			row.push(frag_cl[i].depth_levels[j][1] + "%");
 		}
@@ -253,7 +212,7 @@ function getFragDL(frag_cl, sdp) {
 	return data;
 }
 
-function getFragJsonUrl(sdp, frag_name) {
+function getFragJsonURL(sdp, frag_name) {
 	return getDirname(sdp) + "/" + frag_name + ".json";
 }
 
@@ -337,7 +296,7 @@ function openFragBaseCoverGraph(frag_d_url) {
 	}
 }
 
-function compSap_QC_SD() {
+function compareSap_QC_SeqData() {
 	var input_sdp_obj = $("input[name='sdp']:checked");
 	var param = "";
 	for (var i = 0; i < input_sdp_obj.length; i++) {
@@ -358,7 +317,7 @@ function compSap_QC_SD() {
 			styling: 'bootstrap3'
 			});
 	}else {
-		window.open("sap_comp_qc_sd.php?"+ param);
+		window.open("qc_compare_sap_seqdata.php?"+ param);
 	}
 }
 

@@ -256,7 +256,7 @@
 		<script src="./build/js/custom.min.js"></script>
 
 		<!-- Sample Coverage Scripts -->
-		<script src="js/db_querylab.js"></script>
+		<script src="js/db_lab.js"></script>
 
 	</body>
 </html>

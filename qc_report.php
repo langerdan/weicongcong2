@@ -77,12 +77,10 @@
 											</select>
 										</div>
 										<div id="search_options" class="col-md-7 col-sm-7 col-xs-7">
-											<input type="radio" class="flat" name="search_options" value="all" checked> All&nbsp;&nbsp;
+											<input type="radio" class="flat" name="search_options" value="all"> All&nbsp;&nbsp;
 											<input type="radio" class="flat" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
 											<input type="radio" class="flat" name="search_options" value="sample_type"> 样本类型&nbsp;&nbsp;
-											<input type="radio" class="flat" name="search_options" value="lib_reagent"> 建库试剂&nbsp;&nbsp;
-											<input type="radio" class="flat" name="search_options" value="lib_bn"> 建库批次&nbsp;&nbsp;
-											<input type="radio" class="flat" name="search_options" value="run_bn"> 上机批次&nbsp;&nbsp;
+											<input type="radio" class="flat" name="search_options" value="run_bn" checked> 上机批次&nbsp;&nbsp;
 										</div>
 									</div>
 
@@ -96,7 +94,7 @@
 													<div class="clearfix"></div>
 												</div>
 												<div class="x_content">
-													<table id="datatable_searchresults" class="table table-striped table-bordered jambo_table bulk_action">
+													<table id="dt_searchresults" class="table table-striped table-bordered jambo_table bulk_action">
 														<thead>
 															<tr class="headings">
 																<th>
@@ -105,8 +103,6 @@
 																<th class="column-title">序号</th>
 																<th class="column-title">样本编号</th>
 																<th class="column-title">样本类型</th>
-																<th class="column-title">建库试剂</th>
-																<th class="column-title">建库批次</th>
 																<th class="column-title">上机批次</th>
 																<th class="column-title">报告</th>
 																<th class="bulk-actions" colspan="7">
@@ -164,9 +160,9 @@
 		<script src="./vendors/Chart.js/dist/Chart.min.js"></script>
 
 		<!-- Custom Theme Scripts -->
-		<script src="./build/js/custom.min-qc_report.js"></script>
+		<script src="./build/js/custom.min_sapselect.js"></script>
 
 		<!-- QC report js -->
-		<script src="./js/qc_queryreport.js"></script>
+		<script src="./js/qc_report.js"></script>
 	</body>
 </html>

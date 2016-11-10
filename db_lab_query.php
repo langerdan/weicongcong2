@@ -1,5 +1,5 @@
 <?php
-/* PAGE	   : DB_Lab_query
+/* PAGE	   : db_lab_query
  * AUTHOR  : codeunsolved@gmail.com
  * CREATED : August 28 2016
  * VERSION : v0.0.1a
