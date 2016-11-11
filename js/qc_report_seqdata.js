@@ -297,10 +297,10 @@ function openFragBaseCoverGraph(frag_d_url) {
 }
 
 function compareSap_QC_SeqData() {
-	var input_sdp_obj = $("input[name='sdp']:checked");
+	var input_sdp_obj = $("input[name='sap_select']:checked");
 	var param = "";
 	for (var i = 0; i < input_sdp_obj.length; i++) {
-		var sdp = $("input[name='sdp']:checked:eq(" + i + ")");
+		var sdp = $("input[name='sap_select']:checked:eq(" + i + ")");
 		if (sdp.val() != 0) {
 			if (param == "") {
 				param += "u" + i + "=" + sdp.val();

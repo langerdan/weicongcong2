@@ -473,24 +473,24 @@ def handle_brca():
 if __name__ == '__main__':
     # parse args
     parser = argparse.ArgumentParser(prog='cross_snp', formatter_class=RawTextHelpFormatter,
-                                     description="import vcf, annotation(raw_variants.vcf).\n"
-                                                 "cross vcf with annotation and output report.")
+                                     description="import vcf, annotation(raw_variants.vcf)\n"
+                                                 "cross vcf with annotation and output report")
     subparsers = parser.add_subparsers(help='cross snp with different source')
 
     parser_a = subparsers.add_parser('autobox', help='from autobox')
     parser_a.add_argument('run_bn', type=int, help='run batch No.')
     parser_a.add_argument('offset', type=int, help='day offset')
-    parser_a.add_argument('-i', '--import_var', action='store_true', help='import vcf and annotation(raw_variants.vcf).')
-    parser_a.add_argument('-c', '--cross', action='store_true', help='cross vcf with annotation after import.')
-    parser_a.add_argument('-u', '--update', action='store_true', help='update import data.')
+    parser_a.add_argument('-i', '--import_var', action='store_true', help='import vcf and annotation(raw_variants.vcf)')
+    parser_a.add_argument('-c', '--cross', action='store_true', help='cross vcf with annotation after import')
+    parser_a.add_argument('-u', '--update', action='store_true', help='update import data')
     parser_a.set_defaults(func=handle_autobox)
 
     parser_b = subparsers.add_parser('brca', help='from [project]BRCA')
     parser_b.add_argument('pipeline', choices=['Miseq', 'cedar'], help='specify pipeline')
     parser_b.add_argument('dir_data', help='dir of data')
-    parser_b.add_argument('-i', '--import_var', action='store_true', help='import vcf and annotation(raw_variants.vcf).')
-    parser_b.add_argument('-c', '--cross', action='store_true', help='cross vcf with annotation after import.')
-    parser_b.add_argument('-u', '--update', action='store_true', help='update import data.')
+    parser_b.add_argument('-i', '--import_var', action='store_true', help='import vcf and annotation(raw_variants.vcf)')
+    parser_b.add_argument('-c', '--cross', action='store_true', help='cross vcf with annotation after import')
+    parser_b.add_argument('-u', '--update', action='store_true', help='update import data')
     parser_b.set_defaults(func=handle_brca)
 
     args = parser.parse_args()
