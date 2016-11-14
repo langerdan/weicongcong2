@@ -380,7 +380,7 @@ def handle_autobox():
     run_bn = args.run_bn
     offset = args.offset
 
-    dir_prefix = "56gene20" + str(run_bn + offset)
+    dir_prefix = "42gene20" + str(run_bn + offset)
     dir_outbox = r'/Users/codeunsolved/TopgenData1/outbox'
 
     for run in os.listdir(dir_outbox):

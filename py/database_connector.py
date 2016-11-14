@@ -93,7 +93,7 @@ class MysqlConnector(object):
             pass
         self.cnx.commit()
 
-    def query(self, q_grammar, data):
+    def query(self, q_grammar, data=[]):
         self.cursor.execute(q_grammar, data)
         return self.cursor
 
