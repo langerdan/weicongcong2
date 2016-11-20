@@ -9,8 +9,8 @@ import os
 import re
 import sys
 
-from database_connector import MysqlConnector
 from config import mysql_config
+from database_connector import MysqlConnector
 
 dir_data = r'/Users/codeunsolved/Downloads/NGS-Data'
 project = sys.argv[1]

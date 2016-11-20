@@ -78,7 +78,7 @@
 														<option value="brca"> BRCA </option>
 													</select>
 												</div>
-												<div id="search_options" class="col-md-10 col-sm-10 col-xs-10">
+												<div class="col-md-10 col-sm-10 col-xs-10">
 													<input type="radio" class="flat" name="search_options" value="all"> All&nbsp;&nbsp;
 													<input type="radio" class="flat" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
 													<input type="radio" class="flat" name="search_options" value="sample_type"> 样本类型&nbsp;&nbsp;

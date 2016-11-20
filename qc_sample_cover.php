@@ -136,7 +136,7 @@
 													<table id="sample_cover_table" class="table table-bordered table-head-fixed"></table>
 												</div>
 
-												<div id="tb_sample_cover_graph" class="tab-pane fade in active" style="width: 100%; height: 311px;">
+												<div id="tb_sample_cover_graph" class="tab-pane fade" style="width: 100%; height: 311px;">
 													<canvas id="sample_cover_graph"></canvas>
 												</div>
 

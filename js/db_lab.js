@@ -5,6 +5,8 @@
  * VERSION : v0.0.1a
  */
 
+var dt = {};
+
 $(document).ready(function() {
 	loadunHandleSample('56gene');
 });
@@ -27,7 +29,7 @@ function loadunHandleSample(project) {
 	if ($.fn.dataTable.isDataTable('#datatable_unHS')) {
 		dt_hs.destroy();
 	}
-	dt_hs = $("#datatable_unHS").DataTable( {
+	dt_hs = $("#dt_unHS").DataTable( {
 		ajax: "db_lab_query.php?func=lab_unhs_tb&proj=" + project
 	});
 }
@@ -36,13 +38,15 @@ $('#search_go').click(function () {
 	var project = $("select[name='project']").children(':selected').val();
 	var search_options = $("input[name='search_options']:checked").val();
 	var search_term = $("input[name='search_term']").val();
-	var export_filename = project + "-Lab";
 
-	if ($.fn.dataTable.isDataTable('#datatable_searchresults')) {
-		dt_sr.destroy();
-	}
-	dt_sr = $("#datatable_searchresults").DataTable({
-		ajax: "db_lab_query.php?func=lab_search&proj=" + project + "&opt=" + search_options + "&term=" + search_term,
+	var export_filename = project + "-Lab";
+	drawDataTable('#dt_searchresults', export_filename, {
+		ajax: "db_lab_query.php?func=lab_search&proj=" + project + "&opt=" + search_options + "&term=" + search_term
+	});
+});
+
+function drawDataTable(id, export_fn, options_add) {
+	var options = {
 		dom: "lfrtipB",
 		buttons: [
 			{
@@ -52,23 +56,30 @@ $('#search_go').click(function () {
 			{
 				extend: "csv",
 				className: "btn-sm",
-				title: export_filename
+				title: export_fn
 			},
 			{
 				extend: "excel",
 				className: "btn-sm",
-				title: export_filename
+				title: export_fn
 			},
 			{
 				extend: "pdfHtml5",
 				className: "btn-sm",
-				title: export_filename
+				title: export_fn
 			},
 			{
 				extend: "print",
-				className: "btn-sm"
+				className: "btn-sm",
+				title: export_fn
 				}
 			],
 		responsive: true
-	});
-});
+	};
+	for (var key in options_add) { options[key] = options_add[key]; }
+
+	if ($.fn.dataTable.isDataTable(id)) {
+		dt[id].destroy();
+	}
+	dt[id] = $(id).DataTable(options);
+}

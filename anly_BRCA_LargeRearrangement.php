@@ -64,7 +64,7 @@
 											</div>
 										</div>
 
-										<div id="search_options" class="col-md-7 col-sm-7 col-xs-7">
+										<div class="col-md-7 col-sm-7 col-xs-7">
 											<input type="radio" class="flat" name="search_options" value="all" checked> All&nbsp;&nbsp;
 											<input type="radio" class="flat" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
 											<input type="radio" class="flat" name="search_options" value="run_bn"> 上机批次&nbsp;&nbsp;
@@ -131,16 +131,7 @@
 								</div>
 							</div>
 							<!-- /report header -->
-
-							<!-- FastQC -->
-							<div class="row">
-								<div class="col-md-12 col-sm-12 col-xs-12">
-									<div class="x_panel">
-										<div class="x_title">
-											<h4 class="name_title">FASTQC</h4>
-											<div class="clearfix"></div>
-										</div>
-										<div class="x_content">
+						</div>
 					</div>
 					<!-- /QC report -->
 				</div>

@@ -11,10 +11,10 @@ import sys
 import json
 import time
 
-from base import clean_output
 from base import parse_vcf
-from database_connector import MysqlConnector
+from base import clean_output
 from config import mysql_config
+from database_connector import MysqlConnector
 
 dir_vcf = sys.argv[1]
 dir_output = sys.argv[2]

@@ -76,7 +76,7 @@
 												<option value="sequencing_data" selected> 测序数据质量报告 </option>
 											</select>
 										</div>
-										<div id="search_options" class="col-md-7 col-sm-7 col-xs-7">
+										<div class="col-md-7 col-sm-7 col-xs-7">
 											<input type="radio" class="flat" name="search_options" value="all"> All&nbsp;&nbsp;
 											<input type="radio" class="flat" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
 											<input type="radio" class="flat" name="search_options" value="sample_type"> 样本类型&nbsp;&nbsp;

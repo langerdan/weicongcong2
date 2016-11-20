@@ -16,8 +16,8 @@ import pandas
 from base import read_bed
 from base import clean_output
 from base import print_colors
-from database_connector import MysqlConnector
 from config import mysql_config
+from database_connector import MysqlConnector
 
 
 def read_sample_reads():

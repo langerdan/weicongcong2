@@ -10,8 +10,8 @@ import re
 import time
 
 from base import parse_vcf
-from database_connector import MysqlConnector
 from config import mysql_config
+from database_connector import MysqlConnector
 
 # CONFIG AREA #
 dir_vcf = r'/Users/codeunsolved/Downloads/NGS-Data/Report-fusion_gene/=TEMP=/BRCA160320/normVCF'

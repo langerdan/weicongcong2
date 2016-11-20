@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <!--
- * PAGE    : anno_TopAnno
+ * PAGE    : db_MyCancerGenome
  * AUTHOR  : codeunsolved@gmail.com
- * CREATED : September 14 2016
+ * CREATED : November 16 2016
  * VERSION : v0.0.1a
 -->
 <html lang="en">
@@ -13,7 +13,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<title>注释 － TopAnno</title>
+		<title>数据库 - MyCancerGenome</title>
 
 		<!-- Bootstrap -->
 		<link href="./vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,16 +21,21 @@
 		<link href="./vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 		<!-- iCheck -->
 		<link href="./vendors/iCheck/skins/flat/green.css" rel="stylesheet">
-		<!-- PNotify -->
-		<link href="./vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+		<!-- bootstrap-progressbar -->
+		<link href="./vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
 		<!-- Datatables -->
 		<link href="./vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
 		<link href="./vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
 
 		<!-- Custom Theme Style -->
 		<link href="./build/css/custom.min.css" rel="stylesheet">
-	</head>
 
+		<style type="text/css">
+			.badge {
+				background-color: transparent;
+			}
+		</style>
+	</head>
 	<body class="nav-md">
 		<div class="container body">
 			<div class="main_container">
@@ -45,12 +50,20 @@
 
 				<!-- page content -->
 				<div class="right_col" role="main">
-					<!-- search TopAnno database -->
+					<div class="page-title">
+						<div class="title_left">
+							<h2> MyCancerGenome <small> </small></h2>
+						</div>
+						<div class="title_right"></div>
+					</div>
+					<div class="clearfix"></div>
+
+					<!-- search MyCancerGenome database -->
 					<div class="row" >
 						<div class="col-md-12 col-sm-12 col-xs-12">
 							<div class="x_panel">
 								<div class="x_title">
-									<h2>检索注释</h2>
+									<h2>检索</h2>
 									<div class="clearfix"></div>
 								</div>
 								<div class="x_content">
@@ -64,19 +77,11 @@
 											</div>
 										</div>
 
-										<div class="col-md-2 col-sm-2 col-xs-2">
-											<select name="project" class="form-control">
-												<option value="56gene" selected> 56gene </option>
-												<option value="brca"> BRCA </option>
-											</select>
-										</div>
-										<div id="search_options" class="col-md-10 col-sm-10 col-xs-10">
+										<div class="col-md-9 col-sm-9 col-xs-9">
 											<input type="radio" class="flat" name="search_options" value="all" checked> All&nbsp;&nbsp;
-											<input type="radio" class="flat" name="search_options" value="sample_id"> 样本编号&nbsp;&nbsp;
-											<input type="radio" class="flat" name="search_options" value="sample_type"> 样本类型&nbsp;&nbsp;
-											<input type="radio" class="flat" name="search_options" value="lib_reagent"> 建库试剂&nbsp;&nbsp;
-											<input type="radio" class="flat" name="search_options" value="lib_bn"> 建库批次&nbsp;&nbsp;
-											<input type="radio" class="flat" name="search_options" value="run_bn"> 上机批次&nbsp;&nbsp;
+											<input type="radio" class="flat" name="search_options" value="disease"> Disease&nbsp;&nbsp;
+											<input type="radio" class="flat" name="search_options" value="gene"> Gene&nbsp;&nbsp;
+											<input type="radio" class="flat" name="search_options" value="variant"> Variant&nbsp;&nbsp;
 										</div>
 									</div>
 
@@ -90,16 +95,16 @@
 													<div class="clearfix"></div>
 												</div>
 												<div class="x_content">
-													<table id="datatable_searchresults" class="table table-striped table-bordered jambo_table">
+													<table id="dt_searchresults" class="table table-striped table-bordered jambo_table">
 														<thead>
-															<tr>
-																<th class="column-title">序号</th>
-																<th class="column-title">样本编号</th>
-																<th class="column-title">样本类型</th>
-																<th class="column-title">建库试剂</th>
-																<th class="column-title">建库批次</th>
-																<th class="column-title">上机批次</th>
-																<th class="column-title">注释</th>
+															<tr class="headings">
+																<th class="column-title">No.</th>
+																<th class="column-title">Disease</th>
+																<th class="column-title">Gene</th>
+																<th class="column-title">Variant</th>
+																<th class="column-title">Info</th>
+																<th class="column-title">Last update</th>
+																<th class="column-title">Details</th>
 															</tr>
 														</thead>
 													</table>
@@ -111,24 +116,18 @@
 							</div>
 						</div>
 					</div>
-					<!-- /search TopAnno database -->
+					<!-- /search MyCancerGenome database -->
 
-					<!-- TopAnno outputs -->
+					<!-- variant details -->
 					<div class="row">
 						<div class="col-md-12 col-sm-12 col-xs-12">
 							<div class="x_panel">
-								<div class="x_title">
-									<h2>注释</h2>
-									<div class="clearfix"></div>
-								</div>
-								<div class="x_content">
-									<table id="datatable_topanno" class="table table-striped table-bordered jambo_table">
-									</table>
+								<div id="variant_details" class="x_content">
 								</div>
 							</div>
 						</div>
 					</div>
-					<!-- /TopAnno outputs -->
+					<!-- /variant details -->
 				</div>
 				<!-- /page content -->
 
@@ -144,8 +143,8 @@
 		<script src="./vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 		<!-- iCheck -->
 		<script src="./vendors/iCheck/icheck.min.js"></script>
-		<!-- PNotify -->
-		<script src="./vendors/pnotify/dist/pnotify.js"></script>
+		<!-- bootstrap-progressbar -->
+		<script src="./vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
 		<!-- Datatables -->
 		<script src="./vendors/datatables.net/js/jquery.dataTables.min.js"></script>
 		<script src="./vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
@@ -161,7 +160,62 @@
 		<!-- Custom Theme Scripts -->
 		<script src="./build/js/custom.min.js"></script>
 
-		<!-- DB TopAnno js -->
-		<script src="./js/db_topanno.js"></script>
+		<!-- db MyCancerGenome Scripts -->
+		<script type="text/javascript">
+			var dt = {};
+
+			$('#search_go').click(function () {
+				var search_options = $("input[name='search_options']:checked").val();
+				var search_term = $("input[name='search_term']").val();
+
+				var export_filename = "MyCancerGenome-SearchResults";
+				drawDataTable('#dt_searchresults', export_filename, {
+					ajax: "db_MyCancerGenome_query.php?func=search&opt=" + search_options + "&term=" + search_term
+				});
+			});
+
+			function drawDataTable(id, export_fn, options_add) {
+				var options = {
+					dom: "lfrtipB",
+					buttons: [
+						{
+							extend: "copy",
+							className: "btn-sm"
+						},
+						{
+							extend: "csv",
+							className: "btn-sm",
+							title: export_fn
+						},
+						{
+							extend: "excel",
+							className: "btn-sm",
+							title: export_fn
+						},
+						{
+							extend: "pdfHtml5",
+							className: "btn-sm",
+							title: export_fn
+						},
+						{
+							extend: "print",
+							className: "btn-sm",
+							title: export_fn
+							}
+						],
+					responsive: true
+				};
+				for (var key in options_add) { options[key] = options_add[key]; }
+
+				if ($.fn.dataTable.isDataTable(id)) {
+					dt[id].destroy();
+				}
+				dt[id] = $(id).DataTable(options);
+			}
+
+			function loadVariantDetails(url) {
+				$('#variant_details').html($.ajax({url: "db_MyCancerGenome_query.php?func=details&url=" + url, async: false}).responseText);
+			}
+		</script>
 	</body>
 </html>

@@ -3,9 +3,16 @@
 # PROGRAM : cross_SNP
 # AUTHOR  : codeunsolved@gmail.com
 # CREATED : September 20 2016
-# VERSION : v0.0.1
+# VERSION : v0.0.2
 # UPDATE  : [v0.0.1] October 12 2016
 # 1. add argparse to parse args;
+# 2. add three filter for annotation: 
+#     i. Func.refGene == "intronic";
+#     ii. ExonicFunc.refGene == "synonymous SNV";
+#     iii. 1000g2014sep_all > 0.01;
+# UPDATE  : [v0.0.2] November 20 2016
+# 1. optimize subparsers{autobox, local} to handle Projec and more flexible directory name;
+# 2. optimize query vcf/anno to handle multiple run on same sample, and add Exception for multiple match;
 
 from __future__ import division
 import os
@@ -17,8 +24,8 @@ from argparse import RawTextHelpFormatter
 
 from base import parse_vcf
 from base import print_colors
-from database_connector import MysqlConnector
 from config import mysql_config
+from database_connector import MysqlConnector
 
 # CONFIG AREA #
 vcf_col = ["Pipeline", "SAP_id", "RUN_bn", "Chr", "Pos", "RS_id", "Ref", "Alt", "Qual", "Filter", "Info", "Format",
@@ -108,8 +115,8 @@ def import_vcf(data, is_update=True):
                 "(Pipeline, SAP_id, RUN_bn, Chr, Pos, RS_id, Ref, Alt, Qual, Filter, Info, Format, Format_val, "
                 "AC, AF, AN, DB, DP, FS, MLEAC, MLEAF, MQ, MQ0, QD, SOR, BaseQRankSum, MQRankSum, ReadPosRankSum, "
                 "GT, AD, GQ, PL) "
-                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
-                "%s, %s, %s, %s, %s, %s, %s, %s)".format(table_vcf))
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
+                "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(table_vcf))
     update = 0
     insert = 0
     ignore = 0
@@ -166,33 +173,36 @@ def import_anno(data, is_update=True):
         else:
             insert += 1
             m_con.insert(insert_g, d)
-    print print_colors("insert %s" % insert if insert else "" + "update %s" % update if update else "" +
+    print print_colors("insert %s" % insert if insert else "" + 
+                       "update %s" % update if update else "" +
                        "ignore %s" % ignore if ignore else "", 'grey'),
 
 
 def query_vcf(term):
     query_g = ("SELECT Chr, Pos, RS_id, Ref, Alt, Qual, Filter, Info, Format, Format_val, AD FROM {} "
-               "WHERE Pipeline=%s AND SAP_id=%s AND Chr=%s AND Pos=%s AND Ref=%s AND Alt=%s".format(table_vcf))
+               "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos=%s AND Ref=%s AND Alt=%s".format(table_vcf))
     return m_con.query(query_g, term)
 
 
 def query_anno(term):
     query_g = ("SELECT * FROM {} "
-               "WHERE Pipeline=%s AND SAP_id=%s AND Chr=%s AND Pos_s=%s AND Pos_e=%s AND Ref=%s AND Alt=%s".format(table_anno))
+               "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos_s=%s AND Pos_e=%s AND Ref=%s AND Alt=%s".format(table_anno))
     return m_con.query(query_g, term)
 
 
 def query_vcf_offset(term):
     query_g = ("SELECT Chr, Pos, RS_id, Ref, Alt, Qual, Filter, Info, Format, Format_val, AD FROM {} "
-               "WHERE Pipeline=%s AND SAP_id=%s AND Chr=%s AND Pos=%s".format(table_vcf))
+               "WHERE Pipeline=%s AND SAP_id=%s AND RUN_bn=%s AND Chr=%s AND Pos=%s".format(table_vcf))
     return m_con.query(query_g, term)
 
 
 def handle_mismatch(term):
     for m_o in mismatch_offset:
-        cursor_mis = query_vcf_offset(term[:3] + [int(term[3]) + m_o])
+        cursor_mis = query_vcf_offset(term[:4] + [int(term[4]) + m_o])
         if cursor_mis.rowcount == 1:
             return [0, m_o, cursor_mis]
+        elif cursor_mis.rowcount > 1:
+            raise Exception('[CROSS_VAR][HANDLE_MIS]: %d match in VCF: %s' (cursor_mis.rowcount, str(term[:4] + [int(term[4]) + m_o])))
     return [1]
 
 
@@ -316,9 +326,9 @@ def cross_var(path_file, anno_data, cross_anvc_data, pipeline, sap_id, run_bn, v
             # filter 1000g2014sep_all > 0.01
             if anno_line[12] != '' and float(anno_line[12]) > 0.01:
                 continue
-            cursor = query_vcf([pipeline, sap_id] + anno_line[:2] + anno_line[3:5], )
-            if cursor.rowcount != 1:
-                mismatch_state = handle_mismatch([pipeline, sap_id] + anno_line[:2])
+            cursor = query_vcf([pipeline, sap_id, run_bn] + anno_line[:2] + anno_line[3:5])
+            if cursor.rowcount == 0:
+                mismatch_state = handle_mismatch([pipeline, sap_id, run_bn] + anno_line[:2])
                 if mismatch_state[0]:
                     print "=CROSS= miss match [%s][%s] " % (anno_line[0], anno_line[1])
                     print "=%s" % anno_line
@@ -328,32 +338,36 @@ def cross_var(path_file, anno_data, cross_anvc_data, pipeline, sap_id, run_bn, v
                     vcf_mismatch["%s-%s-%s-%s" % (anno_line[0], anno_line[1], anno_line[3], anno_line[4])] = mismatch_state[1]
                     row_v = mismatch_state[2].fetchone()
                     cross_anvc_data.append(list(row_v[:-1]) + [get_allele_fre(row_v[-1])] + anno_line + [mismatch_state[1]])
-            else:
+            elif cursor.rowcount == 1:
                 row_v = cursor.fetchone()
                 cross_anvc_data.append(list(row_v[:-1]) + [get_allele_fre(row_v[-1])] + anno_line)
+            else:
+                raise Exception('[CROSS_VAR][QUERY_VCF]: %d match in VCF: %s' % (cursor.rowcount, str([pipeline, sap_id, run_bn] + anno_line[:2] + anno_line[3:5])))
 
 
-def cross_snp(pipeline, sap_id, vcf_mismatch):
+def cross_snp(pipeline, sap_id, run_bn, vcf_mismatch):
     cross_snp_data = []
     for snp in onco_snp:
         cross_snp_data.append([])
         anno_mismatch = 0
 
-        cursor_a = query_anno([pipeline, sap_id] + snp[:5])
-        if cursor_a.rowcount != 1:
+        cursor_a = query_anno([pipeline, sap_id, run_bn] + snp[:5])
+        if cursor_a.rowcount == 0:
             cross_snp_data[-1] += ["", "", "", "", ""]
             anno_mismatch = 1
-        else:
+        elif cursor_a.rowcount == 1:
             row_a = cursor_a.fetchone()
             cross_snp_data[-1] += list(row_a[9:13]) + [row_a[-3]]
+        else:
+            raise Exception('[CROSS_SNP][QUERY_ANNO]: %d match in ANNO: %s' % (cursor_a.rowcount, str([pipeline, sap_id, run_bn] + snp[:5])))
 
         vcf_key = "%s-%s-%s-%s" % (snp[0], snp[1], snp[3], snp[4])
         if vcf_key in vcf_mismatch:
-            cursor_v = query_vcf_offset([pipeline, sap_id] + [snp[0], snp[1] + vcf_mismatch[vcf_key]])
+            cursor_v = query_vcf_offset([pipeline, sap_id, run_bn] + [snp[0], snp[1] + vcf_mismatch[vcf_key]])
         else:
-            cursor_v = query_vcf([pipeline, sap_id] + snp[:2] + snp[3:5])
-        if cursor_v.rowcount != 1:
-            mismatch_state = handle_mismatch([pipeline, sap_id] + snp[:2])
+            cursor_v = query_vcf([pipeline, sap_id, run_bn] + snp[:2] + snp[3:5])
+        if cursor_v.rowcount == 0:
+            mismatch_state = handle_mismatch([pipeline, sap_id, run_bn] + snp[:2])
             if mismatch_state[0]:
                 if anno_mismatch == 1:
                     print "\t=SNP-ALL= miss match - %s" % snp[:5]
@@ -363,31 +377,33 @@ def cross_snp(pipeline, sap_id, vcf_mismatch):
             else:
                 row_v = mismatch_state[2].fetchone()
                 cross_snp_data[-1] += [row_v[-2], row_v[-3], mismatch_state[1]]
-        else:
+        elif cursor_v.rowcount == 1:
             row_v = cursor_v.fetchone()
             cross_snp_data[-1] += [row_v[-2], row_v[-3]]
+        else:
+            raise Exception('[CROSS_SNP][QUERY_VCF]: %d match in VCF: %s' % (cursor_v.rowcount, str([pipeline, sap_id, run_bn] + snp[:2] + snp[3:5])))
     return cross_snp_data
 
 
 def handle_autobox():
-    global table_vcf, table_anno
-    table_vcf = "56gene_VCF"
-    table_anno = "56gene_anno"
-
     vcf_data = []
     anno_data = []
 
+    project = args.project
     run_bn = args.run_bn
     offset = args.offset
+    suffix = args.suffix
 
-    dir_prefix = "42gene20" + str(run_bn + offset)
     dir_outbox = r'/Users/codeunsolved/TopgenData1/outbox'
+    dir_prefix = project + str(run_bn + offset) + suffix + '_'
 
     for run in os.listdir(dir_outbox):
         if re.match(dir_prefix, run):
             print print_colors("<%s>" % run, 'red')
-            sum_cross_anvc = []
+            pipeline = re.search('%s(_.+_?)$' % str(run_bn + offset), run).group(1)
             dir_run = os.path.join(dir_outbox, run)
+
+            sum_cross_anvc = []
             for sap in os.listdir(dir_run):
                 dir_sap = os.path.join(dir_run, sap)
                 if os.path.isdir(dir_sap):
@@ -397,7 +413,6 @@ def handle_autobox():
                     output_trigger = 0 if args.import_var else 3
                     vcf_mismatch = {}
                     for f in os.listdir(dir_sap):
-                        pipeline = re.search('%s(_.+_?)$' % str(run_bn + offset), run).group(1)
                         if args.import_var and re.search('raw_variants\.vcf$', f):
                             vcf_body = parse_vcf(os.path.join(dir_sap, f))
                             for vcf_line in vcf_body:
@@ -419,42 +434,34 @@ def handle_autobox():
 
                         if args.cross and output_trigger == 7:
                             output_trigger = 0 if args.cross else 3
-                            cross_snp_data = cross_snp(pipeline, sap_id, vcf_mismatch)
+                            cross_snp_data = cross_snp(pipeline, sap_id, run_bn, vcf_mismatch)
                             print "• output cross SNP xls ...",
                             output_cross(cross_snp_data, cross_anvc_data, dir_sap, sap_id)
                             print print_colors("OK!", 'green')
 
-                            for each_ca_d in cross_anvc_data:
-                                sum_cross_anvc.append([sap_id, run_bn] + each_ca_d)
+                            for each in cross_anvc_data:
+                                sum_cross_anvc.append([sap_id, run_bn] + each)
             output_sum_ca(sum_cross_anvc, dir_run, run_bn)
 
 
-def handle_brca():
-    global table_vcf, table_anno
-    table_vcf = "BRCA_VCF"
-    table_anno = "BRCA_anno"
-
+def handle_local():
     vcf_data = []
     anno_data = []
 
     pipeline = args.pipeline
+    run_bn = args.run_bn
     dir_data = args.dir_data
-    dir_name = os.path.basename(dir_data)
 
-    # handle run batch number
-    if re.match('BRCA|onco', dir_name):
-        run_bn = re.match('(?:BRCA|onco)(.+)', dir_name).group(1)
-    else:
-        run_bn = dir_name
     print print_colors("<%s>" % dir_data, 'red')
 
     sap_ids = {}
     for f in os.listdir(dir_data):
         if args.import_var and re.search('\.vcf$', f):
+            # handle sample id
             if pipeline == 'Miseq':
-                sap_id = re.match('(.+?)_', f).group(1)
-            elif pipeline == 'cedar':
-                sap_id = re.match('(.+?)\.', f).group(1)
+                sap_id = re.match('(.+)_S\d+', f).group(1)
+            else:
+                sap_id = re.match('(.+)\.vcf', f).group(1)
 
             if sap_id not in sap_ids:
                 print print_colors("-{%s}" % sap_id)
@@ -473,29 +480,45 @@ def handle_brca():
 if __name__ == '__main__':
     # parse args
     parser = argparse.ArgumentParser(prog='cross_snp', formatter_class=RawTextHelpFormatter,
-                                     description="import vcf, annotation(raw_variants.vcf)\n"
-                                                 "cross vcf with annotation and output report")
+                                     description="• import vcf, annotation(.vcf, raw_variants.txt)\n"
+                                                 "• cross vcf with annotation and output report(.xls)")
     subparsers = parser.add_subparsers(help='cross snp with different source')
 
     parser_a = subparsers.add_parser('autobox', help='from autobox')
-    parser_a.add_argument('run_bn', type=int, help='run batch No.')
-    parser_a.add_argument('offset', type=int, help='day offset')
+    parser_a.add_argument('project', type=str, help='Specify project prefix')
+    parser_a.add_argument('run_bn', type=int, help='Specify run batch No.')
+    parser_a.add_argument('--offset', type=int, default=0, help='Specify day offset')
+    parser_a.add_argument('--suffix', type=str, default='', help='Specify directory suffix')
     parser_a.add_argument('-i', '--import_var', action='store_true', help='import vcf and annotation(raw_variants.vcf)')
     parser_a.add_argument('-c', '--cross', action='store_true', help='cross vcf with annotation after import')
     parser_a.add_argument('-u', '--update', action='store_true', help='update import data')
     parser_a.set_defaults(func=handle_autobox)
 
-    parser_b = subparsers.add_parser('brca', help='from [project]BRCA')
-    parser_b.add_argument('pipeline', choices=['Miseq', 'cedar'], help='specify pipeline')
-    parser_b.add_argument('dir_data', help='dir of data')
+    parser_b = subparsers.add_parser('local', help='from local')
+    parser_b.add_argument('project', type=str, help='Specify project prefix')
+    parser_b.add_argument('run_bn', type=int, help='Specify run batch No.')
+    parser_b.add_argument('pipeline', choices=['Miseq', 'cedar'], help='Specify pipeline')
+    parser_b.add_argument('dir_data', help='Specify directory of data')
     parser_b.add_argument('-i', '--import_var', action='store_true', help='import vcf and annotation(raw_variants.vcf)')
-    parser_b.add_argument('-c', '--cross', action='store_true', help='cross vcf with annotation after import')
     parser_b.add_argument('-u', '--update', action='store_true', help='update import data')
-    parser_b.set_defaults(func=handle_brca)
+    parser_b.set_defaults(func=handle_local)
 
     args = parser.parse_args()
     if not (args.import_var or args.cross):
         parser.error('No action requested, add --import_var or --cross')
+
+    # handle table belonging
+    if args.project == '56gene':
+        table_vcf = '56gene_vcf'
+        table_anno = '56gene_anno'
+    elif args.project == ('42geneLung' or '42gene'):
+        table_vcf = '42gene_vcf'
+        table_anno = '42gene_anno'
+    elif args.project == 'BRCA':
+        table_vcf = '42gene_vcf'
+        table_anno = '42gene_anno'
+    else:
+        raise Exception('Unknown Project: %s' % args.project)
 
     m_con = MysqlConnector(mysql_config, 'TopgenNGS')
     args.func()

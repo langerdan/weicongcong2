@@ -77,7 +77,7 @@ for ($i = 0; $i < mysql_num_rows($result_lab); $i++) {
 		$response['data'][$index] = [$input_checkbox, $index + 1, $sap_id_action, $sap_type, $run_bn, $v, $vcf_num, $anno_num];
 		$index++;
 	}
-	}
+}
 
 echo json_encode($response);
 

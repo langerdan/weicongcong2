@@ -111,7 +111,7 @@
 											<div class="col-md-12 col-sm-12 col-xs-12">
 												<div class="x_panel">
 													<div class="x_content">
-														<table id="datatable_unHS" class="table table-striped table-bordered jambo_table">
+														<table id="dt_unHS" class="table table-striped table-bordered jambo_table">
 															<thead>
 																<tr>
 																	<th style="width: 10%">序号</th>
@@ -179,7 +179,7 @@
 													<div class="clearfix"></div>
 												</div>
 												<div class="x_content pre-scrollable" style="width: 100%;">
-													<table id="datatable_searchresults" class="table table-striped table-bordered jambo_table">
+													<table id="dt_searchresults" class="table table-striped table-bordered jambo_table">
 														<thead>
 															<tr>
 																<th>序号</th>
@@ -255,7 +255,7 @@
 		<!-- Custom Theme Scripts -->
 		<script src="./build/js/custom.min.js"></script>
 
-		<!-- Sample Coverage Scripts -->
+		<!-- db lab Scripts -->
 		<script src="js/db_lab.js"></script>
 
 	</body>

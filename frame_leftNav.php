@@ -44,6 +44,7 @@ echo <<<LEFT_NAV
 									</li>
 									<li><a><i class="fa fa-database"></i> 数据库 <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
+											<li><a href="db_MyCancerGenome.php">MyCancerGenome</a></li>
 											<li><a href="db_lab.php">NGS lab</a></li>
 										</ul>
 									</li>

@@ -24,8 +24,8 @@ import argparse
 from base import read_bed
 from base import clean_output
 from base import print_colors
-from database_connector import MysqlConnector
 from config import mysql_config
+from database_connector import MysqlConnector
 
 # CONFIG AREA #
 depth_levels = [0, 20, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 1000]
