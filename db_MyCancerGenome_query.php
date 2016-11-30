@@ -47,7 +47,7 @@ switch ($query['func']) {
 			$response['data'][$i] = array();
 			for ($j = 0; $j < mysql_num_fields($result); $j++) {
 				if ($j == 0) {
-					$response['data'][$i][$j] = $j + 1;
+					$response['data'][$i][$j] = $i + 1;
 				}
 				if ($j == mysql_num_fields($result) - 2) {
 					$response['data'][$i][$j+1] = str_replace("\nLast Updated: ", "", $row[$j]);

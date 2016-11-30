@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# PROGRAM : append_NGS_lab
+# PROGRAM : appendNGSlab
 # AUTHOR  : codeunsolved@gmail.com
 # CREATED : September 29 2016
 # VERSION : v0.0.1a

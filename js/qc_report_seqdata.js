@@ -14,64 +14,99 @@ function loadReport_QC_SeqData(sdp) {
 		if (xhttp.readyState == 4 && xhttp.status == 200) {
 			var json = JSON.parse(xhttp.responseText);
 
+			// sample name
+			$('#sample_name').html(json.sample_name);
 			// data version
 			if (json.data_ver) {
-				document.getElementById("data_ver").innerHTML = json.data_ver;
+				$('#data_ver').html(json.data_ver);
 			}else {
-				document.getElementById("data_ver").innerHTML = "v0.0.1a?";
+				$('#data_ver').html("v0.0.1a?");
+			}
+			// bed filename
+			if (json.bed_filename) {
+				$('#bed_filename').html(json.bed_filename);
 			}
 
 			// pass details
-			var pass_details = "";
-			if (!json.pass.ALL) {
-				pass_details += "<p>FAILED详情：</p><div class=\"well\">";
-				if (!json.pass['0x_percent']) {
-					pass_details += "<p>0x位点大于1% <strong style=\"color: red\">FAILED</strong></p>";
-				}
-				if (!json.pass.absent_frag) {
-					pass_details += "<p>存在缺失片段 <strong style=\"color: red\">FAILED</strong></p>";
-				}
-				pass_details += "</div>"
+			$('#pass_0x_percent').html(json.pass['0x_percent'] + '%');
+			$('#pass_absent_frag').html(json.pass.absent_frag);
+			$('#pass_coverage_unifor').html(json.pass.coverage_unifor + '%');
+			$('#pass_min_reads').html(json.pass.min_reads);
+			span_filed = '<span style="color: red;"><strong> FAILED </strong></span>';
+			span_pass = '<span style="color: green;"><strong> PASS </strong></span>';
+			if (json.pass['0x_percent'] > 1) {
+				$('#pass_0x_percent_status').html(span_filed + '0x位点大于1%');
+			}else {
+				$('#pass_0x_percent_status').html(span_pass);
 			}
-			document.getElementById("pass_details").innerHTML = pass_details;
-
-			// FASTQC
-			if (json.fastqc.length > 0) {
-				var fastqc_html_list = new Array();
-				for (var i = 0; i < json.fastqc.length; i++) {
-					fastqc_html_list.push([$.ajax({url: json.fastqc[i], async: false}).responseText, json.fastqc[i]]);
-				}
-				var export_fn_fqc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-FASTQC_Summary";
-				drawDataTable('#dt_fastqc_basic', export_fn_fqc, {
-					data: getFastqcBasic(fastqc_html_list)
-				});
-				// extract FASTQC img
-				extractFastacImg('1', fastqc_html_list[0][0]);
-				extractFastacImg('2', fastqc_html_list[1][0]);
+			if (json.pass.absent_frag) {
+				$('#pass_absent_frag_status').html(span_filed + '存在缺失片段');
+			}else {
+				$('#pass_absent_frag_status').html(span_pass);
+			}
+			if (json.pass.coverage_unifor < 98) {
+				$('#pass_coverage_unifor_status').html(span_filed + '>0.2x小于98%');
+			}else {
+				$('#pass_coverage_unifor_status').html(span_pass);
+			}
+			if (json.pass.min_reads < 98) {
+				$('#pass_min_reads_status').html(span_filed + 'reads覆盖度小于80');
+			}else {
+				$('#pass_min_reads_status').html(span_pass);
 			}
 
-			// coverage summary
-			document.getElementById("sample_name").innerHTML = json.sample_name;
+			// 数据质量分析
 
-			document.getElementById("num_mapped_reads").innerHTML = json.mapped_reads;
+			// 有效数据分析
+			$('#total_reads').html(json.total_reads);
+			$('#num_mapped_reads').html(json.mapped_reads);
 			var percent_mapped = Math.floor((json.mapped_reads / json.total_reads) * 10000) / 100;
-			document.getElementById("per_mapped_reads").innerHTML = percent_mapped + '%';
+			$('#per_mapped_reads').html(percent_mapped + '%');
 			$("#per_mapped_reads").css("background-color", getHeatColor(percent_mapped));
 			if (percent_mapped <= 45) { $("#per_mapped_reads").css("color", "white"); }
-
-			document.getElementById("num_target_reads").innerHTML = json.target_reads;
+			$('#num_target_reads').html(json.target_reads);
 			var percent_target = Math.floor((json.target_reads / json.total_reads) * 10000) / 100;
-			document.getElementById("per_target_reads").innerHTML = percent_target + '%';
+			$('#per_target_reads').html(percent_target + '%');
 			$("#per_target_reads").css("background-color", getHeatColor(percent_target));
 			if (percent_target <= 45) { $("#per_target_reads").css("color", "white"); }
 
-			document.getElementById("aver_sample_depth").innerHTML = json.aver_depth;
-			document.getElementById("max_sample_depth").innerHTML = json.max_depth;
-			document.getElementById("min_sample_depth").innerHTML = json.min_depth;
+			$('#total_reads_pysam').html(json.total_reads_pysam);
+			$('#num_mapped_reads_pysam').html(json.mapped_reads_pysam);
+			var percent_mapped_pysam = Math.floor((json.mapped_reads_pysam / json.total_reads_pysam) * 10000) / 100;
+			$('#per_mapped_reads_pysam').html(percent_mapped_pysam + '%');
+			$("#per_mapped_reads_pysam").css("background-color", getHeatColor(percent_mapped_pysam));
+			if (percent_mapped_pysam <= 45) { $("#per_mapped_reads_pysam").css("color", "white"); }
+			$('#num_target_reads_pysam').html(json.target_reads_pysam);
+			var percent_target_pysam = Math.floor((json.target_reads_pysam / json.total_reads_pysam) * 10000) / 100;
+			$('#per_target_reads_pysam').html(percent_target_pysam + '%');
+			$("#per_target_reads_pysam").css("background-color", getHeatColor(percent_target_pysam));
+			if (percent_target_pysam <= 45) { $("#per_target_reads_pysam").css("color", "white"); }
 
-			// target base coverage
-			document.getElementById("num_target_bp").innerHTML = json.len_bp;
-			document.getElementById("sample_depth_level").innerHTML = loadSampleDepthLevel(json.depth_levels);
+			// Coverage Uniformity
+			$('#total_reads_pysam_cu').html(json.total_reads_pysam);
+			$('#max_reads_pysam').html(json.max_reads);
+			$('#min_reads_pysam').html(json.min_reads);
+			$('#mean_reads_pysam').html(json.mean_reads);
+			$('#max_min_reads_pysam').html(json.min_reads ? Math.floor((json.target_reads_pysam / json.total_reads_pysam) * 10000) / 100 : 'N/A');
+			$('#uniformity_0_2x').html(json.uniformity_0_2x);
+			$("#uniformity_0_2x").css("background-color", getHeatColor(json.uniformity_0_2x));
+			if (json.uniformity_0_2x <= 45) { $("#uniformity_0_2x").css("color", "white"); }
+			$('#uniformity_0_5x').html(json.uniformity_0_5x);
+			$("#uniformity_0_5x").css("background-color", getHeatColor(json.uniformity_0_5x));
+			if (json.uniformity_0_5x <= 45) { $("#uniformity_0_5x").css("color", "white"); }
+			// draw coverage uniformity graph
+			if (Object.keys(json.frag_reads).length < 2000) {
+				loadCoverUniforGraph(json.frag_reads);
+			}else {
+				$('#cu_container').attr("style", "display: none;");
+			}
+
+			// 目标区域覆盖度
+			$('#max_sample_depth').html(json.max_depth);
+			$('#min_sample_depth').html(json.min_depth);
+			$('#mean_sample_depth').html(json.mean_depth);
+			$('#num_target_bp').html(json.len_bp);
+			$('#sample_depth_level').html(loadSampleDepthLevel(json.depth_levels));
 			// draw datatable absent frag
 			var exp_fn_abf = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-Absent_FRAG";
 			var data_absent_frag = new Array();
@@ -103,28 +138,84 @@ function loadReport_QC_SeqData(sdp) {
 				order: [[1, 'des']]
 			});
 
-			document.getElementById("dt_frag_depth_level").innerHTML = loadFragCoverTable(json.depth_levels);
-			// draw datatable frag depth level
-			var export_fn_fc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-" + json.sample_name + "-FRAG_COVER";
-			drawDataTable('#dt_frag_depth_level', export_fn_fc, {
-				data: getFragDepthLevel(json.frag_cover_list, sdp),
-				drawCallback: function(settings) {
-					var td_obj = $("#dt_frag_depth_level td");
-					for (var i = 0; i < td_obj.length; i++) {
-						var cell = $("#dt_frag_depth_level td:eq(" + i + ")");
-						var patt = /^[\d.]+%$/;
-						if (patt.test(cell.text())) {
-							var percent = cell.text().replace(/%/, "");
-							cell.css("background-color", getHeatColor(percent));
-							if (percent <= 45) { cell.css("color", "white"); }
+			// FASTQC
+			if (json.fastqc.length > 0) {
+				var fastqc_html_list = new Array();
+				for (var i = 0; i < json.fastqc.length; i++) {
+					fastqc_html_list.push([$.ajax({url: json.fastqc[i], async: false}).responseText, json.fastqc[i]]);
+				}
+				var export_fn_fqc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-(" + json.sample_name + ")-FASTQC_Summary";
+				drawDataTable('#dt_fastqc_basic', export_fn_fqc, {
+					data: getFastqcBasic(fastqc_html_list)
+				});
+				// extract FASTQC img
+				extractFastacImg('1', fastqc_html_list[0][0]);
+				extractFastacImg('2', fastqc_html_list[1][0]);
+			}
+
+			// 片段碱基覆盖度
+			$('#dt_frag_depth_level').html(loadFragCoverTable(json.depth_levels));
+			if (Object.keys(json.frag_reads).length < 2000) {
+				// draw datatable frag depth level
+				var export_fn_fc = getBasename(getDirname(getDirname(getDirname(sdp)))) + "-" + json.sample_name + "-FRAG_COVER";
+				drawDataTable('#dt_frag_depth_level', export_fn_fc, {
+					data: getFragDepthLevel(json.frag_cover_list, sdp),
+					drawCallback: function(settings) {
+						var td_obj = $("#dt_frag_depth_level td");
+						for (var i = 0; i < td_obj.length; i++) {
+							var cell = $("#dt_frag_depth_level td:eq(" + i + ")");
+							var patt = /^[\d.]+%$/;
+							if (patt.test(cell.text())) {
+								var percent = cell.text().replace(/%/, "");
+								cell.css("background-color", getHeatColor(percent));
+								if (percent <= 45) { cell.css("color", "white"); }
+							}
 						}
 					}
-				}
-			});
+				});
+			}
 		}
 	};
 	xhttp.open("GET", sdp, true);
 	xhttp.send();
+}
+
+function loadCoverUniforGraph(reads) {
+	var keys = Object.keys(reads).sort();
+	var values = new Array();
+	for (var i = 0; i < keys.length; i++) {
+		values.push(reads[keys[i]]);
+	}
+	var graph_data = {
+		labels: keys,
+		datasets: [
+			{
+				label: "Coverage Overview",
+				backgroundColor: "rgba(47,69,84,1)",
+				data: values
+			}
+		]
+	};
+	var graph_options = {
+		responsive: true,
+		maintainAspectRatio: false,
+	};
+
+	drawGraph('coverage_uniformity_graph', graph_data, graph_options);
+}
+
+function drawGraph(graph_id, graph_data, graph_options) {
+	var ctx = document.getElementById(graph_id).getContext("2d");
+
+	if(window.barChart !== undefined && window.barChart !== null){
+		window.barChart.destroy();
+	}
+
+	window.barChart = new Chart(ctx, {
+		type: 'bar',
+		data: graph_data,
+		options: graph_options
+	});
 }
 
 function loadSampleDepthLevel(data) {

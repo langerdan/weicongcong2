@@ -27,7 +27,6 @@
 
 		<!-- Custom Theme Style -->
 		<link href="./build/css/custom.min.css" rel="stylesheet">
-
 	</head>
 	<body class="nav-md">
 		<div class="row">
@@ -171,7 +170,7 @@
 
 			var dt= {};
 
-			document.getElementById("dt_sample_depth_level").innerHTML = loadDepthLevelthead(sdp_list[0].depth_levels);
+			$('#dt_sample_depth_level').html(loadDepthLevelthead(sdp_list[0].depth_levels));
 
 			var exp_fn_sum = "多样本比较-覆盖度统计汇总";
 			drawDataTable('#dt_summary', exp_fn_sum, {
@@ -286,7 +285,7 @@
 					}else {
 						pass = "<strong style=\"color: red\">FAILED</strong>";
 					}
-					data.push([i+1, sdp_list[i].sample_name, pass, sdp_list[i].mapped_reads, per_mapped_reads, sdp_list[i].target_reads, per_target_reads, sdp_list[i].aver_depth, sdp_list[i].max_depth, sdp_list[i].min_depth])
+					data.push([i+1, sdp_list[i].sample_name, pass, sdp_list[i].mapped_reads, per_mapped_reads, sdp_list[i].target_reads, per_target_reads, sdp_list[i].mean_depth, sdp_list[i].max_depth, sdp_list[i].min_depth])
 				}
 				return data;
 			}

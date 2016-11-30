@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# PROGRAM : spider_mycancergenome
+# PROGRAM : spiderMyCancerGenome
 # AUTHOR  : codeunsolved@gmail.com
 # CREATED : November 11 2016
 # VERSION : v0.0.1a

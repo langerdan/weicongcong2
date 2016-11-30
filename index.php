@@ -23,7 +23,6 @@
 		<!-- Custom Theme Style -->
 		<link href="./build/css/custom.min.css" rel="stylesheet">
 	</head>
-
 	<body class="nav-md">
 		<div class="container body">
 			<div class="main_container">
@@ -44,28 +43,26 @@
 							<h3>质量控制</h3>
 							<ul>
 								<li>
-									<h4>质控报告（<strong style="color: green;">推荐</strong>）</h4>
+									<h4>质控报告 v0.0.2（<strong style="color: green;">推荐</strong>）</h4>
 									<p>通过相关数据库交叉检索报告，提示报告PASS/FAILED情况及相关原因</p>
 									<p>支持多样本自定义比较</p>
 									<p>数据表格均可csv、excel、pdf导出</p>
 								</li>
 								<br />
-								<li>
-									<h4>样本覆盖度</h4>
-									<p>推荐使用<strong>质量控制－质控报告</strong></p>
-									<p>数据与<strong>质量控制－质控报告</strong>兼容</p>
-								</li>
-								<br />
-								<li>
-									<h4>扩增子检测</h4>
-									<p>暂停更新</p>
-								</li>
 							</ul>
 						</li>
 						<br />
 						<li>
 							<h3>数据库</h3>
 							<ul>
+								<li>
+									<h4>MyCancerGenome</h4>
+									<p>来源于www.mycancergenome.org［每两周更新］</p>
+								</li>
+								<li>
+									<h4>HaploX 靶向药3.0</h4>
+									<p>海普洛斯Haplox整理自FDA网站</p>
+								</li>
 								<li>
 									<h4>NGS Lab</h4>
 									<p>收样、抽提、建库、上机等相关数据的存储与检索</p>

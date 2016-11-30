@@ -26,10 +26,8 @@ function loadunHandleSample(project) {
 	xhttp.open("GET", "db_lab_query.php?func=lab_unhs_stat&proj=" + project, true);
 	xhttp.send();
 
-	if ($.fn.dataTable.isDataTable('#datatable_unHS')) {
-		dt_hs.destroy();
-	}
-	dt_hs = $("#dt_unHS").DataTable( {
+	var export_filename = project + "_unhandled_samples";
+	drawDataTable('#dt_unHS', export_filename, {
 		ajax: "db_lab_query.php?func=lab_unhs_tb&proj=" + project
 	});
 }

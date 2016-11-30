@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
- * PAGE    : anly_BRCA_LargeRearrangement
+ * PAGE    : anly_BRCA_LargeRA
  * AUTHOR  : codeunsolved@gmail.com
  * CREATED : November 3 2016
  * VERSION : v0.0.1a
@@ -13,7 +13,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<title>分析 - BRCA大片段缺失</title>
+		<title>分析 - BRCA大片段缺失/Large Rearrangement</title>
 
 		<!-- Bootstrap -->
 		<link href="./vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -169,6 +169,6 @@
 		<script src="./build/js/custom.min-qc_report.js"></script>
 
 		<!-- anly BRCA largeDel js -->
-		<script src="./js/anly_brca_largerearrangement.js"></script>
+		<script src="./js/anly_brca_largera.js"></script>
 	</body>
 </html>

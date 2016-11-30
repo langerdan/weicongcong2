@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# PROGRAM : anno_VCF
+# PROGRAM : annoVCF
 # AUTHOR  : codeunsolved@gmail.com
 # CREATED : September 18 2016
 # VERSION : v0.0.1a

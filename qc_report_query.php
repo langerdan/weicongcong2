@@ -34,6 +34,10 @@ switch ($query['func']) {
 						$table = '56gene_Lab';
 						break;
 
+					case '42gene':
+						$table = '42gene_lab';
+						break;
+
 					case 'brca':
 						$table = 'BRCA_Lab';
 						break;

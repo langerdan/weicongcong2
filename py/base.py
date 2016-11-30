@@ -16,8 +16,11 @@ def read_bed(path_b):
         for line_b in bed:
             chr_n = re.match('([^\t]+)\t', line_b).group(1)
             pos_s = int(re.match('[^\t]+\t([^\t]+\t)', line_b).group(1))
-            pos_e = int(re.match('(?:[^\t]+\t){2}([^\t]+\t)', line_b).group(1))
-            gene_name = re.match('(?:[^\t]+\t){3}([^\t\n\r]+)', line_b).group(1)
+            pos_e = int(re.match('(?:[^\t]+\t){2}([^\t]+[\t\n\r])', line_b).group(1))
+            if re.match('(?:[^\t]+\t){3}([^\t\n\r]+)', line_b):
+                gene_name = re.match('(?:[^\t]+\t){3}([^\t\n\r]+)', line_b).group(1)
+            else:
+                gene_name= ""
             f_details["%s-%s-%s-%s" % (chr_n, gene_name, pos_s, pos_e)] = [chr_n, gene_name, pos_s, pos_e]
     return f_details
 
@@ -87,3 +90,13 @@ def get_file_path(dir_main, suffix='faa', output_type='list', r_num=2, debug=Tru
         return path_file
     elif output_type == 'txt':
         return '\n'.join(path_file)
+
+
+def handle_sap_id(file_name):
+    if re.search('_S\d+', file_name):
+        return re.match('(.+)_S\d+', file_name).group(1)
+    elif re.search('autoBox', file_name):
+        return re.match('(.+)_20\d{2}_\d{2}_\d{2}', file_name).group(1)
+    else:
+        print print_colors('unknown sample source', 'red')
+        return re.search('(.+)\.', file_name).group(1)

@@ -33,6 +33,10 @@ switch ($query['proj']) {
 		$table = '56gene_Lab';
 		break;
 
+	case '42gene':
+		$table = '42gene_Lab';
+		break;
+
 	case 'brca':
 		$table = 'BRCA_Lab';
 		break;
@@ -51,13 +55,13 @@ switch ($query['func']) {
 		break;
 
 	case 'lab_unhs_tb':
-		$result = mysql_query("SELECT id, SAP_id, STATE FROM $table WHERE STATE!='FINISH'") or die('Query Error: '.mysql_error());
+		$result = mysql_query("SELECT id, SAP_id, RUN_bn, STATE FROM $table WHERE STATE!='FINISH'") or die('Query Error: '.mysql_error());
 
 		$response = array('data' => array());
 
 		while($row = mysql_fetch_array($result)) {
 			changeProgState($row['STATE']);
-			$response['data'][] = array(0 => $row['id'], 1 => $row['SAP_id'], 2 => "<div class=\"progress progress-striped\" style=\"margin-bottom: 0px;\"><div class=\"progress-bar ".$bar."\" data-transitiongoal=\"".$degree."\" aria-valuenow=\"".$degree."\" style=\"width: ".$degree."%;\"></div></div>", 3 => $state_desc, 4 => "<a href=\"#\" onclick=\"processItem('".$row['id']."');return false;\">跟进</a>" );
+			$response['data'][] = array(0 => $row['id'], 1 => $row['SAP_id'], 2 => $row['RUN_bn'], 3 => "<div class=\"progress progress-striped\" style=\"margin-bottom: 0px;\"><div class=\"progress-bar ".$bar."\" data-transitiongoal=\"".$degree."\" aria-valuenow=\"".$degree."\" style=\"width: ".$degree."%;\"></div></div>", 4 => $state_desc, 5 => "<a href=\"#\" onclick=\"processItem('".$row['id']."');return false;\">跟进</a>" );
 		}
 		echo json_encode($response);
 		break;

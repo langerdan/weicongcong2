@@ -25,7 +25,6 @@
 
 		<!-- Custom Theme Style -->
 		<link href="./build/css/custom.min.css" rel="stylesheet">
-
 	</head>
 	<body class="nav-md">
 		<div class="row">
@@ -155,7 +154,7 @@
 					row.push(json_list[i].gene_name);
 					row.push(json_list[i].pos_s + " - " + json_list[i].pos_e);
 					row.push(json_list[i].len);
-					row.push(json_list[i].aver_depth);
+					row.push(json_list[i].mean_depth);
 					row.push(json_list[i].max_depth);
 					row.push(json_list[i].min_depth);
 					data.push(row);
@@ -167,8 +166,8 @@
 				var x_labels;
 				var graph_data = new Array();
 				var graph_options = {
-						responsive: true,
-						maintainAspectRatio: false,
+					responsive: true,
+					maintainAspectRatio: false,
 				};
 				var x_labels_max_len = 0;
 
@@ -217,17 +216,17 @@
 			}
 
 			function drawGraph(graph_id, graph_data, graph_options) {
-					var ctx = document.getElementById(graph_id).getContext("2d");
+				var ctx = document.getElementById(graph_id).getContext("2d");
 
-					if(window.lineChart !== undefined && window.lineChart !== null){
-									window.lineChart.destroy();
-					}
+				if(window.lineChart !== undefined && window.lineChart !== null){
+					window.lineChart.destroy();
+				}
 
-					window.lineChart = new Chart(ctx, {
-							type: 'line',
-							data: graph_data,
-							options: graph_options
-					});
+				window.lineChart = new Chart(ctx, {
+					type: 'line',
+					data: graph_data,
+					options: graph_options
+				});
 			}
 		</script>
 	</body>

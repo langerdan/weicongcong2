@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# PROGRAM : cross_SNP
+# PROGRAM : crossSNP
 # AUTHOR  : codeunsolved@gmail.com
 # CREATED : September 20 2016
 # VERSION : v0.0.2
@@ -386,25 +386,25 @@ def cross_snp(pipeline, sap_id, run_bn, vcf_mismatch):
 
 
 def handle_autobox():
-    vcf_data = []
-    anno_data = []
-
     project = args.project
     run_bn = args.run_bn
     offset = args.offset
     suffix = args.suffix
 
-    dir_outbox = r'/Users/codeunsolved/TopgenData1/outbox'
+    dir_outbox = args.dir_outbox
     dir_prefix = project + str(run_bn + offset) + suffix + '_'
 
     for run in os.listdir(dir_outbox):
         if re.match(dir_prefix, run):
             print print_colors("<%s>" % run, 'red')
-            pipeline = re.search('%s(_.+_?)$' % str(run_bn + offset), run).group(1)
+            pipeline = re.search('%s(_.+_?)$' % (str(run_bn + offset) + suffix), run).group(1) # need parenthesis to cover (str(run_bn + offset) + suffix)
             dir_run = os.path.join(dir_outbox, run)
 
             sum_cross_anvc = []
             for sap in os.listdir(dir_run):
+                vcf_data = []
+                anno_data = []
+
                 dir_sap = os.path.join(dir_run, sap)
                 if os.path.isdir(dir_sap):
                     print print_colors("-{%s}" % sap)
@@ -445,9 +445,6 @@ def handle_autobox():
 
 
 def handle_local():
-    vcf_data = []
-    anno_data = []
-
     pipeline = args.pipeline
     run_bn = args.run_bn
     dir_data = args.dir_data
@@ -457,6 +454,8 @@ def handle_local():
     sap_ids = {}
     for f in os.listdir(dir_data):
         if args.import_var and re.search('\.vcf$', f):
+            vcf_data = []
+
             # handle sample id
             if pipeline == 'Miseq':
                 sap_id = re.match('(.+)_S\d+', f).group(1)
@@ -479,14 +478,15 @@ def handle_local():
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='cross_snp', formatter_class=RawTextHelpFormatter,
+    parser = argparse.ArgumentParser(prog='cross SNP', formatter_class=RawTextHelpFormatter,
                                      description="• import vcf, annotation(.vcf, raw_variants.txt)\n"
                                                  "• cross vcf with annotation and output report(.xls)")
     subparsers = parser.add_subparsers(help='cross snp with different source')
 
     parser_a = subparsers.add_parser('autobox', help='from autobox')
-    parser_a.add_argument('project', type=str, help='Specify project prefix')
-    parser_a.add_argument('run_bn', type=int, help='Specify run batch No.')
+    parser_a.add_argument('project', type=str, help='Specify Project prefix')
+    parser_a.add_argument('run_bn', type=int, help='Specify RUN batch No.')
+    parser_a.add_argument('-d', '--dir_outbox', type=str, default='/Users/codeunsolved/TopgenData1/outbox', help='Specify directory of outbox')
     parser_a.add_argument('--offset', type=int, default=0, help='Specify day offset')
     parser_a.add_argument('--suffix', type=str, default='', help='Specify directory suffix')
     parser_a.add_argument('-i', '--import_var', action='store_true', help='import vcf and annotation(raw_variants.vcf)')
@@ -495,8 +495,8 @@ if __name__ == '__main__':
     parser_a.set_defaults(func=handle_autobox)
 
     parser_b = subparsers.add_parser('local', help='from local')
-    parser_b.add_argument('project', type=str, help='Specify project prefix')
-    parser_b.add_argument('run_bn', type=int, help='Specify run batch No.')
+    parser_b.add_argument('project', type=str, help='Specify Project prefix')
+    parser_b.add_argument('run_bn', type=int, help='Specify RUN batch No.')
     parser_b.add_argument('pipeline', choices=['Miseq', 'cedar'], help='Specify pipeline')
     parser_b.add_argument('dir_data', help='Specify directory of data')
     parser_b.add_argument('-i', '--import_var', action='store_true', help='import vcf and annotation(raw_variants.vcf)')
@@ -515,8 +515,11 @@ if __name__ == '__main__':
         table_vcf = '42gene_vcf'
         table_anno = '42gene_anno'
     elif args.project == 'BRCA':
-        table_vcf = '42gene_vcf'
-        table_anno = '42gene_anno'
+        table_vcf = 'BRCA_vcf'
+        table_anno = 'BRCA_anno'
+    elif args.project == 'ZS-BRCA':
+        table_vcf = 'ZS_BRCA_vcf'
+        table_anno = 'ZS_BRCA_anno'
     else:
         raise Exception('Unknown Project: %s' % args.project)
 

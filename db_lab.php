@@ -30,6 +30,11 @@
 		<!-- Custom Theme Style -->
 		<link href="./build/css/custom.min.css" rel="stylesheet">
 
+		<style type="text/css">
+			@media (min-width: 992px) {
+				.tile_count .tile_stats_count:nth-child(2):before {
+					border-left: 0; } }
+		</style>
 	</head>
 	<body class="nav-md">
 		<div class="container body">
@@ -63,13 +68,14 @@
 								<div class="x_content">
 									<ul class="nav nav-tabs">
 										<li class="active"><a data-toggle="tab" href="#" onclick="loadunHandleSample('56gene');return false;"> 56gene </a></li>
+										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('42gene');return false;"> 42gene </a></li>
 										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('brca');return false;"> BRCA </a></li>
 									</ul>
 
 									<div class="tab-content">
 										<div class="row tile_count">
 											<div class="col-md-1 col-sm-1 col-xs-1"></div>
-											<div class="col-md-2 col-sm-2 col-xs-2 tile_stats_count" style="border-left: none !important;">
+											<div class="col-md-2 col-sm-2 col-xs-2 tile_stats_count left_none">
 												<span class="count_top"><i class="fa fa-circle"></i> 已收样</span>
 
 												<br />
@@ -114,9 +120,10 @@
 														<table id="dt_unHS" class="table table-striped table-bordered jambo_table">
 															<thead>
 																<tr>
-																	<th style="width: 10%">序号</th>
+																	<th style="width: 5%">序号</th>
 																	<th style="width: 20%">样本名称</th>
-																	<th style="width: 50%">进度</th>
+																	<th style="width: 15%">上机批次</th>
+																	<th style="width: 40%">进度</th>
 																	<th style="width: 10%">说明</th>
 																	<th style="width: 10%">操作</th>
 																</tr>
@@ -156,6 +163,7 @@
 										<div class="col-md-2 col-sm-2 col-xs-2">
 											<select name="project" class="form-control">
 												<option value="56gene" selected> 56gene </option>
+												<option value="42gene"> 42gene </option>
 												<option value="brca"> BRCA </option>
 											</select>
 										</div>

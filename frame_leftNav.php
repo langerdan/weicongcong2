@@ -38,20 +38,19 @@ echo <<<LEFT_NAV
 									<li><a><i class="fa fa-cube"></i> 质量控制 <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
 											<li><a href="qc_report.php">质控报告</a></li>
-											<li><a href="qc_sample_cover.php">样本覆盖度</a></li>
-											<li><a href="qc_amplicon.php">扩增子检测</a></li>
 										</ul>
 									</li>
 									<li><a><i class="fa fa-database"></i> 数据库 <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
 											<li><a href="db_MyCancerGenome.php">MyCancerGenome</a></li>
+											<li><a href="db_haplox_targeted_drugs.php">HaploX 靶向药 3.0</a></li>
 											<li><a href="db_lab.php">NGS lab</a></li>
 										</ul>
 									</li>
 									<li><a><i class="fa fa-area-chart"></i> 分析 <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
 											<li><a href="anly_withAnnovar.php">withAnnovar</a></li>
-											<li><a href="anly_BRCA_LargeRearrangement.php">BRCA LargeRearrangement</a></li>
+											<li><a href="anly_BRCA_LargeRA.php">BRCA 大片段缺失</a></li>
 										</ul>
 									</li>
 									<li><a><i class="fa fa-book"></i> 文档 <span class="fa fa-chevron-down"></span></a>
@@ -66,7 +65,7 @@ echo <<<LEFT_NAV
 									</li>
 									<li><a><i class="fa fa-laptop"></i> 管理 <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
-											<li><a href="admin_user.php">用户</a></li>
+											<li><a href="＃">用户</a></li>
 										</ul>
 									</li>
 								</ul>
