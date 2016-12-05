@@ -18,7 +18,7 @@
 # 3. add Reads statistic via pysam(including each region); 
 # 4. adjust Project, SAP_id, RUN_bn handle and program structure;
 # 5. add bed_filename to sdp;
-# 6. change name 'create_sample_cover_data' to 'QC_Reporter'(may add option: output report);
+# 6. change name from 'create_sample_cover_data' to 'QC_Reporter'(may add option: output report);
 
 from __future__ import division
 import os
@@ -477,6 +477,7 @@ if __name__ == '__main__':
     print print_colors("OK!", 'green')
 
     dir_name = os.path.basename(dir_data)
+
     # handle project
     if args.project is not None:
         project = args.project
@@ -489,6 +490,7 @@ if __name__ == '__main__':
             project = '56gene'
         else:
             raise Exception("Unknown project for %s" % dir_name)
+
     # handle run batch number
     if args.run_bn is not None:
         run_bn = args.run_bn

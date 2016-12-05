@@ -4,8 +4,14 @@
  * CREATED : September 1 2016
  * VERSION : v0.0.1
  * UPDATE  : [v0.0.1] September 23 2016
- * (from Temp_QC_Report_Sequencing_Data)1. add <FASTQC>; 2. add and adjust <report header>; 3. adjust {<summary> => <coverage summary>}; 4. adjust [缺失片段] to <target base coverage>;
- * 4. add function drawDataTable(); 5. change font color to white when HeatColor is too red; 6. add HeatColor to per_mapped_reads and per_target_reads;
+ * (from Temp_QC_Report_Sequencing_Data)
+ * 1. add <FASTQC>;
+ * 2. add and adjust <report header>;
+ * 3. adjust {<summary> => <coverage summary>};
+ * 4. adjust [缺失片段] to <target base coverage>;
+ * 5. add function drawDataTable();
+ * 6. change font color to white when HeatColor is too red;
+ * 7. add HeatColor to per_mapped_reads and per_target_reads;
  */
 
 function loadReport_QC_SeqData(sdp) {

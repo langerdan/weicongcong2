@@ -80,13 +80,12 @@ check_pos = [["chr1", 11854476, 11854476, "MTHFR", "T"],
              ["chr19", 45923653, 45923653, "ERCC1", "A"],
              ["chr22", 42526694, 42526694, "CYP2D6", "G"]]
 
-check_deletion = [["chr18", 657646, 657673, "TYMS"]]
-
 check_depth = [["chr22", 24376132, 24376622, "GSTT1"],
                ["chr22", 24376820, 24377002, "GSTT1"],
                ["chr22", 24379360, 24379512, "GSTT1"],
                ["chr22", 24381700, 24381792, "GSTT1"],
-               ["chr22", 24384112, 24384312, "GSTT1"]]
+               ["chr22", 24384112, 24384312, "GSTT1"],
+               ["chr18", 657646, 657673, "TYMS"]]
 
 
 def output(dir_o):
@@ -208,8 +207,8 @@ def main(sam, sap_id, run_bn, pipeline):
                 #raise Exception("No match - %s" % p)
                 uncover_n += 1
                 check_pos_data.append([sap_id, run_bn] + p + ["Uncovered"])
-        print print_colors("Pass: %d, Filter: %d, Remain: %d/%d, Uncover: %d " % (pass_n, filter_n, remain_n, len(check_pos), uncover_n), 'grey') + \
-              print_colors("OK!", 'green')
+        print print_colors("Pass: %d, Filter: %d, Remain: %d/%d, Uncover: %d " % (pass_n, filter_n, remain_n, len(check_pos), uncover_n), 'grey'),
+        print print_colors("OK!", 'green')
 
     # Check Depth
     if not args.skip_depth:
@@ -218,6 +217,7 @@ def main(sam, sap_id, run_bn, pipeline):
 
         filter_n = 0
         low_depth_n = 0
+        deletion_n = 0
 
         for d in check_depth:
             depths = []
@@ -227,27 +227,19 @@ def main(sam, sap_id, run_bn, pipeline):
                     if pileupcolumn.n > 10:
                         high_depth += 1
                     depths.append([pileupcolumn.pos, pileupcolumn.n])
-            if high_depth == len(range(d[1]-1, d[2]+1)):
-                filter_n += 1
-                if args.verbose: print print_colors("[Filter] %s all depths > 10" % d, 'red')
+            if depths == []:
+                deletion_n += 1
+                check_depth_data.append([sap_id, run_bn] + d + ["Deletion"])
             else:
-                low_depth += 1
-                check_depth_data.append([sap_id, run_bn] + d + depths)
-        print print_colors("Filter: %d, LowDepth: %d/%d " % (filter_n, low_depth_n, len(check_depth)), 'grey') + \
-              print_colors("OK!", 'green')
-
-    # Check Deletion
-    if 0:
-        print print_colors("• Check Deletion ..."),
-        if args.verbose: print "\n"
-        for de in check_deletion:
-            for pileupcolumn in sam.pileup(de[0], de[1]-1, de[2]):
-                if pileupcolumn.pos == de[1]-1:
-                    pass
-                if pileupcolumn.pos in range(de[1], de[2]+1):
-                    pass
-
-
+                if high_depth == len(range(d[1]-1, d[2]+1)):
+                    filter_n += 1
+                    if args.verbose: print print_colors("[Filter] %s all depths > 10" % d, 'red')
+                else:
+                    low_depth_n += 1
+                    check_depth_data.append([sap_id, run_bn] + d + [depths])
+        print print_colors("Filter: %d, LowDepth: %d/%d, Deletion: %d/%d " % 
+                           (filter_n, low_depth_n, len(check_depth), deletion_n, len(check_depth)), 'grey'),
+        print print_colors("OK!", 'green')
 
 
 def handle_autobox():
@@ -272,7 +264,8 @@ def handle_autobox():
 if __name__ == '__main__':
     # parse args
     parser = argparse.ArgumentParser(prog='check Missing', formatter_class=RawTextHelpFormatter,
-                                     description="• check certain pos alt\n")
+                                     description="• check certain pos mutation\n"
+                                                 "• check certain region lowdepth or deletion\n")
     subparsers = parser.add_subparsers(help='Check missing with different source')
 
     parser_a = subparsers.add_parser('autobox', help='from autobox')
@@ -281,7 +274,6 @@ if __name__ == '__main__':
     parser_a.add_argument('run_bn', type=str, help='Specify RUN batch No.')
     parser_a.add_argument('-kp', '--skip_pos', action='store_true', help="skip Check Pos")
     parser_a.add_argument('-kd', '--skip_depth', action='store_true', help="skip Check Depth")
-    parser_a.add_argument('-kl', '--skip_deletion', action='store_true', help="skip Check Deletion")
     parser_a.add_argument('-v', '--verbose', action='store_true', help='Show debug')
     parser_a.set_defaults(func=handle_autobox)
 
@@ -290,7 +282,7 @@ if __name__ == '__main__':
     # handle table belonging
     if args.project == '56gene':
         table_vcf = '56gene_vcf'
-    elif args.project == ('42geneLung' or '42gene'):
+    elif args.project in ['42geneLung', '42gene']:
         table_vcf = '42gene_vcf'
     elif args.project == 'BRCA':
         table_vcf = 'BRCA_vcf'
@@ -300,7 +292,7 @@ if __name__ == '__main__':
         raise Exception('Unknown Project: %s' % args.project)
 
     check_pos_data = [["Sample_id", "RUN", "Chr", "Pos_start", "Pos_end", "Gene", "Ref", "Alt", "Frequency", "Depth", "VCF_Append", "VCF_Match"]]
-    check_depth_data = [["Sample_id", "RUN", "Chr", "Pos_start", "Pos_end", "Gene", "Ref", "Depth"]]
+    check_depth_data = [["Sample_id", "RUN", "Chr", "Pos_start", "Pos_end", "Gene", "Depth"]]
 
     m_con = MysqlConnector(mysql_config, 'TopgenNGS')
     args.func()

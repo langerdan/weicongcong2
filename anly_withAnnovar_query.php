@@ -30,6 +30,10 @@ switch ($query['proj']) {
 		$table = array('lab' => '56gene_lab', 'vcf' => '56gene_VCF', 'anno' =>'56gene_anno');
 		break;
 
+	case '42gene':
+		$table = array('lab' => '42gene_lab', 'vcf' => '42gene_VCF', 'anno' =>'42gene_anno');
+		break;
+
 	case 'brca':
 		$table = array('lab' => 'brca_lab', 'vcf' => 'brca_VCF', 'anno' =>'brca_anno');
 		break;
@@ -67,15 +71,20 @@ for ($i = 0; $i < mysql_num_rows($result_lab); $i++) {
 	$pipelines_anno = getVCForAnnoNum($sap_id, $run_bn, $table, 'anno');
 	$pipelines  = getPipelins($pipelines_vcf, $pipelines_anno);
 
-	foreach ($pipelines as $v) {
-		$input_checkbox = "<input type=\"checkbox\" class=\"flat\" name=\"sap_select\" value='['".$sap_id."', '".$run_bn."', '".$v."']'>";
-		$sap_id_action = "<a href=\"#\" onclick=\"loadVCFandAnno('".$sap_id."', '".$run_bn."', '".$v."');return false;\">".$sap_id."</a>";
-
-		$vcf_num = array_key_exists($v, $pipelines_vcf) ? $pipelines_vcf[$v] : 'NaN';
-		$anno_num = array_key_exists($v, $pipelines_anno) ? $pipelines_anno[$v] : 'NaN';
-
-		$response['data'][$index] = [$input_checkbox, $index + 1, $sap_id_action, $sap_type, $run_bn, $v, $vcf_num, $anno_num];
+	if (empty($pipelines)) {
+		$response['data'][$index] = [$input_checkbox, $index + 1, $sap_id_action, $sap_type, $run_bn, 'NaN', '', ''];
 		$index++;
+	}else {
+		foreach ($pipelines as $v) {
+			$input_checkbox = "<input type=\"checkbox\" class=\"flat\" name=\"sap_select\" value='['".$sap_id."', '".$run_bn."', '".$v."']'>";
+			$sap_id_action = "<a href=\"#\" onclick=\"loadVCFandAnno('".$sap_id."', '".$run_bn."', '".$v."');return false;\">".$sap_id."</a>";
+
+			$vcf_num = array_key_exists($v, $pipelines_vcf) ? $pipelines_vcf[$v] : 'NaN';
+			$anno_num = array_key_exists($v, $pipelines_anno) ? $pipelines_anno[$v] : 'NaN';
+
+			$response['data'][$index] = [$input_checkbox, $index + 1, $sap_id_action, $sap_type, $run_bn, $v, $vcf_num, $anno_num];
+			$index++;
+		}
 	}
 }
 
@@ -84,9 +93,6 @@ echo json_encode($response);
 function getVCForAnnoNum($sap_id, $run_bn, $t, $t_suffix) {
 	$p = array();
 
-	if (preg_match("/^(.+)-42gene$/", $run_bn, $matches)) {
-		$run_bn = $matches[1];
-	}
 	$result = mysql_query("SELECT Pipeline FROM ".$t[$t_suffix]." WHERE SAP_id='$sap_id' AND RUN_bn='$run_bn'");
 	if (!$result) {
 		die('Query Error: '.mysql_error());

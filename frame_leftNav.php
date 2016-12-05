@@ -44,7 +44,7 @@ echo <<<LEFT_NAV
 										<ul class="nav child_menu">
 											<li><a href="db_MyCancerGenome.php">MyCancerGenome</a></li>
 											<li><a href="db_haplox_targeted_drugs.php">HaploX 靶向药 3.0</a></li>
-											<li><a href="db_lab.php">NGS lab</a></li>
+											<li><a href="db_lab.php">NGS Lab</a></li>
 										</ul>
 									</li>
 									<li><a><i class="fa fa-area-chart"></i> 分析 <span class="fa fa-chevron-down"></span></a>

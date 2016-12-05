@@ -74,6 +74,7 @@
 												<div class="col-md-2 col-sm-2 col-xs-2">
 													<select name="project" class="form-control">
 														<option value="56gene" selected> 56gene </option>
+														<option value="42gene"> 42gene </option>
 														<option value="brca"> BRCA </option>
 													</select>
 												</div>
