@@ -28,19 +28,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		break;
 }
 
-switch ($query['proj']) {
-	case '56gene':
-		$table = '56gene_Lab';
-		break;
-
-	case '42gene':
-		$table = '42gene_Lab';
-		break;
-
-	case 'brca':
-		$table = 'BRCA_Lab';
-		break;
-}
+$table = $query['proj'].'_Lab';
 
 switch ($query['func']) {
 	case 'lab_unhs_stat':

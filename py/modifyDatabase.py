@@ -13,9 +13,9 @@ import argparse
 from datetime import datetime
 from argparse import RawTextHelpFormatter
 
-from base import print_colors
 from config import mysql_config
-from database_connector import MysqlConnector
+from lib.base import print_colors
+from lib.database_connector import MysqlConnector
 
 
 def format_sql(s, option='where'):

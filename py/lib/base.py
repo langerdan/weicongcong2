@@ -7,7 +7,14 @@
 
 import os
 import re
+import sys
+import time
 import shutil
+import logging
+import shlex
+import subprocess
+
+from threading import Thread
 
 
 def read_bed(path_b):
@@ -60,11 +67,14 @@ def clean_output(dir_o, subdir_name):
 
 def print_colors(string, color='blue'):
     colors = {
+        'grey': '\033[1;30m',
         'red': '\033[1;31m',
         'green': '\033[1;32m',
         'yellow': '\033[1;33m',
-        'blue': '\033[1;36m',
-        'grey': '\033[1;30m',
+        'blue': '\033[1;34m',
+        'megenta': '\033[1;35m',
+        'cyan': '\033[1;36m',
+        'white': '\033[1;37m',
         'bold': '\033[1m',
         'end': '\033[0m'
     }
@@ -100,3 +110,89 @@ def handle_sap_id(file_name):
     else:
         print print_colors('unknown sample source', 'red')
         return re.search('(.+)\.', file_name).group(1)
+
+
+def handle_project(dir_name):
+    if re.search('56gene', dir_name):
+        project = '56gene'
+    elif re.search('42geneLung', dir_name):
+        project = '42geneLung'
+    elif re.search('14geneCRC', dir_name):
+        project = '14geneCRC'
+    elif re.search('9geneBreast', dir_name):
+        project = '9geneBreast'
+    elif re.search('6geneGIST', dir_name):
+        project = '6geneGIST'
+    elif re.search('6geneOvarian', dir_name):
+        project = '6geneOvarian'
+    elif re.search('BRCA', dir_name):
+        project = 'BRCA'
+    else:
+        raise Exception("Unknown project for %s" % dir_name)
+    return project
+
+
+def handle_run_bn(dir_name):
+    if re.match('BRCA|onco', dir_name):
+        run_bn = re.match('(?:BRCA|onco)(\d+)', dir_name).group(1)
+    else:
+        raise Exception("Unknown RUN batch No. for %s" % dir_name)
+    return run_bn
+
+
+def handle_table(project):
+    table = {'vcf': None, 'anno': None}
+    if project in ['56gene', '42geneLung', '14geneCRC', '9geneBreast', '6geneGIST', '6geneOvarian', 
+                   'BRCA', 'ZS-BRACA']:
+        table['vcf'] = project + '_VCF'
+        table['anno'] = project + '_anno'
+    else:
+        raise Exception('Unknown Project: %s' % project)
+    return table
+
+
+def execute_cmd(c):
+    p = subprocess.Popen(shlex.split(c), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = p.communicate()
+    p.wait()
+    if err:
+        raise Exception(err)
+    elif out:
+        print out
+
+
+class SetupLogger(object):
+    def __init__(self, log_name, path_log=None, level=logging.DEBUG, on_file=True, on_stream=True, log_mode='a',
+                 format_fh='%(asctime)s | %(filename)s - line:%(lineno)-4d | %(levelname)s | %(message)s',
+                 format_sh='[%(levelname)s] %(message)s',
+                 format_date='[%b-%d-%Y] %H:%M:%S'):
+        self.log_name = log_name
+        self.path_log = path_log
+        self.level = level
+        self.on_file = on_file
+        self.on_stream = on_stream
+        self.log_mode = log_mode
+        self.format_fh = format_fh
+        self.format_sh = format_sh
+        self.format_date = format_date
+        self.l = logging.getLogger(log_name)
+        self.l.setLevel(level)
+
+    def add_filehandler(self):
+        if self.on_file:
+            # handle log directory
+            if self.path_log:
+                dir_name = os.path.dirname(self.path_log)
+                if not os.path.exists(dir_name):
+                    print "[WARNING] directory of log doesn't exist, create it!"
+                    os.makedirs(dir_name)
+
+            file_handler = logging.FileHandler(self.path_log, mode=self.log_mode)
+            file_handler.setFormatter(logging.Formatter(self.format_fh, self.format_date))
+            self.l.addHandler(file_handler)
+
+    def add_streamhandler(self, sh_formatter):
+        if self.on_stream:
+            stream_handler = logging.StreamHandler()
+            stream_handler.setFormatter(logging.Formatter(self.format_sh))
+            self.l.addHandler(stream_handler)

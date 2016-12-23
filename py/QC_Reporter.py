@@ -30,12 +30,14 @@ import argparse
 
 import pysam
 
-from base import read_bed
-from base import clean_output
-from base import print_colors
-from base import handle_sap_id
 from config import mysql_config
-from database_connector import MysqlConnector
+from lib.base import read_bed
+from lib.base import clean_output
+from lib.base import print_colors
+from lib.base import handle_sap_id
+from lib.base import handle_run_bn
+from lib.base import handle_project
+from lib.database_connector import MysqlConnector
 
 # CONFIG AREA #
 __VERSION__ = 'v0.0.3'
@@ -262,6 +264,8 @@ def import_qc_seqdata(data):
 
 
 def main():
+    print print_colors("Project : ", 'yellow') + print_colors(project, 'green') + print_colors(" RUN bn: ", 'yellow') + print_colors(run_bn, 'green')
+
     sample_num = 0
     sample_cover = []
     sample_names = []
@@ -382,6 +386,9 @@ def main():
                                 sample_data_pointer["pass"]["absent_frag"] += 1
                             sample_data_pointer["absent_frag"].append(key)
                             print print_colors("add 100% 0x frag [{}] to absent frag".format(key), 'yellow')
+                    if depth_digest_stat["sample"]["len"] == 0:
+                        print print_colors("No target data found!", 'red')
+                        return
                     for depth_level in depth_levels:
                         # add sample depth level
                         depth_level_percent = round(depth_level_stat["sample"][str(depth_level)] / depth_digest_stat["sample"]["len"] * 100, 2)
@@ -419,7 +426,7 @@ def main():
 
             # Reads statistics via pysam (including each region)
             # Coverage Uniformity statistics
-            print print_colors("• get Reads statistics and get Coverage Unniformoty from .bam ...")
+            print print_colors("• get Reads statistics and get Coverage Uniformity from .bam ...")
             pysam_stat(os.path.join(dir_data, "%s.bam" % file_name), sample_data_pointer)
             print print_colors("=>total_reads: %d, mapped_reads: %d, target_reads: %d" % (
                                sample_data_pointer["total_reads_pysam"],
@@ -482,25 +489,12 @@ if __name__ == '__main__':
     if args.project is not None:
         project = args.project
     else:
-        if re.search('BRCA', dir_name):
-            project = 'BRCA'
-        elif re.search('42gene', dir_name):
-            project = '42gene'
-        elif re.search('56gene', dir_name):
-            project = '56gene'
-        else:
-            raise Exception("Unknown project for %s" % dir_name)
-
+        project = handle_project(dir_name)
     # handle run batch number
     if args.run_bn is not None:
         run_bn = args.run_bn
     else:
-        if re.match('BRCA|onco', dir_name):
-            run_bn = re.match('(?:BRCA|onco)(\d+)', dir_name).group(1)
-        else:
-            raise Exception("Unknown RUN batch No. for %s" % dir_name)
-
-    print print_colors("Project : ", 'yellow') + print_colors(project, 'green') + print_colors(" RUN bn: ", 'yellow') + print_colors(run_bn, 'green')
+        run_bn = handle_run_bn(dir_name)
 
     bed_filename = os.path.basename(args.path_bed)
     frag_details = read_bed(path_bed)

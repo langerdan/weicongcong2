@@ -15,9 +15,9 @@ import argparse
 from bs4 import BeautifulSoup
 from tornado import httpclient, gen, ioloop, queues
 
-from base import print_colors
 from config import mysql_config
-from database_connector import MysqlConnector
+from lib.base import print_colors
+from lib.database_connector import MysqlConnector
 
 
 def update_disease():

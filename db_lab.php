@@ -68,8 +68,12 @@
 								<div class="x_content">
 									<ul class="nav nav-tabs">
 										<li class="active"><a data-toggle="tab" href="#" onclick="loadunHandleSample('56gene');return false;"> 56gene </a></li>
-										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('42gene');return false;"> 42gene </a></li>
-										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('brca');return false;"> BRCA </a></li>
+										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('42geneLung');return false;"> 42geneLung </a></li>
+										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('14geneCRC');return false;"> 14geneCRC </a></li>
+										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('9geneBreast');return false;"> 9geneBreast </a></li>
+										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('6geneGIST');return false;"> 6geneGIST </a></li>
+										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('6geneOvarian');return false;"> 6geneOvarian </a></li>
+										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('BRCA');return false;"> BRCA </a></li>
 									</ul>
 
 									<div class="tab-content">
@@ -163,8 +167,12 @@
 										<div class="col-md-2 col-sm-2 col-xs-2">
 											<select name="project" class="form-control">
 												<option value="56gene" selected> 56gene </option>
-												<option value="42gene"> 42gene </option>
-												<option value="brca"> BRCA </option>
+												<option value="42geneLung"> 42geneLung </option>
+												<option value="14geneCRC"> 14geneCRC </option>
+												<option value="9geneBreast"> 9geneBreast </option>
+												<option value="6geneGIST"> 6geneGIST </option>
+												<option value="6geneOvarian"> 6geneOvarian </option>
+												<option value="BRCA"> BRCA </option>
 											</select>
 										</div>
 										<div class="col-md-10 col-sm-10 col-xs-10">
