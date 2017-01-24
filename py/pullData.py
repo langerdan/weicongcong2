@@ -58,7 +58,7 @@ def pull_miseq():
     match_triger = 0
     saps_fetched = set()
     for d in os.listdir(dir_miseq):
-        if re.match(run_bn, d):
+        if re.match("%s_M\d{5}_\d{4}_0{9}-" % run_bn, d):
             match_triger = 1
             print print_colors('<%s>' % d, 'red')
             dir_data = os.path.join(os.path.join(dir_miseq, d), sub_dir)

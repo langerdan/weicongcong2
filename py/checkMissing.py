@@ -252,7 +252,7 @@ def handle_autobox():
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='check Missing', formatter_class=RawTextHelpFormatter,
+    parser = argparse.ArgumentParser(prog='checkMissing', formatter_class=RawTextHelpFormatter,
                                      description="• check certain pos mutation\n"
                                                  "• check certain region lowdepth or deletion\n")
     subparsers = parser.add_subparsers(dest='subparser_name', help='Check missing with different source')

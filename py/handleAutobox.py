@@ -43,14 +43,22 @@ def main():
     if re.search('pull', options):
         print print_colors("<< pullOutbox >>")
         PULL_OUTBOX = time.time()
-        execute_cmd("python %s/py/pullData.py outbox %s %s" % (dir_ngs_dashboard, dir_data, dir_output))
+        execute_cmd("python %s/py/pullData.py outbox %s %s -f '\.(?:ba[im]|vcf|txt)$'" % (dir_ngs_dashboard, dir_data, dir_output))
         print "--------------------------------------------------------"
         print "pullOutbox time: %ss" % round(time.time() - PULL_OUTBOX, 2)
         print "========================================================"
 
         print print_colors("<< pullMiSeq >>")
         PULL_MISEQ = time.time()
-        execute_cmd("python %s/py/pullData.py miseq %s %s" % (dir_ngs_dashboard, run_bn, dir_output))
+
+        if re.match('\d{6}$', run_bn):
+            run_bn_mod = run_bn
+        elif re.match('\d{6}-', run_bn):
+            run_bn_mod = re.match('(\d{6})-', run_bn).group(1)
+        else:
+            raise Exception("[pullMiSeq] invalid RUN: %s" % run_bn)
+
+        execute_cmd("python %s/py/pullData.py miseq %s %s" % (dir_ngs_dashboard, run_bn_mod, dir_output))
         print "--------------------------------------------------------"
         print "pullMiSeq time: %ss" % round(time.time() - PULL_MISEQ, 2)
         print "========================================================"
@@ -58,7 +66,11 @@ def main():
     if re.search('cross', options):
         print print_colors("<< crossSNP >>")
         CROSS_SNP = time.time()
-        execute_cmd("python %s/py/crossSNP.py autobox %s -ick" % (dir_ngs_dashboard, dir_data))
+        if project == "BRCA":
+            print print_colors("Project: BRCA", 'yellow')
+            execute_cmd("python %s/py/crossSNP.py autobox %s -ic -pi" % (dir_ngs_dashboard, dir_data))
+        else:
+            execute_cmd("python %s/py/crossSNP.py autobox %s -ick -p %s -r %s" % (dir_ngs_dashboard, dir_data, project, run_bn))
         print "--------------------------------------------------------"
         print "crossSNP time: %ss" % round(time.time() - CROSS_SNP, 2)
         print "========================================================"
@@ -66,7 +78,7 @@ def main():
     if re.search('miss', options):
         print print_colors("<< checkMissing >>")
         CHK_MISSING = time.time()
-        execute_cmd("python %s/py/checkMissing.py autobox %s" % (dir_ngs_dashboard, dir_data))
+        execute_cmd("python %s/py/checkMissing.py autobox %s -p %s -r %s" % (dir_ngs_dashboard, dir_data, project, run_bn))
         print "--------------------------------------------------------"
         print "checkMissing time: %ss" % round(time.time() - CHK_MISSING, 2)
         print "========================================================"
@@ -82,7 +94,7 @@ def main():
 
         print print_colors("<< QC Report >>")
         QC = time.time()
-        execute_cmd("python %s/py/QC_Reporter.py %s %s"% (dir_ngs_dashboard, dir_output, path_bed))
+        execute_cmd("python %s/py/QC_Reporter.py %s %s -p %s -r %s"% (dir_ngs_dashboard, dir_output, path_bed, project, run_bn))
         print "--------------------------------------------------------"
         print "QC time: %ss" % round(time.time() - QC, 2)
         print "========================================================"
@@ -90,7 +102,7 @@ def main():
     if re.search('fusion', options):
         print print_colors("<< FusionGene >>")
         FUSION = time.time()
-        execute_cmd("%s/Project/FusionGene/markFusionGene.py %s %s %s" % 
+        execute_cmd("python %s/Project/FusionGene/markFusionGene.py %s %s %s" % 
                     (dir_ngs_manual, dir_output, path_bed, path_fg_list))
         print "--------------------------------------------------------"
         print "markFusionGene time: %ss" % round(time.time() - FUSION, 2)
@@ -190,7 +202,7 @@ if __name__ == '__main__':
     else:
         log_file_mode = 'a'
 
-    SetupLoggerMod('log', os.path.join(dir_output, 'handleAutobox.log'), log_mode=log_file_mode,
+    SetupLogger('log', os.path.join(dir_output, 'handleAutobox.log'), log_mode=log_file_mode,
                    format_sh='%(message)s', format_fh='[%(levelname)s] %(message)s')
     logger = logging.getLogger('log')
 

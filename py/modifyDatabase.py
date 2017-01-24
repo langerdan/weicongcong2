@@ -95,7 +95,7 @@ def extract():
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='modify_database', formatter_class=RawTextHelpFormatter,
+    parser = argparse.ArgumentParser(prog='modifyDatabase', formatter_class=RawTextHelpFormatter,
                                      description="Modify Database:\n"
                                                  "1. update 'B1' with 'B2' if match 'A';\n"
                                                  "2. delete some rows if match 'A';\n"

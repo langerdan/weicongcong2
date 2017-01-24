@@ -73,6 +73,7 @@
 										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('9geneBreast');return false;"> 9geneBreast </a></li>
 										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('6geneGIST');return false;"> 6geneGIST </a></li>
 										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('6geneOvarian');return false;"> 6geneOvarian </a></li>
+										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('151gene');return false;"> 151gene </a></li>
 										<li><a data-toggle="tab" href="#" onclick="loadunHandleSample('BRCA');return false;"> BRCA </a></li>
 									</ul>
 

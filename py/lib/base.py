@@ -17,19 +17,29 @@ import subprocess
 from threading import Thread
 
 
-def read_bed(path_b):
-    f_details = {}
+def read_bed(path_b, r_type='dict'):
+    bed_dict = {}
+    bed_list = []
     with open(path_b, 'rb') as bed:
-        for line_b in bed:
-            chr_n = re.match('([^\t]+)\t', line_b).group(1)
-            pos_s = int(re.match('[^\t]+\t([^\t]+\t)', line_b).group(1))
-            pos_e = int(re.match('(?:[^\t]+\t){2}([^\t]+[\t\n\r])', line_b).group(1))
-            if re.match('(?:[^\t]+\t){3}([^\t\n\r]+)', line_b):
-                gene_name = re.match('(?:[^\t]+\t){3}([^\t\n\r]+)', line_b).group(1)
+        for line in bed:
+            if not re.match('chr[1-9XYM]+\t', line):
+                continue
+            line_cont = line.strip().split('\t')
+            chr_n = line_cont[0]
+            pos_s = int(line_cont[1])
+            pos_e = int(line_cont[2])
+            if len(line_cont) >3:
+                gene_name = line_cont[3]
             else:
-                gene_name= ""
-            f_details["%s-%s-%s-%s" % (chr_n, gene_name, pos_s, pos_e)] = [chr_n, gene_name, pos_s, pos_e]
-    return f_details
+                gene_name = "*"
+            bed_dict["%s-%s-%s-%s" % (chr_n, gene_name, pos_s, pos_e)] = {"chr": chr_n, "start": pos_s, "end": pos_e, "gene": gene_name}
+            bed_list.append({"chr": chr_n, "start": pos_s, "end": pos_e, "gene": gene_name})
+    if r_type == 'dict':
+        return bed_dict
+    elif r_type == 'list':
+        return bed_list
+    else:
+        raise Exception("Unknown return type: %s" % r_type)
 
 
 def parse_vcf(p_vcf):
@@ -125,8 +135,14 @@ def handle_project(dir_name):
         project = '6geneGIST'
     elif re.search('6geneOvarian', dir_name):
         project = '6geneOvarian'
+    elif re.search('151gene', dir_name):
+        project = '151gene'
+    elif re.search('50gene', dir_name):
+        project = '50gene'
     elif re.search('BRCA', dir_name):
         project = 'BRCA'
+    elif re.match('TEST', dir_name):
+        project = 'TEST'
     else:
         raise Exception("Unknown project for %s" % dir_name)
     return project
@@ -143,7 +159,7 @@ def handle_run_bn(dir_name):
 def handle_table(project):
     table = {'vcf': None, 'anno': None}
     if project in ['56gene', '42geneLung', '14geneCRC', '9geneBreast', '6geneGIST', '6geneOvarian', 
-                   'BRCA', 'ZS-BRACA']:
+                   '151gene', '50gene', 'BRCA', 'ZS-BRCA', 'TEST']:
         table['vcf'] = project + '_VCF'
         table['anno'] = project + '_anno'
     else:
@@ -177,6 +193,8 @@ class SetupLogger(object):
         self.format_date = format_date
         self.l = logging.getLogger(log_name)
         self.l.setLevel(level)
+        self.add_filehandler()
+        self.add_streamhandler()
 
     def add_filehandler(self):
         if self.on_file:
@@ -191,7 +209,7 @@ class SetupLogger(object):
             file_handler.setFormatter(logging.Formatter(self.format_fh, self.format_date))
             self.l.addHandler(file_handler)
 
-    def add_streamhandler(self, sh_formatter):
+    def add_streamhandler(self):
         if self.on_stream:
             stream_handler = logging.StreamHandler()
             stream_handler.setFormatter(logging.Formatter(self.format_sh))

@@ -192,7 +192,7 @@ def main():
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='spider_mycancergenome', description="catch gene info from My Cancer Genome")
+    parser = argparse.ArgumentParser(prog='spiderMyCancerGenome', description="catch gene info from My Cancer Genome")
     parser.add_argument('-ud', '--update_disease', action='store_true', help='update Disease - Gene list')
     parser.add_argument('-uv', '--update_variant', action='store_true', help='update Disease - Variant list')
     parser.add_argument('-u', '--update', action='store_true', help='update MyCancerGenome')

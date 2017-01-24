@@ -387,7 +387,7 @@ def add_knowledge(data):
         try:
             variant_name = re.search('\((.+)\)', result[1]).group(1)
             if re.search('<td>Frequency of.+?%s' % variant_name, result[2]):
-                freq = re.search('<td>Frequency of.+?%s.+?</td>\n<td>(.+?)(?:\(|<)' % variant_name, result[2]).group(1)
+                freq = re.search('<td>Frequency of.+?%s.+?</td>\n<td[^>]*>(.+?)(?:\(|<)' % variant_name, result[2]).group(1)
             else:
                 # case 01: Ovarian Cancer-PTEN c.388C>T (R130*)
                 print print_colors("None frequency found for %s" % variant_name, 'yellow')
@@ -587,7 +587,7 @@ def handle_local():
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='cross SNP', formatter_class=RawTextHelpFormatter,
+    parser = argparse.ArgumentParser(prog='crossSNP', formatter_class=RawTextHelpFormatter,
                                      description="• import vcf, annotation(.vcf, raw_variants.txt)\n"
                                                  "• cross vcf with annotation and output report(.xls)")
     subparsers = parser.add_subparsers(dest='subparser_name', help='cross snp with different source')

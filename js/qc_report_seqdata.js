@@ -50,13 +50,13 @@ function loadReport_QC_SeqData(sdp) {
 			}else {
 				$('#pass_absent_frag_status').html(span_pass);
 			}
-			if (json.pass.coverage_unifor < 98) {
-				$('#pass_coverage_unifor_status').html(span_filed + '>0.2x小于98%');
+			if (json.pass.coverage_unifor < 95) {
+				$('#pass_coverage_unifor_status').html(span_filed + '>0.2x小于95%');
 			}else {
 				$('#pass_coverage_unifor_status').html(span_pass);
 			}
-			if (json.pass.min_reads < 98) {
-				$('#pass_min_reads_status').html(span_filed + 'reads覆盖度小于80');
+			if (json.pass.min_reads < 10) {
+				$('#pass_min_reads_status').html(span_filed + 'reads覆盖度小于10');
 			}else {
 				$('#pass_min_reads_status').html(span_pass);
 			}

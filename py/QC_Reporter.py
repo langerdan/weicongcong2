@@ -76,10 +76,10 @@ def init_sample_cover(sap_name):
                              "depth_levels": [],
                              "path": "",
                              "frag_data": {"frag_name": f_key,
-                                           "chr_num": re.match('chr(.+)', frag_details[f_key][0]).group(1),
-                                           "gene_name": frag_details[f_key][1],
-                                           "pos_s": frag_details[f_key][2], "pos_e": frag_details[f_key][3],
-                                           "len": frag_details[f_key][3] - frag_details[f_key][2] + 1,
+                                           "chr_num": re.match('chr(.+)', frag_details[f_key]["chr"]).group(1),
+                                           "gene_name": frag_details[f_key]["gene"],
+                                           "pos_s": frag_details[f_key]["start"], "pos_e": frag_details[f_key]["end"],
+                                           "len": frag_details[f_key]["end"] - frag_details[f_key]["start"] + 1,
                                            "mean_depth": None, "max_depth": None, "min_depth": None,
                                            "x_labels": [], "depths": []
                                            }
@@ -150,7 +150,7 @@ def pysam_stat(path_bam, sdp):
     sdp["mapped_reads_pysam"] = samfile.mapped
     sdp["total_reads_pysam"] = samfile.unmapped + sdp["mapped_reads_pysam"]
     for f_key in frag_details:
-        sdp["frag_reads"][f_key] = samfile.count(frag_details[f_key][0], frag_details[f_key][2], frag_details[f_key][3])
+        sdp["frag_reads"][f_key] = samfile.count(frag_details[f_key]["chr"], frag_details[f_key]["start"], frag_details[f_key]["end"])
         sdp["target_reads_pysam"] += sdp["frag_reads"][f_key]
 
     # Coverage Uniformity
@@ -202,11 +202,11 @@ def pass_check(sdp):
                 sdp["pass"]["OVERALL"] = 0
                 return
         elif key == "coverage_unifor":
-            if sdp["pass"][key] < 98:
+            if sdp["pass"][key] < 95:
                 sdp["pass"]["OVERALL"] = 0
                 return
         elif key == "min_reads":
-            if sdp["pass"][key] < 80:
+            if sdp["pass"][key] < 10:
                 sdp["pass"]["OVERALL"] = 0
                 return
     sdp["pass"]["OVERALL"] = 1
@@ -263,6 +263,12 @@ def import_qc_seqdata(data):
                        "ignore %s" % ignore if ignore else "", 'grey'),
 
 
+def show_pass_digest(data):
+    data_sorted = sorted(data, key=lambda d: d[1])
+    for d in data_sorted:
+        print " - %s: " % d[1] + print_colors("Pass", 'green') if d[-1] else " - %s: " % d[1] + print_colors("Failed", 'red')
+
+
 def main():
     print print_colors("Project : ", 'yellow') + print_colors(project, 'green') + print_colors(" RUN bn: ", 'yellow') + print_colors(run_bn, 'green')
 
@@ -302,7 +308,7 @@ def main():
                             if key not in depth_digest_stat["frag"]:
                                 depth_digest_stat["frag"][key] = {"sum": 0, "len": 0, "max": None, "min": None}
 
-                            if chr_n == value[0] and value[2] <= pos <= value[3]:
+                            if chr_n == value["chr"] and value["start"] <= pos <= value["end"]:
                                 # count depth_level_stat["sample"] and ["frag"]
                                 for depth_level in depth_levels:
                                     if depth_level == 0 and depth > depth_level:
@@ -461,10 +467,12 @@ def main():
     print print_colors("• import data to QC_SeqData ..."),
     import_qc_seqdata(mysql_qc)
     print print_colors("OK!", 'green')
+    # show sample pass digest
+    show_pass_digest(mysql_qc)
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='create QC data for Topgen-Dashboard and reporter')
+    parser = argparse.ArgumentParser(prog='QC_Reporter')
     parser.add_argument('dir_data', type=str, help="Specify path of data's directory")
     parser.add_argument('path_bed', type=str, help="Specify path of bed file")
     parser.add_argument('-p', '--project', type=str, help="Specify Project")
@@ -498,7 +506,7 @@ if __name__ == '__main__':
 
     bed_filename = os.path.basename(args.path_bed)
     frag_details = read_bed(path_bed)
-    frag_details_sorted = sorted(frag_details.iteritems(), key=lambda d: (d[1][0], d[1][2]))
+    frag_details_sorted = sorted(frag_details.iteritems(), key=lambda d: (d[1]["chr"], d[1]["start"]))
 
     m_con = MysqlConnector(mysql_config, 'TopgenNGS')
     main()

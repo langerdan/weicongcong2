@@ -67,11 +67,14 @@
 											<select name="project" class="form-control">
 												<option value="56gene" selected> 56gene </option>
 												<option value="42geneLung"> 42geneLung </option>
+												<option value="BRCA"> BRCA </option>
 												<option value="14geneCRC"> 14geneCRC </option>
 												<option value="9geneBreast"> 9geneBreast </option>
 												<option value="6geneGIST"> 6geneGIST </option>
 												<option value="6geneOvarian"> 6geneOvarian </option>
-												<option value="BRCA"> BRCA </option>
+												<option value="151gene"> 151gene </option>
+												<option value="50gene"> 50gene </option>
+												<option value="TEST"> TEST </option>
 											</select>
 										</div>
 										<div class="col-md-3 col-sm-3 col-xs-3">
