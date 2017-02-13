@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 from tornado import httpclient, gen, ioloop, queues
 
 from config import mysql_config
-from lib.base import print_colors
+from lib.base import color_term
 from lib.database_connector import MysqlConnector
 
 
@@ -27,7 +27,7 @@ def update_disease():
             for key in r_gene.json():
                 import_disease([str(option.string), int(option['value']), str(key), r_gene.json()[key]])
         else:
-            print print_colors("[ERROR] CODE: %d - failed to get genes for disease: %s" % (r_gene.status_code , option.string),'red')
+            print color_term("[ERROR] CODE: %d - failed to get genes for disease: %s" % (r_gene.status_code , option.string), 'red')
             get_genes()
 
     r = requests.get('https://www.mycancergenome.org/')
@@ -37,7 +37,7 @@ def update_disease():
         for option in select_disease.find_all('option', attrs={'value': re.compile('\d+')}):
             get_genes()
     else:
-        print print_colors("[ERROR] CODE: %d - failed to get disease at 'https://www.mycancergenome.org/'" % r.status_code,'red')
+        print color_term("[ERROR] CODE: %d - failed to get disease at 'https://www.mycancergenome.org/'" % r.status_code, 'red')
         update_disease()
 
 
@@ -48,9 +48,9 @@ def import_disease(data):
     if m_con.query("SELECT id FROM MyCancerGenome_Disease "
                    "WHERE disease=%s AND gene=%s ",
                    data[::2]).rowcount == 1:
-        print print_colors("=>ignore %s" % data, 'yellow')
+        print color_term("=>ignore %s" % data, 'yellow')
     else:
-        print print_colors("=>insert %s" % data, 'green')
+        print color_term("=>insert %s" % data, 'green')
         m_con.insert(insert_g, data)
 
 
@@ -65,7 +65,7 @@ def update_variant():
                 variant_form = re.match('\S+\s+(\S+)', str(v.string)).group(1)
                 import_variant([d, gene, variant_form, str(v.string), str(v['href'])])
         else:
-            print print_colors("[ERROR] CODE: %d - failed to get variant for disease: %s" % (r.status_code , d),'red')
+            print color_term("[ERROR] CODE: %d - failed to get variant for disease: %s" % (r.status_code , d), 'red')
             get_variant()
 
     disease = set()
@@ -85,9 +85,9 @@ def import_variant(data):
     if m_con.query("SELECT id FROM MyCancerGenome_Variant "
                    "WHERE disease=%s AND variant=%s ",
                    [data[0], data[3]]).rowcount == 1:
-        print print_colors("=>ignore %s" % data, 'yellow')
+        print color_term("=>ignore %s" % data, 'yellow')
     else:
-        print print_colors("=>insert %s" % data, 'green')
+        print color_term("=>insert %s" % data, 'green')
         m_con.insert(insert_g, data)
 
 
@@ -99,9 +99,9 @@ def import_variant_details(data):
     if m_con.query("SELECT id FROM MyCancerGenome_Variant "
                    "WHERE last_update=%s AND variant_url=%s ",
                    data[-2:]).rowcount == 1:
-        print print_colors("=>ignore %s" % data[2], 'yellow')
+        print color_term("=>ignore %s" % data[2], 'yellow')
     else:
-        print print_colors("=>update %s" % data[2], 'green')
+        print color_term("=>update %s" % data[2], 'green')
         m_con.query("UPDATE MyCancerGenome_Variant "
                     "SET variant_table=%s, variant_details=%s, last_update=%s "
                     "WHERE variant_url=%s ", data)
@@ -118,7 +118,7 @@ def get(url):
     try:
         resp = yield httpclient.AsyncHTTPClient().fetch(url)
     except Exception as e:
-        print print_colors('Exception: %s %s' % (e, url), 'red')
+        print color_term('Exception: %s %s' % (e, url), 'red')
         raise gen.Return([])
     else:
         raise gen.Return(resp)
@@ -138,14 +138,14 @@ def main():
     def fetch():
         url = yield q_get.get()
         try:
-            print print_colors('<No.%d/%d - %s>' % (unfetched.index(url) + 1, len(unfetched), url))
+            print color_term('<No.%d/%d - %s>' % (unfetched.index(url) + 1, len(unfetched), url))
             if url in fetching:
-                print print_colors('fetching!', 'red')
+                print color_term('fetching!', 'red')
             else:
                 fetching.add(url)
                 if not args.update:
                     if check_variant_details(url):
-                        print print_colors('Pass!', 'grey')
+                        print color_term('Pass!', 'grey')
                         fetched.add(url)
                     else:
                         response = yield get(url)
@@ -157,7 +157,7 @@ def main():
                             last_update = str(soup.select("#section-content-container div[class='section-content active'] p")[-1].text)
                             import_variant_details([variant_table, variant_details, last_update, url])
                         else:
-                            print print_colors('FAILED! put into queue[%s]' % url, 'red')
+                            print color_term('FAILED! put into queue[%s]' % url, 'red')
                             fetching.remove(url)
                             q_get.put(url)
                 else:
@@ -170,7 +170,7 @@ def main():
                         last_update = str(soup.select("#section-content-container div[class='section-content active'] p")[-1].text)
                         import_variant_details([variant_table, variant_details, last_update, url])
                     else:
-                        print print_colors('FAILED! put into queue[%s]' % url, 'red')
+                        print color_term('FAILED! put into queue[%s]' % url, 'red')
                         fetching.remove(url)
                         q_get.put(url)
         finally:
@@ -192,7 +192,8 @@ def main():
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='spiderMyCancerGenome', description="catch gene info from My Cancer Genome")
+    parser = argparse.ArgumentParser(prog='spiderMyCancerGenome', formatter_class=argparse.RawTextHelpFormatter,
+                                     description="catch gene info from My Cancer Genome")
     parser.add_argument('-ud', '--update_disease', action='store_true', help='update Disease - Gene list')
     parser.add_argument('-uv', '--update_variant', action='store_true', help='update Disease - Variant list')
     parser.add_argument('-u', '--update', action='store_true', help='update MyCancerGenome')

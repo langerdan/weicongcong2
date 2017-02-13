@@ -8,17 +8,17 @@
 # 1. add compare VCF;
 # 2. add compare BED;
 
+from __future__ import division
 import os
 import re
 import random
 import argparse
-from argparse import RawTextHelpFormatter
 
 import xlrd
 
 from lib.base import read_bed
 from lib.base import parse_vcf
-from lib.base import print_colors
+from lib.base import color_term
 
 
 def compare_vcf():
@@ -92,10 +92,10 @@ def compare_vcf():
     v_sap_a = []
     v_sap_b = []
 
-    print print_colors("<%s -> %s>" % (sap_a, sap_b))
+    print color_term("<%s -> %s>" % (sap_a, sap_b))
 
     # Sample A
-    print print_colors(" - %s ..." % name_a),
+    print color_term(" - %s ..." % name_a),
     if args.cross_xls:
         vcf_content_a = parse_cross_xls(sap_a)
     else:
@@ -106,10 +106,10 @@ def compare_vcf():
         else:
             v_sap_a.append('-'.join([str(x) for x in v[:2] + v[3:5]]))
         v_sap_a.append('-'.join([str(x) for x in v[:2]]))
-    print print_colors(str(len(v_sap_a)/2), 'green')
+    print color_term(str(len(v_sap_a) / 2), 'green')
 
     # Sample B
-    print print_colors(" - %s ..." % name_b),
+    print color_term(" - %s ..." % name_b),
     if args.ts_xls:
         vcf_content_b = parse_ts_xls(sap_b)
     else:
@@ -134,7 +134,7 @@ def compare_vcf():
             details.append(["Match", v_full])
         else:
             raise Exception("Unexpected case with [%s]" % v_full)
-    print print_colors(str(len(v_sap_b)/2), 'green')
+    print color_term(str(len(v_sap_b) / 2), 'green')
 
     for v_header in v_sap_a:
         if re.match('chr[1-9XYM]+-\d+-[^\-]+-[^\-]+', v_header):
@@ -142,7 +142,7 @@ def compare_vcf():
             if v_chr_pos not in v_sap_b:
                 append += 1
                 append_details.append(["Append", "A: %s" % v_header])
-    print print_colors("Append %d, Miss %d, Inconsistent %d, Match %d" % (append, miss, inconsistent, match), 'green')
+    print color_term("Append %d, Miss %d, Inconsistent %d, Match %d" % (append, miss, inconsistent, match), 'green')
     summary.append([append, miss, inconsistent, match])
     output_v(summary, append_details + details, name_a, name_b)
 
@@ -150,7 +150,7 @@ def compare_vcf():
         left = []
 
         print "-------"
-        print print_colors("%s Filter: %s" % (name_n, os.path.basename(p_bed)))
+        print color_term("%s Filter: %s" % (name_n, os.path.basename(p_bed)))
         bed_n = read_bed(p_bed, 'list')
         for n in d_n:
             match_trigger = 0
@@ -167,7 +167,7 @@ def compare_vcf():
             if not match_trigger:
                 left.append('-'.join(v))
 
-        print print_colors("%s after filter: %s" % (name_n, len(left)), 'red')
+        print color_term("%s after filter: %s" % (name_n, len(left)), 'red')
         print ', '.join(left)
 
     if args.append_bed:
@@ -302,21 +302,37 @@ def compare_bed():
             for line in d:
                 o.write("%s\t%s\t%s\t%s\n" % (line["chr"], line["start"], line["end"], line["gene"]))
 
+    def stats():
+        def sum_range(bed):
+            total_range = 0
+            for o in bed:
+                total_range += o["end"] - o["start"] + 1
+            return total_range
+
+        print "Overlap range: %sbp\non bed A'percentage: %s%%\non bed B'percentage: %s%%" % (
+            color_term(str(sum_range(bed_a_overlap)), 'green'),
+            color_term(str(round(sum_range(bed_a_overlap) / sum_range(bed_a) * 100, 2)), 'green'),
+            color_term(str(round(sum_range(bed_a_overlap) / sum_range(bed_b) * 100, 2)), 'green'))
+        print round(sum_range(bed_a_overlap)/sum_range(bed_a)*100, 2)
+
     bed_a = read_bed(args.bed_a, 'list')
     bed_b = read_bed(args.bed_b, 'list')
 
     bed_a_name = re.match('(.+)\.bed$', os.path.basename(args.bed_a)).group(1)
     bed_b_name = re.match('(.+)\.bed$', os.path.basename(args.bed_b)).group(1)
 
-    print print_colors("• output ..."),
+    print color_term("• output ..."),
     output_b(get_append_area(bed_a, bed_b), "%s->%s_append" % (bed_a_name, bed_b_name))
     output_b(get_append_area(bed_b, bed_a), "%s->%s_miss" % (bed_a_name, bed_b_name))
-    output_b(get_overlap_area(bed_a, bed_b), "%s->%s_overlap" % (bed_a_name, bed_b_name))
-    print print_colors("OK!", 'green')
+    bed_a_overlap = get_overlap_area(bed_a, bed_b)
+    output_b(bed_a_overlap, "%s->%s_overlap" % (bed_a_name, bed_b_name))
+
+    stats()
+
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='compare', formatter_class=RawTextHelpFormatter,
+    parser = argparse.ArgumentParser(prog='compare', formatter_class=argparse.RawTextHelpFormatter,
                                      description="• compare VCF\n"
                                                  "• compare BED")
     subparsers = parser.add_subparsers(dest='subparser_name', help='compare with different way')
@@ -336,7 +352,7 @@ if __name__ == '__main__':
     parser_b.add_argument('bed_b', type=str, help='Specify path of bed file B')
     parser_b.add_argument('dir_output', type=str, help='Specify directory of output')
     parser_b.add_argument('-m', '--merge', action='store_true', help='merge fragments if they got overlaps')
-    parser_b.add_argument('-c', '--cross_xls', action='store_true', help='Sample A is a .xls file from crossSNP')
+    parser_b.add_argument('--options', type=str, default='', help='Specify options')
     parser_b.set_defaults(func=compare_bed)
 
     args = parser.parse_args()

@@ -16,13 +16,12 @@ import os
 import re
 import json
 import argparse
-from argparse import RawTextHelpFormatter
 
 import pysam
 import xlwt
 
 from config import mysql_config
-from lib.base import print_colors
+from lib.base import color_term
 from lib.base import handle_table
 from lib.base import handle_sap_id
 from lib.base import handle_run_bn
@@ -102,8 +101,8 @@ def main(sam, sap_id, run_bn, pipeline):
         if cursor.rowcount:
             for i, item in enumerate(cursor.fetchall()):
                 if str(item[3]) == ref and str(item[4]) in stat:
-                    if args.verbose: print print_colors("%d/%d Got %s > %s in vcf" % 
-                                                        (i+1, cursor.rowcount, '-'.join(p[:4] + [ref]), str(item[4])), 'green')
+                    if args.verbose: print color_term("%d/%d Got %s > %s in vcf" %
+                                                      (i+1, cursor.rowcount, '-'.join(p[:4] + [ref]), str(item[4])), 'green')
                     v["match"].append([str(x) for x in item[2:]])
                     continue
                 else:
@@ -116,7 +115,7 @@ def main(sam, sap_id, run_bn, pipeline):
 
     # Check Pos
     if not args.skip_pos:
-        print print_colors("• Check Pos ..."),
+        print color_term("• Check Pos ..."),
         if args.verbose or args.verbose2: print ""
 
         pass_n = 0
@@ -155,13 +154,13 @@ def main(sam, sap_id, run_bn, pipeline):
                     # filter - VCF matched all alt type
                     if vcf_alt["filter"] == 2:
                         filter_n += 1
-                        if args.verbose: print print_colors("[FILTER-MATCH] Alt: %s already called in vcf: %s" % (alt_frequency.keys(), vcf_alt["match"]), 'red')
+                        if args.verbose: print color_term("[FILTER-MATCH] Alt: %s already called in vcf: %s" % (alt_frequency.keys(), vcf_alt["match"]), 'red')
                         if args.debug_filter: check_pos_data.append([sap_id, run_bn] + p[:-1] + 
                                                                     ["[FILTER-MATCH]" + str(nt_stat), alt_frequency, pileupcolumn.n, append, match])
                     else:
                         if alt_frequency == "No mutation":
                             pass_n += 1
-                            if args.verbose: print print_colors("[Pass] %s No mutation" % '-'.join(p[:4] + [ref]), 'red')
+                            if args.verbose: print color_term("[Pass] %s No mutation" % '-'.join(p[:4] + [ref]), 'red')
                         else:
                             # filter - Alt frequency < 0.5%
                             low_freq = []
@@ -170,14 +169,14 @@ def main(sam, sap_id, run_bn, pipeline):
                                     low_freq.append(k_a)
                             if set(low_freq + [x[-1] for x in match]) == set(alt_frequency.keys()):
                                 filter_n += 1
-                                if args.verbose: print print_colors("[FILTER-LOWFREQ] except matches(%s) in VCF, all alt freq(%s) < 0.5%%" % 
-                                                                    ([x[-1] for x in match], [alt_frequency[x] for x in low_freq]), 'red')
+                                if args.verbose: print color_term("[FILTER-LOWFREQ] except matches(%s) in VCF, all alt freq(%s) < 0.5%%" %
+                                                                  ([x[-1] for x in match], [alt_frequency[x] for x in low_freq]), 'red')
                                 if args.debug_filter: check_pos_data.append([sap_id, run_bn] + p[:-1] + 
                                                                             ["[FILTER-LOWFREQ]" + str(nt_stat), alt_frequency, pileupcolumn.n, append, match])
                             # filter - Not include target Alt type
                             elif alt in ['A', 'T', 'G', 'C'] and alt not in alt_frequency:
                                 filter_n += 1
-                                if args.verbose: print print_colors("[FILTER-NO_TARGET_ALT] %s no target alt type: %s" % ('-'.join(p[:4]), alt), 'red')
+                                if args.verbose: print color_term("[FILTER-NO_TARGET_ALT] %s no target alt type: %s" % ('-'.join(p[:4]), alt), 'red')
                                 if args.debug_filter: check_pos_data.append([sap_id, run_bn] + p[:-1] + 
                                                                             ["[FILTER-NO_TARGET_ALT]" + str(nt_stat), alt_frequency, pileupcolumn.n, append, match])
                             else:
@@ -190,12 +189,12 @@ def main(sam, sap_id, run_bn, pipeline):
                 #raise Exception("No match - %s" % p)
                 uncover_n += 1
                 check_pos_data.append([sap_id, run_bn] + p + ["Uncovered"])
-        print print_colors("Pass: %d, Filter: %d, Remain: %d/%d, Uncover: %d " % (pass_n, filter_n, remain_n, len(check_pos), uncover_n), 'grey'),
-        print print_colors("OK!", 'green')
+        print color_term("Pass: %d, Filter: %d, Remain: %d/%d, Uncover: %d " % (pass_n, filter_n, remain_n, len(check_pos), uncover_n), 'grey'),
+        print color_term("OK!", 'green')
 
     # Check Depth
     if not args.skip_depth:
-        print print_colors("• Check Depth ..."),
+        print color_term("• Check Depth ..."),
         if args.verbose or args.verbose2: print ""
 
         filter_n = 0
@@ -222,13 +221,13 @@ def main(sam, sap_id, run_bn, pipeline):
             else:
                 if high_depth == len(range(pos_s-1, pos_e+1)):
                     filter_n += 1
-                    if args.verbose: print print_colors("[Filter] %s all depths > 10" % d, 'red')
+                    if args.verbose: print color_term("[Filter] %s all depths > 10" % d, 'red')
                 else:
                     low_depth_n += 1
                     check_depth_data.append([sap_id, run_bn] + d + [depths])
-        print print_colors("Filter: %d, LowDepth: %d/%d, Deletion: %d/%d " % 
-                           (filter_n, low_depth_n, len(check_depth), deletion_n, len(check_depth)), 'grey'),
-        print print_colors("OK!", 'green')
+        print color_term("Filter: %d, LowDepth: %d/%d, Deletion: %d/%d " %
+                         (filter_n, low_depth_n, len(check_depth), deletion_n, len(check_depth)), 'grey'),
+        print color_term("OK!", 'green')
 
 
 def handle_autobox():
@@ -236,7 +235,7 @@ def handle_autobox():
     for sap in os.listdir(dir_data):
         dir_sap = os.path.join(dir_data, sap)
         if os.path.isdir(dir_sap):
-            print print_colors("-{%s}" % sap, 'red')
+            print color_term("-{%s}" % sap, 'red')
             sample_id = handle_sap_id(sap)
             if os.path.isdir(dir_sap):
                 for f in os.listdir(dir_sap):
@@ -247,12 +246,12 @@ def handle_autobox():
                         samfile.close()
     print "------------------\n• output CheckMissing.xls to %s ..." % dir_data,
     output(dir_data)
-    print print_colors("OK!", 'green')
+    print color_term("OK!", 'green')
 
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='checkMissing', formatter_class=RawTextHelpFormatter,
+    parser = argparse.ArgumentParser(prog='checkMissing', formatter_class=argparse.RawTextHelpFormatter,
                                      description="• check certain pos mutation\n"
                                                  "• check certain region lowdepth or deletion\n")
     subparsers = parser.add_subparsers(dest='subparser_name', help='Check missing with different source')

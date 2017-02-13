@@ -3,12 +3,12 @@
 # PROGRAM : handleAutobox
 # AUTHOR  : codeunsolved@gmail.com
 # CREATED : December 20 2016
-# VERSION : v0.0.1a
+# VERSION : v0.0.1
 # ToDo:
-# 1. class FileHandlerFormatter can ONLY format '%(message)s';
-#    [Solved] with `return logging.Formatter.format(self, record)`,
-#    1.1 but it affect on global, with StreamHandler too.
-# 2. not real time output with subprocess(execute_cmd);
+# 1. [Solevd]remove ANSI color format when logger stream to FileHandler;
+# 2. [Solevd]not real time output with subprocess(execute_cmd);
+# UPDATE  : [v0.0.1] February 13 2017
+# 1. Solevd ToDo list;
 
 import os
 import re
@@ -16,39 +16,39 @@ import sys
 import time
 import logging
 import argparse
-from argparse import RawTextHelpFormatter
 
-from lib.base import SetupLogger
+from lib.base import color_term
 from lib.base import execute_cmd
-from lib.base import print_colors
+from lib.base import SetupLogger
 from lib.base import handle_project
 
 
 def main():
     print "========================================================"
-    print time.strftime("%Y年%m月%d日 %A %H:%M:%S", time.gmtime())
+    print time.strftime("%Y年%m月%d日 %A %H:%M:%S")
     print "========================================================"
 
     START = time.time()
 
-    print print_colors("=>Project : ", 'green') + project
-    print print_colors("=>RUN     : ", 'green') + run_bn
+    print color_term("=>Project : ", 'green') + project
+    print color_term("=>RUN     : ", 'green') + run_bn
     print "--------------------------------------------------------"
-    print print_colors("=>Data    : ", 'green') + dir_data
-    print print_colors("=>Output  : ", 'green') + dir_output
-    print print_colors("=>bed     : ", 'green') + path_bed
-    print print_colors("=>Options : ", 'green') + options
+    print color_term("=>Data    : ", 'green') + dir_data
+    print color_term("=>Output  : ", 'green') + dir_output
+    print color_term("=>bed     : ", 'green') + path_bed
+    print color_term("=>Options : ", 'green') + options
     print "========================================================"
 
     if re.search('pull', options):
-        print print_colors("<< pullOutbox >>")
+        print color_term("<< pullOutbox >>")
         PULL_OUTBOX = time.time()
         execute_cmd("python %s/py/pullData.py outbox %s %s -f '\.(?:ba[im]|vcf|txt)$'" % (dir_ngs_dashboard, dir_data, dir_output))
         print "--------------------------------------------------------"
         print "pullOutbox time: %ss" % round(time.time() - PULL_OUTBOX, 2)
         print "========================================================"
 
-        print print_colors("<< pullMiSeq >>")
+        time.sleep(4)
+        print color_term("<< pullMiSeq >>")
         PULL_MISEQ = time.time()
 
         if re.match('\d{6}$', run_bn):
@@ -64,10 +64,10 @@ def main():
         print "========================================================"
 
     if re.search('cross', options):
-        print print_colors("<< crossSNP >>")
+        print color_term("<< crossSNP >>")
         CROSS_SNP = time.time()
         if project == "BRCA":
-            print print_colors("Project: BRCA", 'yellow')
+            print color_term("Project: BRCA", 'yellow')
             execute_cmd("python %s/py/crossSNP.py autobox %s -ic -pi" % (dir_ngs_dashboard, dir_data))
         else:
             execute_cmd("python %s/py/crossSNP.py autobox %s -ick -p %s -r %s" % (dir_ngs_dashboard, dir_data, project, run_bn))
@@ -76,7 +76,7 @@ def main():
         print "========================================================"
 
     if re.search('miss', options):
-        print print_colors("<< checkMissing >>")
+        print color_term("<< checkMissing >>")
         CHK_MISSING = time.time()
         execute_cmd("python %s/py/checkMissing.py autobox %s -p %s -r %s" % (dir_ngs_dashboard, dir_data, project, run_bn))
         print "--------------------------------------------------------"
@@ -84,7 +84,7 @@ def main():
         print "========================================================"
 
     if re.search('qc', options):
-        print print_colors("<< FASTQC • STATS • DEPTH >>")
+        print color_term("<< FASTQC • STATS • DEPTH >>")
         PREQC = time.time()
         execute_cmd("%s/Pipelines/preVariantCalling.sh fastqcstatdepth %s %s" % 
                     (dir_ngs_manual, dir_output, path_bed))
@@ -92,7 +92,7 @@ def main():
         print "preQC time: %ss" % round(time.time() - PREQC, 2)
         print "========================================================"
 
-        print print_colors("<< QC Report >>")
+        print color_term("<< QC Report >>")
         QC = time.time()
         execute_cmd("python %s/py/QC_Reporter.py %s %s -p %s -r %s"% (dir_ngs_dashboard, dir_output, path_bed, project, run_bn))
         print "--------------------------------------------------------"
@@ -100,7 +100,7 @@ def main():
         print "========================================================"
 
     if re.search('fusion', options):
-        print print_colors("<< FusionGene >>")
+        print color_term("<< FusionGene >>")
         FUSION = time.time()
         execute_cmd("python %s/Project/FusionGene/markFusionGene.py %s %s %s" % 
                     (dir_ngs_manual, dir_output, path_bed, path_fg_list))
@@ -110,27 +110,6 @@ def main():
 
     print "Total time: %ss" % round(time.time() - START, 2)
     print "========================================================"
-
-
-class FileHandlerFormatter(logging.Formatter):
-    def format(self, record):
-        record.msg = re.sub('\\033\[[0-8;]+m', '', record.msg)
-        return logging.Formatter.format(self, record)
-
-
-class SetupLoggerMod(SetupLogger):
-    def add_filehandler(self):
-        if self.on_file:
-            # handle log directory
-            if self.path_log:
-                dir_name = os.path.dirname(self.path_log)
-                if not os.path.exists(dir_name):
-                    print "[WARNING] directory of log doesn't exist, create it!"
-                    os.makedirs(dir_name)
-
-            file_handler = logging.FileHandler(self.path_log, mode=self.log_mode)
-            file_handler.setFormatter(FileHandlerFormatter(self.format_fh, self.format_date))
-            self.l.addHandler(file_handler)
 
 
 class StreamToLogger(object):
@@ -152,7 +131,7 @@ class StreamToLogger(object):
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='handleAutobox', formatter_class=RawTextHelpFormatter,
+    parser = argparse.ArgumentParser(prog='handleAutobox', formatter_class=argparse.RawTextHelpFormatter,
                                      description="process analysis after Autobox pipeline.")
 
     parser.add_argument('dir_data', type=str, help='Specify directory of data')
@@ -172,7 +151,7 @@ if __name__ == '__main__':
                                                   "--------------------\n")
     parser.add_argument('-p', '--project', type=str, help='Specify Project')
     parser.add_argument('-r', '--run_bn', type=str, help='Specify RUN batch No.')
-    parser.add_argument('-w', '--log_write', action='store_true', help="Change log file mode='w'")
+    parser.add_argument('-l', '--log_mode', type=str, default='a', help="Specify log mode (default: 'a')")
 
     args = parser.parse_args()
 
@@ -196,14 +175,9 @@ if __name__ == '__main__':
         run_bn = args.run_bn
     else:
         run_bn = re.match("%s(\d+)" % project, dir_data_name).group(1)
-    # setup log
-    if args.log_write:
-        log_file_mode = 'w'
-    else:
-        log_file_mode = 'a'
 
-    SetupLogger('log', os.path.join(dir_output, 'handleAutobox.log'), log_mode=log_file_mode,
-                   format_sh='%(message)s', format_fh='[%(levelname)s] %(message)s')
+    SetupLogger('log', os.path.join(dir_output, 'handleAutobox.log'), log_mode=args.log_mode,
+                format_sh='%(message)s', format_fh='[%(levelname)s] %(message)s')
     logger = logging.getLogger('log')
 
     sys.stdout = StreamToLogger(logger, logging.INFO)

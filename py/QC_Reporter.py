@@ -11,7 +11,7 @@
 # 1. add 100% 0x frag to absent frag;
 # 2. use *.stats(samtools stats) to replace *-mismatch.log(countReads)
 #    as reads stats(total, mapping, target) data source, target bam comes from `samtools view -b -L $bed`，
-#    and discards subprocess.Popen method with open for more compatibility；
+#    and discards subprocess.Popen() method with open for more compatibility；
 # UPDATE  : [v0.0.3] November 22 2016
 # 1. add module pysam to parse bam file;
 # 2. add Coverage Uniformity statistic(Refer: https://github.com/eulaf/CFseq/blob/master/pipeline/qc/uniformity_coverage.py);
@@ -32,8 +32,8 @@ import pysam
 
 from config import mysql_config
 from lib.base import read_bed
+from lib.base import color_term
 from lib.base import clean_output
-from lib.base import print_colors
 from lib.base import handle_sap_id
 from lib.base import handle_run_bn
 from lib.base import handle_project
@@ -174,21 +174,21 @@ def cp_fastqc(sap_name, sdp):
         if re.search('^%s.+_fastqc\.html' % sap_name, fqc_html_file):
             path_fqc_html_file = os.path.join(dir_data, fqc_html_file)
             if re.search('R1', fqc_html_file):
-                print print_colors("=>R1's fastqc html: %s ..." % fqc_html_file),
+                print color_term("=>R1's fastqc html: %s ..." % fqc_html_file),
                 shutil.copy(path_fqc_html_file, os.path.join(dir_output, "fastqc"))
                 sdp["fastqc"].append("data/%s/fastqc/%s" % (dir_name, fqc_html_file))
                 copy_trigger |= 1
-                print print_colors("OK!", 'green')
+                print color_term("OK!", 'green')
             if re.search('R2', fqc_html_file):
-                print print_colors("=>R2's fastqc html: %s ..." % fqc_html_file),
+                print color_term("=>R2's fastqc html: %s ..." % fqc_html_file),
                 shutil.copy(path_fqc_html_file, os.path.join(dir_output, "fastqc"))
                 sdp["fastqc"].append("data/%s/fastqc/%s" % (dir_name, fqc_html_file))
                 copy_trigger |= 2
-                print print_colors("OK!", 'green')
+                print color_term("OK!", 'green')
     if ~copy_trigger & 1:
-        print print_colors("  R1's fastqc html: nonExistent!", 'red')
+        print color_term("  R1's fastqc html: nonExistent!", 'red')
     if ~copy_trigger & 2:
-        print print_colors("  R2's fastqc html: nonExistent!", 'red')
+        print color_term("  R2's fastqc html: nonExistent!", 'red')
 
 
 def pass_check(sdp):
@@ -230,7 +230,7 @@ def import_lab(data):
         else:
             insert += 1
             m_con.insert(insert_g, (item[0], item[22]))
-    print print_colors("insert %s" % insert if insert else "" + 
+    print color_term("insert %s" % insert if insert else "" +
                        "update %s" % update if update else "" +
                        "ignore %s" % ignore if ignore else "", 'grey'),
 
@@ -258,7 +258,7 @@ def import_qc_seqdata(data):
         else:
             insert += 1
             m_con.insert(insert_g, d)
-    print print_colors("insert %s" % insert if insert else "" + 
+    print color_term("insert %s" % insert if insert else "" +
                        "update %s" % update if update else "" +
                        "ignore %s" % ignore if ignore else "", 'grey'),
 
@@ -266,11 +266,11 @@ def import_qc_seqdata(data):
 def show_pass_digest(data):
     data_sorted = sorted(data, key=lambda d: d[1])
     for d in data_sorted:
-        print " - %s: " % d[1] + print_colors("Pass", 'green') if d[-1] else " - %s: " % d[1] + print_colors("Failed", 'red')
+        print " - %s: " % d[1] + color_term("Pass", 'green') if d[-1] else " - %s: " % d[1] + color_term("Failed", 'red')
 
 
 def main():
-    print print_colors("Project : ", 'yellow') + print_colors(project, 'green') + print_colors(" RUN bn: ", 'yellow') + print_colors(run_bn, 'green')
+    print color_term("Project : ", 'yellow') + color_term(project, 'green') + color_term(" RUN bn: ", 'yellow') + color_term(run_bn, 'green')
 
     sample_num = 0
     sample_cover = []
@@ -278,7 +278,7 @@ def main():
     mysql_qc = []
     for f in os.listdir(dir_data):
         if re.match('^.+\.depth$', f):
-            print print_colors("<%s>" % f, 'red')
+            print color_term("<%s>" % f, 'red')
             sample_num += 1
 
             # handle sample name
@@ -373,11 +373,11 @@ def main():
                             else:
                                 sample_data_pointer["pass"]["absent_frag"] += 1
                             sample_data_pointer["absent_frag"].append(key)
-                            print print_colors("[WARNING] %s popped" % key, 'yellow')
+                            print color_term("[WARNING] %s popped" % key, 'yellow')
                     if len(sample_data_pointer["absent_frag"]) != 0:
                         for p_key in sample_data_pointer["absent_frag"]:
                             frag_cover.pop(p_key)
-                        print print_colors("------- popped %d frags -------" % len(sample_data_pointer["absent_frag"]), 'red')
+                        print color_term("------- popped %d frags -------" % len(sample_data_pointer["absent_frag"]), 'red')
 
                     # add 0x frag 0-percent
                     for key in sample_data_pointer["0x_frag"]:
@@ -391,9 +391,9 @@ def main():
                             else:
                                 sample_data_pointer["pass"]["absent_frag"] += 1
                             sample_data_pointer["absent_frag"].append(key)
-                            print print_colors("add 100% 0x frag [{}] to absent frag".format(key), 'yellow')
+                            print color_term("add 100% 0x frag [{}] to absent frag".format(key), 'yellow')
                     if depth_digest_stat["sample"]["len"] == 0:
-                        print print_colors("No target data found!", 'red')
+                        print color_term("No target data found!", 'red')
                         return
                     for depth_level in depth_levels:
                         # add sample depth level
@@ -401,7 +401,7 @@ def main():
                         sample_cover[-1]["depth_levels"].append([str(depth_level), depth_level_percent])
                         if depth_level == 0:
                             sample_data_pointer["pass"]["0x_percent"] = round(100 - depth_level_percent, 2)
-                        print print_colors("=>depth level: %s, len: %s, sum: %s" % (
+                        print color_term("=>depth level: %s, len: %s, sum: %s" % (
                                            sample_cover[-1]["depth_levels"][-1],
                                            depth_level_stat["sample"][str(depth_level)],
                                            depth_digest_stat["sample"]["len"]), 'green')
@@ -421,28 +421,28 @@ def main():
                     sample_data_pointer["depth_levels"] = sample_cover[-1]["depth_levels"]
 
             # Reads statistics via samtools stats
-            print print_colors("• get Reads statistics from .stats ...")
+            print color_term("• get Reads statistics from .stats ...")
             (sample_data_pointer["total_reads"],
              sample_data_pointer["mapped_reads"],
              sample_data_pointer["target_reads"]) = get_reads_stats(file_name)
-            print print_colors("=>total_reads: %d, mapped_reads: %d, target_reads: %d" % (
+            print color_term("=>total_reads: %d, mapped_reads: %d, target_reads: %d" % (
                                sample_data_pointer["total_reads"],
                                sample_data_pointer["mapped_reads"],
                                sample_data_pointer["target_reads"]), 'green')
 
             # Reads statistics via pysam (including each region)
             # Coverage Uniformity statistics
-            print print_colors("• get Reads statistics and get Coverage Uniformity from .bam ...")
+            print color_term("• get Reads statistics and get Coverage Uniformity from .bam ...")
             pysam_stat(os.path.join(dir_data, "%s.bam" % file_name), sample_data_pointer)
-            print print_colors("=>total_reads: %d, mapped_reads: %d, target_reads: %d" % (
+            print color_term("=>total_reads: %d, mapped_reads: %d, target_reads: %d" % (
                                sample_data_pointer["total_reads_pysam"],
                                sample_data_pointer["mapped_reads_pysam"],
                                sample_data_pointer["target_reads_pysam"],), 'green')
-            print print_colors("=>max reads: %d, min reads: %d, mean reads: %d" % (
+            print color_term("=>max reads: %d, min reads: %d, mean reads: %d" % (
                                sample_data_pointer["max_reads"],
                                sample_data_pointer["min_reads"],
                                sample_data_pointer["mean_reads"]), 'green')
-            print print_colors("=>Coverage Uniformity >0.2x: %f, >0.5x: %f" % (
+            print color_term("=>Coverage Uniformity >0.2x: %f, >0.5x: %f" % (
                                sample_data_pointer["uniformity_0_2x"],
                                sample_data_pointer["uniformity_0_5x"]), 'green')
 
@@ -454,31 +454,32 @@ def main():
                                sample_data_pointer["pass"]["OVERALL"]])
 
             # copy FASTQC html
-            print print_colors("• copy fastqc html ...")
+            print color_term("• copy fastqc html ...")
             cp_fastqc(sample_name, sample_data_pointer)
 
-    print print_colors("• output data ..."),
+    print color_term("• output data ..."),
     output_sample_cover_data(sample_cover, sample_num, len(frag_details))
-    print print_colors("OK!", 'green')
+    print color_term("OK!", 'green')
 
-    print print_colors("• import data to Lab ..."),
+    print color_term("• import data to Lab ..."),
     import_lab(sample_names)
-    print print_colors("OK!", 'green')
-    print print_colors("• import data to QC_SeqData ..."),
+    print color_term("OK!", 'green')
+    print color_term("• import data to QC_SeqData ..."),
     import_qc_seqdata(mysql_qc)
-    print print_colors("OK!", 'green')
+    print color_term("OK!", 'green')
     # show sample pass digest
     show_pass_digest(mysql_qc)
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='QC_Reporter')
+    parser = argparse.ArgumentParser(prog='QC_Reporter', formatter_class=argparse.RawTextHelpFormatter,
+                                     description="")
     parser.add_argument('dir_data', type=str, help="Specify path of data's directory")
     parser.add_argument('path_bed', type=str, help="Specify path of bed file")
     parser.add_argument('-p', '--project', type=str, help="Specify Project")
     parser.add_argument('-r', '--run_bn', type=str, help="Specify RUN batch No.")
+    parser.add_argument('-u', '--update', action='store_true', help="update import data")
     parser.add_argument('-kd', '--skip_depth', action='store_false', help="skip depth statistics")
-    parser.add_argument('-u', '--update', action='store_true', help='update import data')
 
     args = parser.parse_args()
     
@@ -486,10 +487,10 @@ if __name__ == '__main__':
     path_bed = args.path_bed
     dir_output = os.path.join('/Users/codeunsolved/Sites/topgen-dashboard/data', os.path.basename(dir_data))
 
-    print print_colors("• clean dir output ..."),
+    print color_term("• clean dir output ..."),
     clean_output(dir_output, "sample_cover")
     clean_output(dir_output, "fastqc")
-    print print_colors("OK!", 'green')
+    print color_term("OK!", 'green')
 
     dir_name = os.path.basename(dir_data)
 

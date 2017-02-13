@@ -3,15 +3,20 @@
 # PROGRAM : base
 # AUTHOR  : codeunsolved@gmail.com
 # CREATED : August 10 2016
-# VERSION : v0.0.1a
+# VERSION : v0.0.1
+# UPDATE  : [v0.0.1] February 13 2017
+# 1. integrate some basic and useful functions;
+# 2. modified the way of parsing .tsv file(re.match() -> split());
+# 3. add StetupLogger(), execute_cmd();
+# 4. print_colors() change name to 'color_term';
 
 import os
 import re
 import sys
 import time
+import shlex
 import shutil
 import logging
-import shlex
 import subprocess
 
 from threading import Thread
@@ -52,16 +57,17 @@ def parse_vcf(p_vcf):
             if re.match('#', line):
                 continue
             if ver == "4.1" or "4.2":
-                chr_n = re.match('([^\t]+)\t', line).group(1)
-                pos = int(re.match('[^\t]+\t([^\t]+)\t', line).group(1))
-                id_snp = re.match('(?:[^\t]+\t){2}([^\t]+)\t', line).group(1)
-                ref = re.match('(?:[^\t]+\t){3}([^\t]+)\t', line).group(1)
-                alt = re.match('(?:[^\t]+\t){4}([^\t]+)\t', line).group(1)
-                qual = re.match('(?:[^\t]+\t){5}([^\t]+)\t', line).group(1)
-                q_filter = re.match('(?:[^\t]+\t){6}([^\t]+)\t', line).group(1)
-                info = re.match('(?:[^\t]+\t){7}([^\t]+)\t', line).group(1)
-                format_key = re.match('(?:[^\t]+\t){8}([^\t]+)\t', line).group(1)
-                format_value = re.match('(?:[^\t]+\t){9}([^\t\n\r]+)', line).group(1)
+                line_cont = line.strip().split('\t')
+                chr_n = line_cont[0]
+                pos = int(line_cont[1])
+                id_snp = line_cont[2]
+                ref = line_cont[3]
+                alt = line_cont[4]
+                qual = line_cont[5]
+                q_filter = line_cont[6]
+                info = line_cont[7]
+                format_key = line_cont[8]
+                format_value = line_cont[9]
                 vcf_body.append([chr_n, pos, id_snp, ref, alt, qual, q_filter, info, format_key, format_value])
     return vcf_body
 
@@ -75,23 +81,7 @@ def clean_output(dir_o, subdir_name):
         os.makedirs(os.path.join(dir_o, subdir_name))
 
 
-def print_colors(string, color='blue'):
-    colors = {
-        'grey': '\033[1;30m',
-        'red': '\033[1;31m',
-        'green': '\033[1;32m',
-        'yellow': '\033[1;33m',
-        'blue': '\033[1;34m',
-        'megenta': '\033[1;35m',
-        'cyan': '\033[1;36m',
-        'white': '\033[1;37m',
-        'bold': '\033[1m',
-        'end': '\033[0m'
-    }
-    return colors[color] + string + colors['end']
-
-
-def get_file_path(dir_main, suffix='faa', output_type='list', r_num=2, debug=True):
+def get_file_path(dir_main, suffix=None, output_type='list', r_num=2, debug=True):
     def recurse_dir(dir_r, path_list, suffix_r, r_num_r):
         r_num_r -= 1
         content_list = os.listdir(dir_r)
@@ -112,73 +102,30 @@ def get_file_path(dir_main, suffix='faa', output_type='list', r_num=2, debug=Tru
         return '\n'.join(path_file)
 
 
-def handle_sap_id(file_name):
-    if re.search('_S\d+', file_name):
-        return re.match('(.+)_S\d+', file_name).group(1)
-    elif re.search('autoBox', file_name):
-        return re.match('(.+)_20\d{2}_\d{2}_\d{2}', file_name).group(1)
-    else:
-        print print_colors('unknown sample source', 'red')
-        return re.search('(.+)\.', file_name).group(1)
+def color_term(string, color='blue'):
+    colors = {
+        'grey': '\033[1;30m',
+        'red': '\033[1;31m',
+        'green': '\033[1;32m',
+        'yellow': '\033[1;33m',
+        'blue': '\033[1;34m',
+        'megenta': '\033[1;35m',
+        'cyan': '\033[1;36m',
+        'white': '\033[1;37m',
+        'bold': '\033[1m',
+        'end': '\033[0m'
+    }
+    return colors[color] + string + colors['end']
 
 
-def handle_project(dir_name):
-    if re.search('56gene', dir_name):
-        project = '56gene'
-    elif re.search('42geneLung', dir_name):
-        project = '42geneLung'
-    elif re.search('14geneCRC', dir_name):
-        project = '14geneCRC'
-    elif re.search('9geneBreast', dir_name):
-        project = '9geneBreast'
-    elif re.search('6geneGIST', dir_name):
-        project = '6geneGIST'
-    elif re.search('6geneOvarian', dir_name):
-        project = '6geneOvarian'
-    elif re.search('151gene', dir_name):
-        project = '151gene'
-    elif re.search('50gene', dir_name):
-        project = '50gene'
-    elif re.search('BRCA', dir_name):
-        project = 'BRCA'
-    elif re.match('TEST', dir_name):
-        project = 'TEST'
-    else:
-        raise Exception("Unknown project for %s" % dir_name)
-    return project
-
-
-def handle_run_bn(dir_name):
-    if re.match('BRCA|onco', dir_name):
-        run_bn = re.match('(?:BRCA|onco)(\d+)', dir_name).group(1)
-    else:
-        raise Exception("Unknown RUN batch No. for %s" % dir_name)
-    return run_bn
-
-
-def handle_table(project):
-    table = {'vcf': None, 'anno': None}
-    if project in ['56gene', '42geneLung', '14geneCRC', '9geneBreast', '6geneGIST', '6geneOvarian', 
-                   '151gene', '50gene', 'BRCA', 'ZS-BRCA', 'TEST']:
-        table['vcf'] = project + '_VCF'
-        table['anno'] = project + '_anno'
-    else:
-        raise Exception('Unknown Project: %s' % project)
-    return table
-
-
-def execute_cmd(c):
-    p = subprocess.Popen(shlex.split(c), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = p.communicate()
-    p.wait()
-    if err:
-        raise Exception(err)
-    elif out:
-        print out
+class FileHandlerFormatter(logging.Formatter):
+    def format(self, record):
+        msg = super(FileHandlerFormatter, self).format(record)
+        return re.sub('\\033\[[0-8;]+m', '', msg)
 
 
 class SetupLogger(object):
-    def __init__(self, log_name, path_log=None, level=logging.DEBUG, on_file=True, on_stream=True, log_mode='a',
+    def __init__(self, log_name, path_log=None, level=logging.INFO, on_file=True, on_stream=True, log_mode='a',
                  format_fh='%(asctime)s | %(filename)s - line:%(lineno)-4d | %(levelname)s | %(message)s',
                  format_sh='[%(levelname)s] %(message)s',
                  format_date='[%b-%d-%Y] %H:%M:%S'):
@@ -198,15 +145,14 @@ class SetupLogger(object):
 
     def add_filehandler(self):
         if self.on_file:
-            # handle log directory
-            if self.path_log:
+            if self.path_log: # handle log directory
                 dir_name = os.path.dirname(self.path_log)
                 if not os.path.exists(dir_name):
-                    print "[WARNING] directory of log doesn't exist, create it!"
+                    print color_term("[WARNING] directory of log doesn't exist, create it!", 'yellow')
                     os.makedirs(dir_name)
 
             file_handler = logging.FileHandler(self.path_log, mode=self.log_mode)
-            file_handler.setFormatter(logging.Formatter(self.format_fh, self.format_date))
+            file_handler.setFormatter(FileHandlerFormatter(self.format_fh, self.format_date))
             self.l.addHandler(file_handler)
 
     def add_streamhandler(self):
@@ -214,3 +160,57 @@ class SetupLogger(object):
             stream_handler = logging.StreamHandler()
             stream_handler.setFormatter(logging.Formatter(self.format_sh))
             self.l.addHandler(stream_handler)
+
+
+def execute_cmd(c):
+    p = subprocess.Popen(shlex.split(c), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    while True:
+        output = p.stdout.readline()
+        if output == '' and p.poll() is not None:
+            break
+        if output:
+            print output.strip()
+
+    error = p.stderr.read()
+    if error:
+        raise Exception(error)
+
+
+# NGS
+ngs_projects = ['56gene', '42geneLung', '14geneCRC', '9geneBreast', '6geneGIST', '6geneOvarian', 
+                '151gene', '50gene', 'BRCA', 'ZS-BRCA', 'TEST']
+
+def handle_project(dir_name):
+    for p in ngs_projects:
+        if re.search(p, dir_name):
+            return p
+    raise Exception("Unknown project for %s" % dir_name)
+
+
+def handle_table(project):
+    table = {'vcf': None, 'anno': None}
+    if project in ngs_projects:
+        table['vcf'] = project + '_VCF'
+        table['anno'] = project + '_anno'
+    else:
+        raise Exception('Unknown Project: %s' % project)
+    return table
+
+
+def handle_run_bn(dir_name):
+    if re.match('BRCA|onco', dir_name):
+        run_bn = re.match('(?:BRCA|onco)(\d+)', dir_name).group(1)
+    else:
+        raise Exception("Unknown RUN batch No. for %s" % dir_name)
+    return run_bn
+
+
+def handle_sap_id(file_name):
+    if re.search('_S\d+', file_name):
+        return re.match('(.+)_S\d+', file_name).group(1)
+    elif re.search('autoBox', file_name):
+        return re.match('(.+)_20\d{2}_\d{2}_\d{2}', file_name).group(1)
+    else:
+        print color_term("Unknown sample source", 'red')
+        return re.search('(.+)\.', file_name).group(1)

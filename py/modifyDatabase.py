@@ -11,10 +11,9 @@ import os
 import re
 import argparse
 from datetime import datetime
-from argparse import RawTextHelpFormatter
 
 from config import mysql_config
-from lib.base import print_colors
+from lib.base import color_term
 from lib.database_connector import MysqlConnector
 
 
@@ -51,33 +50,33 @@ def update():
     data = re.findall('=(.+?)(?:,|$)', args.sub) + format_match_data(args.match)
     sql_format = [args.table, format_sql(args.sub, 'set'), format_sql(args.match)]
     sql_query = "UPDATE {0:s} SET {1:s} WHERE {2:s} ".format(*sql_format)
-    print print_colors("• UPDATE ", 'red') + print_colors(("%s %s ..." % (sql_query, data))[7:], 'yellow'),
+    print color_term("• UPDATE ", 'red') + color_term(("%s %s ..." % (sql_query, data))[7:], 'yellow'),
     start = datetime.now()
     cursor = m_con.query(sql_query, data)
-    print print_colors("OK!", 'green')
-    print print_colors("------------------\n  %d rows affected(%fs)" % (cursor.rowcount, (datetime.now() - start).total_seconds()))
+    print color_term("OK!", 'green')
+    print color_term("------------------\n  %d rows affected(%fs)" % (cursor.rowcount, (datetime.now() - start).total_seconds()))
 
 
 def delete():
     data = format_match_data(args.match)
     sql_format = [args.table, format_sql(args.match)]
     sql_query = "DELETE FROM {0:s} WHERE {1:s} ".format(*sql_format)
-    print print_colors("• DELETE ", 'red') + print_colors(("%s %s ..." % (sql_query, data))[7:], 'yellow'),
+    print color_term("• DELETE ", 'red') + color_term(("%s %s ..." % (sql_query, data))[7:], 'yellow'),
     start = datetime.now()
     cursor = m_con.query(sql_query, data)
-    print print_colors("OK!", 'green')
-    print print_colors("------------------\n  %d rows affected(%fs)" % (cursor.rowcount, (datetime.now() - start).total_seconds()))
+    print color_term("OK!", 'green')
+    print color_term("------------------\n  %d rows affected(%fs)" % (cursor.rowcount, (datetime.now() - start).total_seconds()))
 
 
 def extract():
     data = format_match_data(args.match)
     sql_format = [args.table, format_sql(args.match)]
     sql_query = "SELECT * FROM {0:s} WHERE {1:s}".format(*sql_format)
-    print print_colors("• SELECT ", 'red') + print_colors(("%s %s ..." % (sql_query, data))[7:], 'yellow'),
+    print color_term("• SELECT ", 'red') + color_term(("%s %s ..." % (sql_query, data))[7:], 'yellow'),
     start = datetime.now()
     cursor = m_con.query(sql_query, data)
-    print print_colors("OK!", 'green')
-    print print_colors("------------------\n  %d rows affected(%fs)" % (cursor.rowcount, (datetime.now() - start).total_seconds()))
+    print color_term("OK!", 'green')
+    print color_term("------------------\n  %d rows affected(%fs)" % (cursor.rowcount, (datetime.now() - start).total_seconds()))
 
     if args.include_id:
         col_names = cursor.column_names
@@ -87,15 +86,15 @@ def extract():
         results = [x[1:] for x in cursor.fetchall()]
 
     i_g = "INSERT INTO {0:s} ({1:s}) VALUES ({2:s})".format(args.table_b, ','.join(col_names), ','.join(['%s' for x in col_names]))
-    print print_colors("• INSERT ", 'red') + print_colors(("%s [%d rows] ..." % (i_g, len(results)))[7:], 'yellow'),
+    print color_term("• INSERT ", 'red') + color_term(("%s [%d rows] ..." % (i_g, len(results)))[7:], 'yellow'),
     start = datetime.now()
     m_con.cursor.executemany(i_g, results)
-    print print_colors("OK!", 'green')
-    print print_colors("------------------\n  %d rows affected(%fs)" % (m_con.cursor.rowcount, (datetime.now() - start).total_seconds()))
+    print color_term("OK!", 'green')
+    print color_term("------------------\n  %d rows affected(%fs)" % (m_con.cursor.rowcount, (datetime.now() - start).total_seconds()))
 
 if __name__ == '__main__':
     # parse args
-    parser = argparse.ArgumentParser(prog='modifyDatabase', formatter_class=RawTextHelpFormatter,
+    parser = argparse.ArgumentParser(prog='modifyDatabase', formatter_class=argparse.RawTextHelpFormatter,
                                      description="Modify Database:\n"
                                                  "1. update 'B1' with 'B2' if match 'A';\n"
                                                  "2. delete some rows if match 'A';\n"
